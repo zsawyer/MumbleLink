@@ -1,5 +1,7 @@
 HOW TO:
 
+### Windows ###
+
 # setup #
 1. install Windows SDK: http://msdn.microsoft.com/en-us/windows/bb980924
 2. install Visual C++ 2010 Express: http://www.microsoft.com/express/Downloads/#2010-Visual-CPP
@@ -15,5 +17,24 @@ HOW TO:
 8. check the output if additional libraries (other than KERNEL32.DLL) are required 
 9. include required DLLs
 
-## installing ##
+# installing #
 10. follow mod installation instructions: http://www.minecraftforum.net/viewtopic.php?f=1032&t=235800
+
+
+
+### Linux ###
+
+# setup #
+1. install sun version of jdk: $ sudo apt-get install sun-java6-jdk
+
+# editing #
+2. do not modify "mod_MumbleLink.h" only replace it by a newly generated one (see javah) (may add GPL notice)
+3. do not modify "linkedMem.h" unless you want to use a different mumble-Link-plugin other than 1.2.0
+4. do edit MumbleJniLinkDll
+
+# compiling #
+5. run make.sh
+
+# installing #
+10. follow mod installation instructions: http://www.minecraftforum.net/viewtopic.php?f=1032&t=235800
+
