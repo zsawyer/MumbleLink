@@ -288,34 +288,43 @@ public class mod_MumbleLink extends BaseMod {
         String libpath = System.getProperty(jPath);
 
         try {
-            // actual loading of library
+            // actual loading of library (any plattform)
             System.loadLibrary(libName);
         } catch (UnsatisfiedLinkError ex) {
-            ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] native library failed to load: {0}\n{1}: {2}", new Object[]{ex, jPath, libpath});
+            ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] native library failed to load: {0} -\n {1}: {2}", new Object[]{ex, jPath, libpath});
 
             // fallback for missing in PATH
             try {
-                // load actual library
+                // load actual library for win32
                 System.load(dllFolder + libName +".dll");
             } catch (UnsatisfiedLinkError ex2) {
                 ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] native library failed to load: {0}", ex2);
 
-                // fallback for 64 bit systems
-                try {
-                    System.loadLibrary(libName + "_x64");
-                } catch (UnsatisfiedLinkError ex3) {
-                    ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] native library failed to load: {0}\n{1}: {2}", new Object[]{ex3, jPath, libpath});
+                // fallback for non-windows
+                try {                
+                    // load actual library for *nix
+                    System.load(dllFolder + "lib" + libName +".so");
+                } catch (UnsatisfiedLinkError ex2L) {
+                    ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] native library failed to load: {0}", ex2L);
 
-                    // fallback for missing in PATH
+                
+                    // fallback for 64 bit systems
                     try {
-                        System.load(dllFolder + libName + "_x64.dll");
-                    } catch (UnsatisfiedLinkError ex4) {
-                        ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] native library failed to load: {0}", ex4);
+                        System.loadLibrary(libName + "_x64");
+                    } catch (UnsatisfiedLinkError ex3) {
+                        ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] native library failed to load: {0} -\n {1}: {2}", new Object[]{ex3, jPath, libpath});
 
-                        // failed to load library
-                        ModLoader.getLogger().log(Level.SEVERE, "[mod_MumbleLink] could not load required libraries!");
+                        // fallback for missing in PATH
+                        try {
+                            System.load(dllFolder + libName + "_x64.dll");
+                        } catch (UnsatisfiedLinkError ex4) {
+                            ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] native library failed to load: {0}", ex4);
 
-                        System.loadLibrary(libName + "_x64"); // force crash
+                            // failed to load library
+                            ModLoader.getLogger().log(Level.SEVERE, "[mod_MumbleLink] could not load required libraries!");
+
+                            System.loadLibrary(libName + "_x64"); // force crash
+                        }
                     }
                 }
             }
