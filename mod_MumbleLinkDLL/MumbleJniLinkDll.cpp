@@ -32,15 +32,17 @@
 #include <string.h>
 #include <wchar.h>
 
-/* probably needed for other platforms
-#include <stdlib.h>
-#include <sys/mman.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
- */
-#include <windows.h>
+#ifndef WIN32
+
+    #include <stdint.h> // uint32_t
+    #include <sys/mman.h> // shm_open, PROT_READ, PROT_WRITE, MAP_SHARED mmap
+    #include <unistd.h> // getuid
+    #include <sys/stat.h> // S_IRUSR, S_IWUSR
+    #include <fcntl.h> // O_RDWR
+ 
+#else
+    #include <windows.h>
+#endif
 
 
 #include "mod_MumbleLink.h"
