@@ -25,7 +25,11 @@ HOW TO:
 ### Linux ###
 
 # setup #
-1. install sun version of jdk: $ sudo apt-get install sun-java6-jdk
+1. install sun version of jdk: 
+    a) $ sudo add-apt-repository "deb http://archive.canonical.com/ lucid partner"
+    b) $ sudo apt-get update
+    c) $ sudo apt-get install sun-java6-jdk
+    
 
 # editing #
 2. do not modify "mod_MumbleLink.h" only replace it by a newly generated one (see javah) (may add GPL notice)
