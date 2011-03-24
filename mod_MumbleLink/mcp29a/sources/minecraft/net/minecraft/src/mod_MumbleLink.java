@@ -46,7 +46,7 @@ public class mod_MumbleLink extends BaseMod {
 
     @Override
     public String Version() {
-        return "1.1";
+        return "1.2";
     }
 
     public mod_MumbleLink() {
