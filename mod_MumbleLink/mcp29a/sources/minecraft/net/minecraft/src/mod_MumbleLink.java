@@ -1,29 +1,28 @@
 /*
-    mod_Mumble - Positional Audio Communication for Minecraft with Mumble
-    Copyright (C) 2011 zsawyer (http://sourceforge.net/users/zsawyer)
+mod_Mumble - Positional Audio Communication for Minecraft with Mumble
+Copyright 2011 zsawyer (http://sourceforge.net/users/zsawyer)
 
-    This file is part of mod_MumbleLink
-        (http://sourceforge.net/projects/modmumblelink/).
+This file is part of mod_MumbleLink
+(http://sourceforge.net/projects/modmumblelink/).
 
-    mod_MumbleLink is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+mod_MumbleLink is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    mod_MumbleLink is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+mod_MumbleLink is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU Lesser General Public License
+along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-
 package net.minecraft.src;
 
 import java.io.File;
-import java.util.logging.Level;
+import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.Vec3D;
 
@@ -39,7 +38,11 @@ import net.minecraft.src.Vec3D;
  */
 public class mod_MumbleLink extends BaseMod {
 
-    private boolean once = false;
+    /// name of the library
+    static final String libName = "mod_MumbleLink";
+    private static boolean libLoaded = false;
+    static ArrayList<UnsatisfiedLinkError> errors = new ArrayList<UnsatisfiedLinkError>();
+    static UnsatisfiedLinkError error = new UnsatisfiedLinkError();
 
     @Override
     public String Version() {
@@ -277,58 +280,99 @@ public class mod_MumbleLink extends BaseMod {
      * load dll
      */
     static {
-        String libName = "mod_MumbleLink";
-
-        String jPath = "java.library.path";
-
-        
+        // assemble the current minecraft path
         String s = File.separator;
         String dllFolder = Minecraft.getAppDir("minecraft").getAbsolutePath() + s + "bin" + s + "natives" + s + "mumbleLink" + s;
 
 
-        String libpath = System.getProperty(jPath);
+        // loading the library by trying different versions and file locations
 
-        try {
-            // actual loading of library (any plattform)
-            System.loadLibrary(libName);
-        } catch (UnsatisfiedLinkError ex) {
-            ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] native library failed to load: {0} -\n {1}: {2}", new Object[]{ex, jPath, libpath});
+        // try 32 bit library
+        attemptLoadLibrary(libName); // from path
+        attemptLoadLibrary(dllFolder + libName + ".dll", true); // from file
+        attemptLoadLibrary(dllFolder + "lib" + libName + ".so", true); // from file
 
-            // fallback for missing in PATH
-            try {
-                // load actual library for win32
-                System.load(dllFolder + libName +".dll");
-            } catch (UnsatisfiedLinkError ex2) {
-                ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] native library failed to load: {0}", ex2);
+        // try 64 bit library
+        attemptLoadLibrary(libName + "_x64"); // from path
+        attemptLoadLibrary(dllFolder + libName + "_x64.dll", true); // from file
+        attemptLoadLibrary(dllFolder + "lib" + libName + "_x64.so", true); // from file
 
-                // fallback for non-windows
-                try {                
-                    // load actual library for *nix
-                    System.load(dllFolder + "lib" + libName +".so");
-                } catch (UnsatisfiedLinkError ex2L) {
-                    ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] native library failed to load: {0}", ex2L);
+        // if no library could be loaded
+        if (!libLoaded) {
+            UnsatisfiedLinkError err;
+            // if no error were registered
+            if (errors.size() == 0) {
+                // throw missing libraries error
+                 err = new UnsatisfiedLinkError("Library files not found!");
 
+                // give output to the log
+                ModLoader.getLogger().severe("[mod_MumbleLink][ERROR]" + err);                
+            } else {
+                // throw incompatibility error
+                err = new UnsatisfiedLinkError("Required library could not be loaded, available libraries are incompatible!");
                 
-                    // fallback for 64 bit systems
-                    try {
-                        System.loadLibrary(libName + "_x64");
-                    } catch (UnsatisfiedLinkError ex3) {
-                        ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] native library failed to load: {0} -\n {1}: {2}", new Object[]{ex3, jPath, libpath});
+                // give output to the log
+                ModLoader.getLogger().severe("[mod_MumbleLink][ERROR]" + err);
+            }
 
-                        // fallback for missing in PATH
-                        try {
-                            System.load(dllFolder + libName + "_x64.dll");
-                        } catch (UnsatisfiedLinkError ex4) {
-                            ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] native library failed to load: {0}", ex4);
+            ModLoader.ThrowException("Couldn't load library for mod_MumbleLink", err);
+        }
 
-                            // failed to load library
-                            ModLoader.getLogger().log(Level.SEVERE, "[mod_MumbleLink] could not load required libraries!");
+    }
 
-                            System.loadLibrary(libName + "_x64"); // force crash
-                        }
-                    }
+    /**
+     * load the specified library from path
+     *
+     * @param lib library name 
+     * @throws UnsatisfiedLinkError loading of a found library failed
+     */
+    private static void attemptLoadLibrary(String lib) {
+        attemptLoadLibrary(lib, false);
+    }
+
+    /**
+     * load library from either path or a file
+     *
+     * @param lib name of the library or path of the file
+     * @param file if true lib is expected to specify a file
+     * @throws UnsatisfiedLinkError loading of a found library failed
+     */
+    private static void attemptLoadLibrary(String lib, boolean file) {
+        // if the library was already loaded skip
+        if (!libLoaded) {
+
+            // try loading lib
+            try {
+                // if supplied lib is a file path
+                if (file) {
+                    // attempt to load library file
+                    System.load(lib);
+                } else {
+                    // attemt to load the library from jpath
+                    System.loadLibrary(lib);
+                }
+
+            } catch (UnsatisfiedLinkError err) {
+                //ModLoader.getLogger().fine("[DEBUG] " + err);
+
+                // check if the library was not found
+                if (err.getMessage().startsWith("no ") ||
+                        err.getMessage().startsWith("Can't load library")) {
+                    
+                    // library was not loaded because it was not found
+                    return;
+                    
+                } else {
+                    // loading failed, throw error
+                    errors.add(err);
+                    return;
                 }
             }
+
+            // mark success
+            libLoaded = true;
+
+            //ModLoader.getLogger().fine("[DEBUG] loaded: " + lib);
         }
     }
 }
