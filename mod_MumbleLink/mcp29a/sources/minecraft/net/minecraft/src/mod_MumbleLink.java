@@ -220,8 +220,7 @@ public class mod_MumbleLink extends BaseMod {
             //int context_len = context.length;
             String context = "MinecraftAllTalk";
 
-            //char[] name = "MinecraftLink".toCharArray(); // [256]
-            String name = "MinecraftLink";
+            String name = "Minecraft";
 
             String description = "Link plugin for Minecraft Beta 1.3 with ModLoaderV5";
 
