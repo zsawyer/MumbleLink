@@ -26,11 +26,17 @@
  * @author zsawyer, 2010-03-20
  */
 
+ #ifdef _WIN32
+ #define WIN32
+ #endif
+ 
 #include <jni.h>
 
 #include <stdio.h>
 #include <string.h>
 #include <wchar.h>
+
+#include <locale> // std::use_facet, std::ctype
 
 #ifndef WIN32
 
@@ -90,6 +96,7 @@ Java_mod_1MumbleLink_updateLinkedMumble(JNIEnv* env, jobject,
         jfloatArray p_fCameraFront, jfloatArray p_fCameraTop, jstring p_identity,
         jstring p_context) {
 
+
     if (!lm)
         return;
 
@@ -123,7 +130,11 @@ Java_mod_1MumbleLink_updateLinkedMumble(JNIEnv* env, jobject,
 
     lm->context_len = (size_t) env->GetStringLength(p_context);
     copyConvertUC(env, (lm->context), p_context);
-    
+
+    // DEBUG: values from linked memory
+    //printf("\nUpdate: \nname: %ls\ndescription: %ls\nidentity: %ls\ncontext: %s\n", lm->name, lm->description, lm->identity, lm->context);
+    //printf("fCameraFront: %f, %f, %f\n", lm->fCameraFront[0], lm->fCameraFront[1], lm->fCameraFront[2]);
+ 
 
     return;
 
@@ -131,26 +142,27 @@ Java_mod_1MumbleLink_updateLinkedMumble(JNIEnv* env, jobject,
 
 void copyConvertWCharT(JNIEnv* env, wchar_t* target, jstring source) {
 
-    // get the wchar_t representation
-    const wchar_t * utf16_name = (wchar_t *)env->GetStringChars(source, NULL);
-    // get the length of the string
-    jsize size = env->GetStringLength(source);
-    // copy to linked mem
-    memcpy(target, utf16_name, ((size_t) size) * sizeof (jchar));
-    // release unneeded jni representation
-    env->ReleaseStringChars(source, (jchar*) utf16_name);
+    // convert jni to primitive datatype
+    const char *str = env->GetStringUTFChars(source, NULL);
 
+    // convert const char* to wchar_t*
+    std::use_facet< std::ctype<wchar_t> >(std::locale()).widen(str,str+strlen(str),target); 
+
+    // release unneeded jni representation
+    env->ReleaseStringUTFChars(source, (char*) str);
 }
 
 void copyConvertUC(JNIEnv* env, unsigned char* target, jstring source) {
 
     // get the wchar_t representation
-    const unsigned char * utf16_name = (unsigned char*) env->GetStringChars(source, NULL);
+    const unsigned char * utf16_name = (unsigned char*) env->GetStringUTFChars(source, NULL);
+
     // get the length of the string
-    jsize size = env->GetStringLength(source);
+    jsize size = env->GetStringUTFLength(source);
     // copy to linked mem
     memcpy(target, utf16_name, ((size_t) size) * sizeof (jchar));
+
     // release unneeded jni representation
-    env->ReleaseStringChars(source, (jchar*) utf16_name);
+    env->ReleaseStringUTFChars(source, (char*) utf16_name);
 
 }
