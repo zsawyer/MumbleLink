@@ -304,17 +304,17 @@ public class mod_MumbleLink extends BaseMod {
             if (errors.size() == 0) {
                 // throw missing libraries error
                  err = new UnsatisfiedLinkError("Library files not found!");
-
-                // give output to the log
-                ModLoader.getLogger().severe("[mod_MumbleLink][ERROR]" + err);                
+             
             } else {
                 // throw incompatibility error
                 err = new UnsatisfiedLinkError("Required library could not be loaded, available libraries are incompatible!");
                 
-                // give output to the log
-                ModLoader.getLogger().severe("[mod_MumbleLink][ERROR]" + err);
             }
 
+            // give output to the log
+            ModLoader.getLogger().severe("[mod_MumbleLink][ERROR] " + err);   
+                
+            // halt Minecraft
             ModLoader.ThrowException("Couldn't load library for mod_MumbleLink", err);
         }
 
