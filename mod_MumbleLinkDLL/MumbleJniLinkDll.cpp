@@ -154,15 +154,18 @@ void copyConvertWCharT(JNIEnv* env, wchar_t* target, jstring source) {
 
 void copyConvertUC(JNIEnv* env, unsigned char* target, jstring source) {
 
-    // get the wchar_t representation
-    const unsigned char * utf16_name = (unsigned char*) env->GetStringUTFChars(source, NULL);
-
+    // get the string as c primitives
+    const char * utf16_name_cc = env->GetStringUTFChars(source, NULL);
     // get the length of the string
-    jsize size = env->GetStringUTFLength(source);
+    size_t size = strlen(utf16_name_cc);
+    
+    // get the wchar_t representation
+    const unsigned char * utf16_name_cuc = (unsigned char*) utf16_name_cc;
+    
     // copy to linked mem
-    memcpy(target, utf16_name, ((size_t) size) * sizeof (jchar));
+    memcpy(target, utf16_name_cuc, (size) * (sizeof(const char)) );
 
     // release unneeded jni representation
-    env->ReleaseStringUTFChars(source, (char*) utf16_name);
+    env->ReleaseStringUTFChars(source, utf16_name_cc);
 
 }
