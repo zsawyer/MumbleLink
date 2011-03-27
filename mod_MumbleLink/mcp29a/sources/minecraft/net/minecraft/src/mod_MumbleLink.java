@@ -24,7 +24,6 @@ package net.minecraft.src;
 import java.io.File;
 import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Vec3D;
 
 /**
  * mod to link with mumble for positional audio 
@@ -223,7 +222,10 @@ public class mod_MumbleLink extends BaseMod {
             // differ for those who shouldn't (e.g. it could contain the server+port and team)
             //char[] context = "MinecraftAllTalk".toCharArray();
             //int context_len = context.length;
-            String context = "MinecraftAllTalk";
+            // CAUTION: max len: 256
+
+            // create context string while staying inside bounds and keeping as much information as possible
+            String context = generateContextJSON(game.theWorld);
 
             String name = "Minecraft";
 
@@ -253,6 +255,57 @@ public class mod_MumbleLink extends BaseMod {
         }
     }
 
+    /**
+     * create a JSON String representation of the context using world unique information
+     *
+     * @param world instance in which the game takes place
+     * @return JSON string unique to a world
+     */
+    private String generateContextJSON(World world) {
+            int contextSize = 256; // from linkedMem.h: unsigned char context[256];
+
+            // strings needed for context
+            String startStr = "{";
+            String gameStr = "\"game\":\"Minecraft\", ";
+            String worldNameInit = "\"WorldName\":\"";
+            String worldSeedInit = "\"WorldSeed\":\"";
+            String concatinator = "\", ";
+            String endStr = "\"}";
+
+
+            //2 for 2 dynamic contexts (world name, world seed)
+            int numContents = 2;
+            /// name of the world
+            String worldName = world.worldinfo.getWorldName();
+            /// seed of the world
+            String worldSeed = Long.toString(world.worldinfo.getRandomSeed());
+
+
+            // string if world is not set
+            String context_empty = startStr
+                    + gameStr
+                    + worldNameInit + concatinator
+                    + worldSeedInit
+                    + endStr;
+
+            // calcualte the rest that we can use for dynamic content
+            int remainderFraction = (contextSize - context_empty.getBytes().length) / numContents; // 256 is set by linkedMem (as defined in Link plugin from mumble)
+
+            // get the actual length if the string is smaller then the allocated space
+            int newWorldNameLen = Math.min(worldName.getBytes().length, remainderFraction);
+            // get the actual length if the string is smaller then the allocated space
+            int newWorldSeedLen = Math.min(worldSeed.getBytes().length, remainderFraction);
+
+            String context = startStr
+                    + gameStr
+                    + worldNameInit + worldName.substring(0, newWorldNameLen) + concatinator
+                    + worldSeedInit + worldSeed.substring(0, newWorldSeedLen)
+                    + endStr;
+
+            return context;
+    }
+
+
     /********** NATIVE FUNCTIONS FROM DLL **********/
     /**
      * method from dll (heartbeat to mumble)
@@ -280,7 +333,8 @@ public class mod_MumbleLink extends BaseMod {
      * load dll
      */
     static {
-        // assemble the current minecraft path
+// assemble the current minecraft path
+
         String s = File.separator;
         String dllFolder = Minecraft.getAppDir("minecraft").getAbsolutePath() + s + "bin" + s + "natives" + s + "mumbleLink" + s;
 
@@ -288,34 +342,50 @@ public class mod_MumbleLink extends BaseMod {
         // loading the library by trying different versions and file locations
 
         // try 32 bit library
-        attemptLoadLibrary(libName); // from path
-        attemptLoadLibrary(dllFolder + libName + ".dll", true); // from file
-        attemptLoadLibrary(dllFolder + "lib" + libName + ".so", true); // from file
+        attemptLoadLibrary(
+                libName); // from path
+        attemptLoadLibrary(
+                dllFolder + libName + ".dll", true); // from file
+        attemptLoadLibrary(
+                dllFolder + "lib" + libName + ".so", true); // from file
 
         // try 64 bit library
-        attemptLoadLibrary(libName + "_x64"); // from path
-        attemptLoadLibrary(dllFolder + libName + "_x64.dll", true); // from file
-        attemptLoadLibrary(dllFolder + "lib" + libName + "_x64.so", true); // from file
+        attemptLoadLibrary(
+                libName + "_x64"); // from path
+        attemptLoadLibrary(
+                dllFolder + libName + "_x64.dll", true); // from file
+        attemptLoadLibrary(
+                dllFolder + "lib" + libName + "_x64.so", true); // from file
 
         // if no library could be loaded
+
+
         if (!libLoaded) {
             UnsatisfiedLinkError err;
             // if no error were registered
+
+
             if (errors.size() == 0) {
                 // throw missing libraries error
-                 err = new UnsatisfiedLinkError("Library files not found!");
-             
+                err = new UnsatisfiedLinkError("Library files not found!");
+
+
+
             } else {
                 // throw incompatibility error
                 err = new UnsatisfiedLinkError("Required library could not be loaded, available libraries are incompatible!");
-                
+
+
+
             }
 
             // give output to the log
-            ModLoader.getLogger().severe("[mod_MumbleLink][ERROR] " + err);   
-                
+            ModLoader.getLogger().severe("[mod_MumbleLink][ERROR] " + err);
+
             // halt Minecraft
             ModLoader.ThrowException("Couldn't load library for mod_MumbleLink", err);
+
+
         }
 
     }
@@ -328,6 +398,8 @@ public class mod_MumbleLink extends BaseMod {
      */
     private static void attemptLoadLibrary(String lib) {
         attemptLoadLibrary(lib, false);
+
+
     }
 
     /**
@@ -347,25 +419,35 @@ public class mod_MumbleLink extends BaseMod {
                 if (file) {
                     // attempt to load library file
                     System.load(lib);
+
+
                 } else {
                     // attemt to load the library from jpath
                     System.loadLibrary(lib);
+
+
                 }
 
             } catch (UnsatisfiedLinkError err) {
                 //ModLoader.getLogger().fine("[DEBUG] " + err);
 
                 // check if the library was not found
-                if (err.getMessage().startsWith("no ") ||
-                        err.getMessage().startsWith("Can't load library")) {
-                    
+                if (err.getMessage().startsWith("no ")
+                        || err.getMessage().startsWith("Can't load library")) {
+
                     // library was not loaded because it was not found
                     return;
-                    
+
+
+
                 } else {
                     // loading failed, throw error
                     errors.add(err);
+
+
                     return;
+
+
                 }
             }
 
@@ -373,6 +455,7 @@ public class mod_MumbleLink extends BaseMod {
             libLoaded = true;
 
             //ModLoader.getLogger().fine("[DEBUG] loaded: " + lib);
+
         }
     }
 }
