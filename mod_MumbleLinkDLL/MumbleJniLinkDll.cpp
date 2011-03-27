@@ -128,11 +128,11 @@ Java_mod_1MumbleLink_updateLinkedMumble(JNIEnv* env, jobject,
     
     copyConvertWCharT(env, (lm->identity), p_identity);
 
-    lm->context_len = (size_t) env->GetStringLength(p_context);
-    copyConvertUC(env, (lm->context), p_context);
+    // insert context and length of context
+    lm->context_len = copyConvertUC(env, (lm->context), p_context);
 
     // DEBUG: values from linked memory
-    //printf("\nUpdate: \nname: %ls\ndescription: %ls\nidentity: %ls\ncontext: %s\n", lm->name, lm->description, lm->identity, lm->context);
+    //printf("\nUpdate: \nname: %ls\ndescription: %ls\nidentity: %ls\ncontext: %s\ncontext_len: %i\n", lm->name, lm->description, lm->identity, lm->context, lm->context_len);
     //printf("fCameraFront: %f, %f, %f\n", lm->fCameraFront[0], lm->fCameraFront[1], lm->fCameraFront[2]);
  
 
@@ -152,7 +152,7 @@ void copyConvertWCharT(JNIEnv* env, wchar_t* target, jstring source) {
     env->ReleaseStringUTFChars(source, (char*) str);
 }
 
-void copyConvertUC(JNIEnv* env, unsigned char* target, jstring source) {
+size_t copyConvertUC(JNIEnv* env, unsigned char* target, jstring source) {
 
     // get the string as c primitives
     const char * utf16_name_cc = env->GetStringUTFChars(source, NULL);
@@ -168,4 +168,5 @@ void copyConvertUC(JNIEnv* env, unsigned char* target, jstring source) {
     // release unneeded jni representation
     env->ReleaseStringUTFChars(source, utf16_name_cc);
 
+    return size;
 }

@@ -48,8 +48,9 @@ void copyConvertWCharT(JNIEnv* env, wchar_t* target, jstring source);
  * @param env jni environment
  * @param target memory location
  * @param source jstring
+ * @return size of the effected area in target
  */
-void copyConvertUC(JNIEnv* env, unsigned char* target, jstring source);
+size_t copyConvertUC(JNIEnv* env, unsigned char* target, jstring source);
 
 
 #ifdef	__cplusplus
