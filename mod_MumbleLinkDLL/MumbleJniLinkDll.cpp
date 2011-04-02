@@ -55,19 +55,19 @@
 #include "linkedMem.h"
 #include "MumbleJniLinkDll.h"
 
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_mod_1MumbleLink_initMumble(JNIEnv* env, jobject obj) {
 
 #ifdef WIN32
     HANDLE hMapObject = OpenFileMappingW(FILE_MAP_ALL_ACCESS, FALSE, L"MumbleLink");
     if (hMapObject == NULL)
-        return;
+        return 1;
 
     lm = (LinkedMem *) MapViewOfFile(hMapObject, FILE_MAP_ALL_ACCESS, 0, 0, sizeof (LinkedMem));
     if (lm == NULL) {
         CloseHandle(hMapObject);
         hMapObject = NULL;
-        return;
+        return 2;
     }
 #else
     char memname[256];
@@ -76,20 +76,22 @@ Java_mod_1MumbleLink_initMumble(JNIEnv* env, jobject obj) {
     int shmfd = shm_open(memname, O_RDWR, S_IRUSR | S_IWUSR);
 
     if (shmfd < 0) {
-        return;
+        return 3;
     }
 
     lm = (LinkedMem *) (mmap(NULL, sizeof (struct LinkedMem), PROT_READ | PROT_WRITE, MAP_SHARED, shmfd, 0));
 
     if (lm == (void *) (-1)) {
         lm = NULL;
-        return;
+        return 4;
     }
 #endif
 
+
+    return 0;
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_mod_1MumbleLink_updateLinkedMumble(JNIEnv* env, jobject,
         jfloatArray p_fAvatarPosition, jfloatArray p_fAvatarFront,
         jfloatArray p_fAvatarTop, jstring p_name, jstring p_description, jfloatArray p_fCameraPosition,
@@ -98,7 +100,7 @@ Java_mod_1MumbleLink_updateLinkedMumble(JNIEnv* env, jobject,
 
 
     if (!lm)
-        return;
+        return 1;
 
     if (lm->uiVersion != 2) {
 
@@ -136,7 +138,7 @@ Java_mod_1MumbleLink_updateLinkedMumble(JNIEnv* env, jobject,
     //printf("fCameraFront: %f, %f, %f\n", lm->fCameraFront[0], lm->fCameraFront[1], lm->fCameraFront[2]);
  
 
-    return;
+    return 0;
 
 }
 

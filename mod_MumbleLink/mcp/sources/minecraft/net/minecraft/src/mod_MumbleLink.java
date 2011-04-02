@@ -21,8 +21,14 @@ along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.minecraft.src;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.logging.Level;
 import net.minecraft.client.Minecraft;
 
@@ -43,6 +49,11 @@ public class mod_MumbleLink extends BaseMod {
     private static boolean libLoaded = false;
     private static ArrayList<UnsatisfiedLinkError> errors = new ArrayList<UnsatisfiedLinkError>();
 
+    private boolean mumbleInited = false;
+    
+    private final String configFileName = "mod_MumbleLink.conf";
+    private Map<String, String> config;
+
     @Override
     public String Version() {
         return "2.2";
@@ -51,8 +62,15 @@ public class mod_MumbleLink extends BaseMod {
     public mod_MumbleLink() {
         //ModLoader.getLogger().fine("[mod_MumbleLink] Initializing...");
 
-        // initialize the mumble link, create linked memory
-        initMumble();
+        config = new Hashtable<String, String>();
+        config.put("mumbleContext", "AllTalk");
+
+
+        // load and set configuration from file
+        readConfig();
+
+        // attempt mumble initialization
+        tryInitMumble();
 
         //ModLoader.getLogger().fine("[mod_MumbleLink] Hooking to game tick...");
 
@@ -65,12 +83,44 @@ public class mod_MumbleLink extends BaseMod {
     @Override
     public void OnTickInGame(Minecraft game) {
         super.OnTickInGame(game);
-
         //ModLoader.getLogger().fine("[mod_MumbleLink] caught game tick");
+
+        // if initiation was not successful
+        if (!mumbleInited) {
+            // if retry of mumble init did not work
+            if (!tryInitMumble()) {
+                // skip
+                return;
+            }
+        }
 
         // inform mumble of the current location
         updateMumble(game);
+    }
 
+    /**
+     * try to initialize mumble
+     *  does some error checking
+     *
+     * @return true if initialized
+     */
+    private boolean tryInitMumble() {
+        // initialize the mumble link, create linked memory
+        int err = initMumble();
+
+        // if there was an error initializing mumble
+        if (err != 0) {
+            // remember to try again
+            mumbleInited = false;
+
+            //ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] could not link with Mumble (not started?) (code: {0})", err);
+        } else {
+            // mark as initialized
+            mumbleInited = true;
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -224,13 +274,18 @@ public class mod_MumbleLink extends BaseMod {
             //int context_len = context.length;
             // CAUTION: max len: 256
 
+
             String context = "MinecraftAllTalk";
-            // create context string while staying inside bounds and keeping as much information as possible
-            //String context = generateContextJSON(game.theWorld);
+
+            // if config entry is set and is not set to AllTalk
+            if( config.containsKey("mumbleContext") ? config.get("mumbleContext").equals("world") : false ) {
+                // create context string while staying inside bounds and keeping as much information as possible
+                context = generateContextJSON(game.theWorld);
+            }
 
             String name = "Minecraft";
 
-            String description = "Link plugin for Minecraft Beta 1.3 with ModLoaderV5";
+            String description = "Link plugin for Minecraft Beta 1.4 with ModLoader";
 
 
 
@@ -247,9 +302,9 @@ public class mod_MumbleLink extends BaseMod {
 
 
 
-            updateLinkedMumble(fAvatarPosition, fAvatarFront, fAvatarTop, name, description, fCameraPosition, fCameraFront, fCameraTop, identity, context);
+            int err = updateLinkedMumble(fAvatarPosition, fAvatarFront, fAvatarTop, name, description, fCameraPosition, fCameraFront, fCameraTop, identity, context);
 
-            //ModLoader.getLogger().fine("[mod_MumbleLink] mumble updated");
+            //ModLoader.getLogger().log(Level.FINER, "[mod_MumbleLink] mumble updated (code: {0})", err);
 
         } catch (Exception ex) {
             //ModLoader.getLogger().log(Level.SEVERE, null, ex);
@@ -264,57 +319,56 @@ public class mod_MumbleLink extends BaseMod {
      * @return JSON string unique to a world
      */
     private String generateContextJSON(World world) {
-            int contextSize = 256; // from linkedMem.h: unsigned char context[256];
+        int contextSize = 256; // from linkedMem.h: unsigned char context[256];
 
-            // strings needed for context
-            String startStr = "{";
-            String gameStr = "\"game\":\"Minecraft\", ";
-            // NOTE: worldName for multiplayer servers is by default "MPServer" seed is probably unique enough
-            //String worldNameInit = "\"WorldName\":\"";
-            String worldSeedInit = "\"WorldSeed\":\"";
-            String concatinator = "\", ";
-            String endStr = "\"}";
-
-
-            // 1 for 1 dynamic context only (world seed)
-            // 2 for 2 dynamic contexts (world name, world seed)
-            int numContents = 1;
-            /// name of the world
-            String worldName = world.worldInfo.getWorldName();
-            /// seed of the world
-            String worldSeed = Long.toString(world.worldInfo.getRandomSeed());
+        // strings needed for context
+        String startStr = "{";
+        String gameStr = "\"game\":\"Minecraft\", ";
+        // NOTE: worldName for multiplayer servers is by default "MPServer" seed is probably unique enough
+        //String worldNameInit = "\"WorldName\":\"";
+        String worldSeedInit = "\"WorldSeed\":\"";
+        String concatinator = "\", ";
+        String endStr = "\"}";
 
 
-            // string if world is not set
-            String context_empty = startStr
-                    + gameStr
-              //      + worldNameInit + concatinator
-                    + worldSeedInit
-                    + endStr;
+        // 1 for 1 dynamic context only (world seed)
+        // 2 for 2 dynamic contexts (world name, world seed)
+        int numContents = 1;
+        /// name of the world
+        String worldName = world.worldInfo.getWorldName();
+        /// seed of the world
+        String worldSeed = Long.toString(world.worldInfo.getRandomSeed());
 
-            // calcualte the rest that we can use for dynamic content
-            int remainderFraction = (contextSize - context_empty.getBytes().length) / numContents; // 256 is set by linkedMem (as defined in Link plugin from mumble)
 
-            // get the actual length if the string is smaller then the allocated space
-            int newWorldNameLen = Math.min(worldName.getBytes().length, remainderFraction);
-            // get the actual length if the string is smaller then the allocated space
-            int newWorldSeedLen = Math.min(worldSeed.getBytes().length, remainderFraction);
+        // string if world is not set
+        String context_empty = startStr
+                + gameStr
+                //      + worldNameInit + concatinator
+                + worldSeedInit
+                + endStr;
 
-            String context = startStr
-                    + gameStr
-                    //+ worldNameInit + worldName.substring(0, newWorldNameLen) + concatinator
-                    + worldSeedInit + worldSeed.substring(0, newWorldSeedLen)
-                    + endStr;
+        // calcualte the rest that we can use for dynamic content
+        int remainderFraction = (contextSize - context_empty.getBytes().length) / numContents; // 256 is set by linkedMem (as defined in Link plugin from mumble)
 
-            return context;
+        // get the actual length if the string is smaller then the allocated space
+        int newWorldNameLen = Math.min(worldName.getBytes().length, remainderFraction);
+        // get the actual length if the string is smaller then the allocated space
+        int newWorldSeedLen = Math.min(worldSeed.getBytes().length, remainderFraction);
+
+        String context = startStr
+                + gameStr
+                //+ worldNameInit + worldName.substring(0, newWorldNameLen) + concatinator
+                + worldSeedInit + worldSeed.substring(0, newWorldSeedLen)
+                + endStr;
+
+        return context;
     }
-
 
     /********** NATIVE FUNCTIONS FROM DLL **********/
     /**
      * method from dll (heartbeat to mumble)
      */
-    private native void updateLinkedMumble(
+    private native int updateLinkedMumble(
             float[] fAvatarPosition, // [3]
             float[] fAvatarFront, // [3]
             float[] fAvatarTop, // [3]            
@@ -331,14 +385,14 @@ public class mod_MumbleLink extends BaseMod {
     /**
      * method from dll (prepare mumble)
      */
-    private native void initMumble();
+    private native int initMumble();
 
     /**
      * load dll
      */
     static {
-// assemble the current minecraft path
 
+        // assemble the current minecraft path
         String s = File.separator;
         String dllFolder = Minecraft.getAppDir("minecraft").getAbsolutePath() + s + "bin" + s + "natives" + s + "mumbleLink" + s;
 
@@ -362,8 +416,6 @@ public class mod_MumbleLink extends BaseMod {
                 dllFolder + "lib" + libName + "_x64.so", true); // from file
 
         // if no library could be loaded
-
-
         if (!libLoaded) {
             UnsatisfiedLinkError err;
             // if no errors were registered
@@ -383,7 +435,6 @@ public class mod_MumbleLink extends BaseMod {
 
             // halt Minecraft
             ModLoader.ThrowException("Couldn't load library for mod_MumbleLink", err);
-
 
         }
 
@@ -419,11 +470,9 @@ public class mod_MumbleLink extends BaseMod {
                     // attempt to load library file
                     System.load(lib);
 
-
                 } else {
                     // attemt to load the library from jpath
                     System.loadLibrary(lib);
-
 
                 }
 
@@ -437,16 +486,11 @@ public class mod_MumbleLink extends BaseMod {
                     // library was not loaded because it was not found
                     return;
 
-
-
                 } else {
                     // loading failed, throw error
                     errors.add(err);
 
-
                     return;
-
-
                 }
             }
 
@@ -454,7 +498,49 @@ public class mod_MumbleLink extends BaseMod {
             libLoaded = true;
 
             //ModLoader.getLogger().fine("[DEBUG] loaded: " + lib);
+        }
+    }
 
+    private void readConfig() {
+
+        // get the config file
+        File settingsFile = new File(Minecraft.getAppDir("minecraft"), configFileName);
+
+        // if the settings file exsists
+        if (settingsFile.exists()) {
+            //ModLoader.getLogger().fine("[mod_MumbleLink] config file exists");
+
+            // read file contents
+            BufferedReader bufferedreader;
+            try {
+                bufferedreader = new BufferedReader(new FileReader(settingsFile));
+            } catch (FileNotFoundException ex) {
+                //abort
+                return;
+            }
+
+
+            try {
+                String s;
+                // for every line
+                while ((s = bufferedreader.readLine()) != null) {
+                    //ModLoader.getLogger().fine("[mod_MumbleLink] reading line: " + s);
+
+                    // extract key-value-pair
+                    String[] as = s.split(":", 2);
+
+                    // if its a pair
+                    if (as.length == 2) {
+                        // add/replace to/in config
+                        config.put(as[0].trim(), as[1].trim());
+                    }
+
+                }
+
+            } catch (IOException ex) {
+                // abort
+                return;
+            }
         }
     }
 }
