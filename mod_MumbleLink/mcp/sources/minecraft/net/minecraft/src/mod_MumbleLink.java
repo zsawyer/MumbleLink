@@ -23,6 +23,7 @@ package net.minecraft.src;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import net.minecraft.client.Minecraft;
 
 /**
@@ -31,21 +32,20 @@ import net.minecraft.client.Minecraft;
  *
  * when developing for it I suggest using "mumblePAHelper" to see coordinates 
  *
- * for Minecraft Beta 1.3
+ * for Minecraft Beta 1.4
  *
- * @author zsawyer, 2010-03-20
+ * @author zsawyer, 2010-04-02
  */
 public class mod_MumbleLink extends BaseMod {
 
     /// name of the library
-    static final String libName = "mod_MumbleLink";
+    private static final String libName = "mod_MumbleLink";
     private static boolean libLoaded = false;
-    static ArrayList<UnsatisfiedLinkError> errors = new ArrayList<UnsatisfiedLinkError>();
-    static UnsatisfiedLinkError error = new UnsatisfiedLinkError();
+    private static ArrayList<UnsatisfiedLinkError> errors = new ArrayList<UnsatisfiedLinkError>();
 
     @Override
     public String Version() {
-        return "1.2";
+        return "2.2";
     }
 
     public mod_MumbleLink() {
@@ -224,8 +224,9 @@ public class mod_MumbleLink extends BaseMod {
             //int context_len = context.length;
             // CAUTION: max len: 256
 
+            String context = "MinecraftAllTalk";
             // create context string while staying inside bounds and keeping as much information as possible
-            String context = generateContextJSON(game.theWorld);
+            //String context = generateContextJSON(game.theWorld);
 
             String name = "Minecraft";
 
@@ -257,6 +258,7 @@ public class mod_MumbleLink extends BaseMod {
 
     /**
      * create a JSON String representation of the context using world unique information
+     *  keeps the output string within a certain length (256)
      *
      * @param world instance in which the game takes place
      * @return JSON string unique to a world
@@ -267,24 +269,26 @@ public class mod_MumbleLink extends BaseMod {
             // strings needed for context
             String startStr = "{";
             String gameStr = "\"game\":\"Minecraft\", ";
-            String worldNameInit = "\"WorldName\":\"";
+            // NOTE: worldName for multiplayer servers is by default "MPServer" seed is probably unique enough
+            //String worldNameInit = "\"WorldName\":\"";
             String worldSeedInit = "\"WorldSeed\":\"";
             String concatinator = "\", ";
             String endStr = "\"}";
 
 
-            //2 for 2 dynamic contexts (world name, world seed)
-            int numContents = 2;
+            // 1 for 1 dynamic context only (world seed)
+            // 2 for 2 dynamic contexts (world name, world seed)
+            int numContents = 1;
             /// name of the world
-            String worldName = world.worldinfo.getWorldName();
+            String worldName = world.worldInfo.getWorldName();
             /// seed of the world
-            String worldSeed = Long.toString(world.worldinfo.getRandomSeed());
+            String worldSeed = Long.toString(world.worldInfo.getRandomSeed());
 
 
             // string if world is not set
             String context_empty = startStr
                     + gameStr
-                    + worldNameInit + concatinator
+              //      + worldNameInit + concatinator
                     + worldSeedInit
                     + endStr;
 
@@ -298,7 +302,7 @@ public class mod_MumbleLink extends BaseMod {
 
             String context = startStr
                     + gameStr
-                    + worldNameInit + worldName.substring(0, newWorldNameLen) + concatinator
+                    //+ worldNameInit + worldName.substring(0, newWorldNameLen) + concatinator
                     + worldSeedInit + worldSeed.substring(0, newWorldSeedLen)
                     + endStr;
 
@@ -362,25 +366,20 @@ public class mod_MumbleLink extends BaseMod {
 
         if (!libLoaded) {
             UnsatisfiedLinkError err;
-            // if no error were registered
+            // if no errors were registered
 
-
-            if (errors.size() == 0) {
+            if (errors.isEmpty()) {
                 // throw missing libraries error
                 err = new UnsatisfiedLinkError("Library files not found!");
-
-
 
             } else {
                 // throw incompatibility error
                 err = new UnsatisfiedLinkError("Required library could not be loaded, available libraries are incompatible!");
 
-
-
             }
 
             // give output to the log
-            ModLoader.getLogger().severe("[mod_MumbleLink][ERROR] " + err);
+            ModLoader.getLogger().log(Level.SEVERE, "[mod_MumbleLink][ERROR] {0}", err);
 
             // halt Minecraft
             ModLoader.ThrowException("Couldn't load library for mod_MumbleLink", err);
