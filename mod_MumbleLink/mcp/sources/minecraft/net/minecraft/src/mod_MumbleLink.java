@@ -44,23 +44,32 @@ import net.minecraft.client.Minecraft;
  */
 public class mod_MumbleLink extends BaseMod {
 
+    /// display name of this mod
+    private static final String modName = "MumbleLink";
+    /// current version number of this mod
+    private static final String modVersion = "2.3";
     /// name of the library
     private static final String libName = "mod_MumbleLink";
+    /// whether or not the required native library was already loaded
     private static boolean libLoaded = false;
+    /// error stack when loading libraries during mod initialization
     private static ArrayList<UnsatisfiedLinkError> errors = new ArrayList<UnsatisfiedLinkError>();
 
+    /// whether or not the shared memory for mumble was already initialized
     private boolean mumbleInited = false;
-    
+
+    /// name of the config file
     private final String configFileName = "mod_MumbleLink.conf";
+    /// config parameters for this mod
     private Map<String, String> config;
 
     @Override
     public String Version() {
-        return "2.2.2";
+        return modVersion;
     }
 
     public mod_MumbleLink() {
-        //ModLoader.getLogger().fine("[mod_MumbleLink] Initializing...");
+        //ModLoader.getLogger().fine("[" + modName + modVersion "] Initializing...");
 
         config = new Hashtable<String, String>();
         config.put("mumbleContext", "AllTalk");
@@ -72,18 +81,18 @@ public class mod_MumbleLink extends BaseMod {
         // attempt mumble initialization
         tryInitMumble();
 
-        //ModLoader.getLogger().fine("[mod_MumbleLink] Hooking to game tick...");
+        //ModLoader.getLogger().fine("[" + modName + modVersion "] Hooking to game tick...");
 
         // hook to game to know when to update
         ModLoader.SetInGameHook(this, true, false);
 
-        //ModLoader.getLogger().fine("[mod_MumbleLink] Finished hooking to game tick!");
+        //ModLoader.getLogger().fine("[" + modName + modVersion "] Finished hooking to game tick!");
     }
 
     @Override
     public void OnTickInGame(Minecraft game) {
         super.OnTickInGame(game);
-        //ModLoader.getLogger().fine("[mod_MumbleLink] caught game tick");
+        //ModLoader.getLogger().fine("[" + modName + modVersion "] caught game tick");
 
         // if initiation was not successful
         if (!mumbleInited) {
@@ -113,7 +122,7 @@ public class mod_MumbleLink extends BaseMod {
             // remember to try again
             mumbleInited = false;
 
-            //ModLoader.getLogger().log(Level.WARNING, "[mod_MumbleLink] could not link with Mumble (not started?) (code: {0})", err);
+            //ModLoader.getLogger().log(Level.WARNING, "[" + modName + modVersion "] could not link with Mumble (not started?) (code: {0})", err);
         } else {
             // mark as initialized
             mumbleInited = true;
@@ -162,21 +171,21 @@ public class mod_MumbleLink extends BaseMod {
              * /
 
             try {
-            //ModLoader.getLogger().fine("[mod_MumbleLink] loading modifiers");
+            //ModLoader.getLogger().fine("[" + modName + modVersion "] loading modifiers");
 
             // get the settings file for multipliers
             File settingsFile = new File(Minecraft.getAppDir("minecraft"), "mumbleMultipliers.settings");
 
             // if the settings file exsists
             if (settingsFile.exists()) {
-            //ModLoader.getLogger().fine("[mod_MumbleLink] file exists");
+            //ModLoader.getLogger().fine("[" + modName + modVersion "] file exists");
 
             // read file contents
             BufferedReader bufferedreader = new BufferedReader(new FileReader(settingsFile));
             String s;
             // for every line
             while ((s = bufferedreader.readLine()) != null) {
-            //ModLoader.getLogger().fine("[mod_MumbleLink] reading line: " + s);
+            //ModLoader.getLogger().fine("[" + modName + modVersion "] reading line: " + s);
             // extract value
             String as[] = s.split(":");
 
@@ -228,7 +237,7 @@ public class mod_MumbleLink extends BaseMod {
              */
 
 
-            //ModLoader.getLogger().fine("[mod_MumbleLink] preparing mumble update");
+            //ModLoader.getLogger().fine("[" + modName + modVersion "] preparing mumble update");
 
 
             /// view vector
@@ -289,7 +298,7 @@ public class mod_MumbleLink extends BaseMod {
 
 
 
-            /*ModLoader.getLogger().fine("[mod_MumbleLink] updating mumble: \ncontext: " + context
+            /*ModLoader.getLogger().fine("[" + modName + modVersion "] updating mumble: \ncontext: " + context
             + "\ndescription: " + description
             + "\nidentity: " + identity
             + "\nname: " + name
@@ -304,7 +313,7 @@ public class mod_MumbleLink extends BaseMod {
 
             int err = updateLinkedMumble(fAvatarPosition, fAvatarFront, fAvatarTop, name, description, fCameraPosition, fCameraFront, fCameraTop, identity, context);
 
-            //ModLoader.getLogger().log(Level.FINER, "[mod_MumbleLink] mumble updated (code: {0})", err);
+            //ModLoader.getLogger().log(Level.FINER, "[" + modName + modVersion "] mumble updated (code: {0})", err);
 
         } catch (Exception ex) {
             //ModLoader.getLogger().log(Level.SEVERE, null, ex);
@@ -394,7 +403,7 @@ public class mod_MumbleLink extends BaseMod {
 
         // assemble the current minecraft path
         String s = File.separator;
-        String dllFolder = Minecraft.getAppDir("minecraft").getAbsolutePath() + s + "bin" + s + "natives" + s + "mumbleLink" + s;
+        String dllFolder = Minecraft.getAppDir("minecraft").getAbsolutePath() + s + "mods" + s + modName + s + "natives" + s;
 
 
         // loading the library by trying different versions and file locations
@@ -431,10 +440,10 @@ public class mod_MumbleLink extends BaseMod {
             }
 
             // give output to the log
-            ModLoader.getLogger().log(Level.SEVERE, "[mod_MumbleLink][ERROR] {0}", err);
+            ModLoader.getLogger().log(Level.SEVERE, "[" + modName + modVersion + "][ERROR] {0}", err.getMessage());
 
             // halt Minecraft
-            ModLoader.ThrowException("Couldn't load library for mod_MumbleLink", err);
+            ModLoader.ThrowException("Couldn't load library for mod " + modName + modVersion, err);
 
         }
 
@@ -508,7 +517,7 @@ public class mod_MumbleLink extends BaseMod {
 
         // if the settings file exsists
         if (settingsFile.exists()) {
-            //ModLoader.getLogger().fine("[mod_MumbleLink] config file exists");
+            //ModLoader.getLogger().fine("[" + modName + modVersion "] config file exists");
 
             // read file contents
             BufferedReader bufferedreader;
@@ -524,7 +533,7 @@ public class mod_MumbleLink extends BaseMod {
                 String s;
                 // for every line
                 while ((s = bufferedreader.readLine()) != null) {
-                    //ModLoader.getLogger().fine("[mod_MumbleLink] reading line: " + s);
+                    //ModLoader.getLogger().fine("[" + modName + modVersion "] reading line: " + s);
 
                     // extract key-value-pair
                     String[] as = s.split(":", 2);
