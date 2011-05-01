@@ -29,6 +29,8 @@ HOW TO:
     a) $ sudo add-apt-repository "deb http://archive.canonical.com/ lucid partner"
     b) $ sudo apt-get update
     c) $ sudo apt-get install sun-java6-jdk
+    d) required for compiling 64-bit library on 32-bit system
+        $ sudo ln -s /usr/lib64/libstdc++.so.6 /usr/lib64/libstdc++.so
     
 
 # editing #
