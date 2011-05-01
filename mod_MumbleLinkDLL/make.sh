@@ -10,19 +10,19 @@ g++  -o build_linux32/libmod_MumbleLink.so -shared \
      -I/usr/lib/jvm/java-6-sun-1.6.0.24/include/linux\
      -lrt\
      MumbleJniLinkDll.cpp\
-       -static -lstdc++
+        -lstdc++
 
 # 64 bit
 rm -R build_linux64
 mkdir build_linux64
 
-g++  -o build_linux64/libmod_MumbleLink_x64.so -m64 -shared -c -fPIC\
+g++  -o build_linux64/libmod_MumbleLink_x64.so -m64 -shared -fPIC\
      -Wl,-soname,build_linux64/libmod_MumbleLink_x64.so  \
      -I/usr/lib/jvm/java-6-sun-1.6.0.24/include/\
      -I/usr/lib/jvm/java-6-sun-1.6.0.24/include/linux\
      -lrt\
      MumbleJniLinkDll.cpp\
-       -static -lstdc++ \
+       -lstdc++ \
        -m64 \
        -I/usr/include/c++/4.4/i686-linux-gnu
 
