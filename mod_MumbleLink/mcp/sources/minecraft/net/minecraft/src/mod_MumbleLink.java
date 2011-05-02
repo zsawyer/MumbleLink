@@ -42,12 +42,13 @@ import net.minecraft.client.Minecraft;
  *
  * @author zsawyer, 2010-04-02
  */
+@SuppressWarnings("StaticNonFinalUsedInInitialization")
 public class mod_MumbleLink extends BaseMod {
 
     /// display name of this mod
     private static final String modName = "MumbleLink";
     /// current version number of this mod
-    private static final String modVersion = "2.3";
+    private static final String modVersion = "2.3.2";
     /// name of the library
     private static final String libName = "mod_MumbleLink";
     /// whether or not the required native library was already loaded
@@ -164,6 +165,7 @@ public class mod_MumbleLink extends BaseMod {
 
             DEBUG: for debugging you can copy the "mumbleMultipliers.settings"
             into the .minecraft folder
+                for a sample file see SVN trunk: SOURCES\trunk\templates\confs
 
             I suggest to uncomment the "ModLoader.getLogger" lines to get
             debug logging into "ModLoader.txt"
@@ -373,9 +375,36 @@ public class mod_MumbleLink extends BaseMod {
         return context;
     }
 
-    /********** NATIVE FUNCTIONS FROM DLL **********/
+    /* ********* NATIVE FUNCTIONS FROM DLL ********* */
     /**
      * method from dll (heartbeat to mumble)
+     *
+     * updates the shared memory with the newest data
+     *
+     *  this basically corresponds to the suggested function as posted in the
+     *  mumble wiki (http://mumble.sourceforge.net/Link)
+     *
+     *
+     * @param fAvatarPosition Position of the avatar
+     * @param fAvatarFront Unit vector pointing out of the avatar's
+     *                     eyes (pitch, yaw)
+     * @param fAvatarTop Unit vector pointing out of the top of the avatar's
+     *                   head (pitch, roll)
+     * @param name this tool's name
+     * @param description what this tool is/does
+     * @param fCameraPosition Position of the camera 
+     * @param fCameraFront Unit vector pointing which direction the camera is
+     *                     facing (pitch, yaw)
+     * @param fCameraTop Unit vector pointing out of the top of the
+     *                   camera (pitch, roll)
+     * @param identity Identifier which uniquely identifies a certain player in
+     *                 a context (e.g. the ingame Name)
+     * @param context Context should be equal for players which should be able
+     *                to hear each other positional and differ for those who
+     *                shouldn't (e.g. it could contain the server+port and team)
+     * @return error code 
+     *         0: no error
+     *         1: shared memory was not initialized (was initMumble() called?)
      */
     private native int updateLinkedMumble(
             float[] fAvatarPosition, // [3]
@@ -393,11 +422,24 @@ public class mod_MumbleLink extends BaseMod {
 
     /**
      * method from dll (prepare mumble)
+     *
+     * initializes the shared memory
+     *
+     *  this basically corresponds to the suggested function as posted in the
+     *  mumble wiki (http://mumble.sourceforge.net/Link)
+     * 
+     * @return error code 
+     *         0: no error
+     *         1: win32 specific: OpenFileMappingW failed to return a handle
+     *         2: win32 specific: MapViewOfFile failed to return a structure
+     *         3: unix specific: shm_open returned a negative integer
+     * *       4: unix specific: mmap failed to return a structure
      */
     private native int initMumble();
 
+    
     /**
-     * load dll
+     * statically load the native libraries
      */
     static {
 
@@ -510,6 +552,10 @@ public class mod_MumbleLink extends BaseMod {
         }
     }
 
+    /**
+     * fetches the settings from config file
+     */
+    @SuppressWarnings("NestedAssignment")
     private void readConfig() {
 
         // get the config file
