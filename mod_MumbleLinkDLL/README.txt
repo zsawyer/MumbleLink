@@ -9,7 +9,7 @@ HOW TO:
 # editing #
 3. do not modify "mod_MumbleLink.h" only replace it by a newly generated one (see javah) (may add GPL notice)
 4. do not modify "linkedMem.h" unless you want to use a different mumble-Link-plugin other than 1.2.0
-5. do edit MumbleJniLinkDll
+5. do edit MumbleJniLinkDll.cpp and MumbleJniLinkDll.h
 
 # compiling #
 6. update make.bat to represent the SKD and VC installation directories
@@ -36,7 +36,7 @@ HOW TO:
 # editing #
 2. do not modify "mod_MumbleLink.h" only replace it by a newly generated one (see javah) (may add GPL notice)
 3. do not modify "linkedMem.h" unless you want to use a different mumble-Link-plugin other than 1.2.0
-4. do edit MumbleJniLinkDll
+4. do edit MumbleJniLinkDll.cpp and MumbleJniLinkDll.h
 
 # compiling #
 5. run make.sh
@@ -44,3 +44,21 @@ HOW TO:
 # installing #
 10. follow mod installation instructions: http://www.minecraftforum.net/viewtopic.php?f=1032&t=235800
 
+
+
+### MAC OSX ###
+
+# setup #
+1. probably requires the Apple SDK
+2. install g++ compiler
+
+# editing #
+2. do not modify "mod_MumbleLink.h" only replace it by a newly generated one (see javah) (may add GPL notice)
+3. do not modify "linkedMem.h" unless you want to use a different mumble-Link-plugin other than 1.2.0
+4. do edit MumbleJniLinkDll.cpp and MumbleJniLinkDll.h
+
+# compiling #
+5. run make_osx.sh
+
+# installing #
+10. follow mod installation instructions: http://www.minecraftforum.net/viewtopic.php?f=1032&t=235800
