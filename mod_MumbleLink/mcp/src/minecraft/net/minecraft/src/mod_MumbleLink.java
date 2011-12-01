@@ -51,7 +51,9 @@ public class mod_MumbleLink extends BaseMod {
     /// current version number of this mod
     private static final String modVersion = "2.4";
     /// name of the library
-    private static final String libName = "mod_MumbleLink";
+    private static final String libName = "mod_MumbleLink";    
+    /// delay for user notification 
+	private static final long notificationDelay = 100;
     /// whether or not the required native library was already loaded
     private static boolean libLoaded = false;
     /// error stack when loading libraries during mod initialization
@@ -66,7 +68,9 @@ public class mod_MumbleLink extends BaseMod {
     private Map<String, String> config;
     
     // flag if the user has been notified about mumble being linked
-    private boolean notfied = false;    
+    private boolean notfied = false;
+    // start for the delay timer
+	private long start = -1;    
     // achievement to indicate that mumble was successfully linked
     public static Achievement achMumbleLinked;
     
@@ -92,13 +96,14 @@ public class mod_MumbleLink extends BaseMod {
         //ModLoader.getLogger().fine("[" + modName + modVersion "] Finished hooking to game tick!");
         
         // initialize a custom achivement
-        achMumbleLinked = new Achievement(0xA232A, "mumbleLinked", 8, 6, Item.silk, null);
+        achMumbleLinked = new Achievement(0xA232A, "mumbleLinked", 5, 0, Item.silk, null);
         achMumbleLinked.registerAchievement();        
         ModLoader.AddAchievementDesc(achMumbleLinked, "Mumble Linked!", 
         		"Use Mumble and Minecraft at the same time to get positional audio.");
                        
     }
 
+    
     @Override
     public boolean OnTickInGame(float tick, Minecraft game) {
         super.OnTickInGame(tick, game);
@@ -117,23 +122,36 @@ public class mod_MumbleLink extends BaseMod {
         // inform mumble of the current location
         updateMumble(game);
         
-        // if link was established and the client was not yet told
+        
+        // if link was established and the client was not yet notified
         if(!this.notfied && mumbleInited) {
         	// make sure we are in a world
         	if(game != null && game.ingameGUI != null) {
-        		// remember not to nag again
-        		this.notfied = true;
+        		//ModLoader.getLogger().log(Level.FINER, "[" + modName + modVersion + "] ticked {0})", game.theWorld.getWorldTime());
+        		long now = game.theWorld.getWorldTime();
+        		// if start was not yet set
+        		if(start == -1) { 
+        			// define start to now
+        			start = now;
+    			};         		
         		
-        		// display a message
-        		game.ingameGUI.addChatMessage("Mumble linked.");
-        		
-        		// unlock achievement
-        		game.thePlayer.addStat(achMumbleLinked, 1);
+    			// if delay time passed
+        		if(start + notificationDelay < now) {
+	        		// remember not to nag again
+	        		this.notfied = true;
+	        		
+	        		// display a message
+	        		game.ingameGUI.addChatMessage("Mumble linked.");
+	        		
+	        		// unlock achievement
+	        		game.thePlayer.addStat(achMumbleLinked, 1);
+        		}
         	}
         }
 
         return true;
     }
+    
 
     /**
      * try to initialize mumble
@@ -160,6 +178,7 @@ public class mod_MumbleLink extends BaseMod {
         return false;
     }
 
+    
     /**
      * do mumble preparations and call the JNI mumble link function
      *
@@ -337,13 +356,14 @@ public class mod_MumbleLink extends BaseMod {
 
             int err = updateLinkedMumble(fAvatarPosition, fAvatarFront, fAvatarTop, name, description, fCameraPosition, fCameraFront, fCameraTop, identity, context);
 
-            ModLoader.getLogger().log(Level.FINER, "[" + modName + modVersion + "] mumble updated (code: {0})", err);
+            //ModLoader.getLogger().log(Level.FINER, "[" + modName + modVersion + "] mumble updated (code: {0})", err);
 
         } catch (Exception ex) {
             //ModLoader.getLogger().log(Level.SEVERE, null, ex);
         }
     }
 
+    
     /**
      * create a JSON String representation of the context using world unique information
      *  keeps the output string within a certain length (256)
@@ -354,7 +374,8 @@ public class mod_MumbleLink extends BaseMod {
     private String generateContextJSON(World world) {
         int contextSize = 256; // from linkedMem.h: unsigned char context[256];
 
-        // TODO: Seed is not very unique, find a better server identifyer 
+        // TODO: Seed is not very unique, find a better server identifier
+        // TODO: identify Nether and other worlds 
         // strings needed for context
         String startStr = "{";
         String gameStr = "\"game\":\"Minecraft\", ";
@@ -398,6 +419,7 @@ public class mod_MumbleLink extends BaseMod {
         return context;
     }
 
+    
     /* ********* NATIVE FUNCTIONS FROM DLL ********* */
     /**
      * method from dll (heartbeat to mumble)
@@ -443,6 +465,7 @@ public class mod_MumbleLink extends BaseMod {
             String identity, // [256]
             String context);
 
+    
     /**
      * method from dll (prepare mumble)
      *
@@ -524,6 +547,7 @@ public class mod_MumbleLink extends BaseMod {
 
     }
 
+    
     /**
      * load the specified library from path
      *
@@ -532,10 +556,9 @@ public class mod_MumbleLink extends BaseMod {
      */
     private static void attemptLoadLibrary(String lib) {
         attemptLoadLibrary(lib, false);
-
-
     }
 
+    
     /**
      * load library from either path or a file
      *
@@ -585,6 +608,7 @@ public class mod_MumbleLink extends BaseMod {
         }
     }
 
+    
     /**
      * fetches the settings from config file
      */
@@ -632,11 +656,13 @@ public class mod_MumbleLink extends BaseMod {
         }
     }
 
+    
 	@Override
 	public String getVersion() {
 		return modVersion;
 	}
 
+	
 	@Override
 	public void load() {
 		// nothing to do here, we do not alter Minecraft's behavior
