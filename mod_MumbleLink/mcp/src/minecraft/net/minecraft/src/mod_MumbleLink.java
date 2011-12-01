@@ -66,7 +66,10 @@ public class mod_MumbleLink extends BaseMod {
     private Map<String, String> config;
     
     // flag if the user has been notified about mumble being linked
-    private boolean notfied = false;
+    private boolean notfied = false;    
+    // achievement to indicate that mumble was successfully linked
+    public static Achievement achMumbleLinked;
+    
     
     public mod_MumbleLink() {
         //ModLoader.getLogger().fine("[" + modName + modVersion "] Initializing...");
@@ -87,6 +90,12 @@ public class mod_MumbleLink extends BaseMod {
         ModLoader.SetInGameHook(this, true, false);
 
         //ModLoader.getLogger().fine("[" + modName + modVersion "] Finished hooking to game tick!");
+        
+        // initialize a custom achivement
+        achMumbleLinked = new Achievement(0xA232A, "mumbleLinked", 8, 6, Item.silk, null);
+        achMumbleLinked.registerAchievement();        
+        ModLoader.AddAchievementDesc(achMumbleLinked, "Mumble Linked!", 
+        		"Use Mumble and Minecraft at the same time to get positional audio.");
                        
     }
 
@@ -111,12 +120,15 @@ public class mod_MumbleLink extends BaseMod {
         // if link was established and the client was not yet told
         if(!this.notfied && mumbleInited) {
         	// make sure we are in a world
-        	if(game != null && game.ingameGUI != null) {        		        	
+        	if(game != null && game.ingameGUI != null) {
+        		// remember not to nag again
+        		this.notfied = true;
+        		
         		// display a message
         		game.ingameGUI.addChatMessage("Mumble linked.");
         		
-        		// remember not to nag again
-        		this.notfied = true;
+        		// unlock achievement
+        		game.thePlayer.addStat(achMumbleLinked, 1);
         	}
         }
 
@@ -325,7 +337,7 @@ public class mod_MumbleLink extends BaseMod {
 
             int err = updateLinkedMumble(fAvatarPosition, fAvatarFront, fAvatarTop, name, description, fCameraPosition, fCameraFront, fCameraTop, identity, context);
 
-            //ModLoader.getLogger().log(Level.FINER, "[" + modName + modVersion + "] mumble updated (code: {0})", err);
+            ModLoader.getLogger().log(Level.FINER, "[" + modName + modVersion + "] mumble updated (code: {0})", err);
 
         } catch (Exception ex) {
             //ModLoader.getLogger().log(Level.SEVERE, null, ex);
