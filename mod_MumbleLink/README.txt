@@ -3,7 +3,7 @@ HOW TO:
 !!!CAUTION!!!
 If you are modifying the native methods be sure to create a new .h for JNI 
 1. run: javah -jni mod_MumbleLink
-2. update mod_MumbleLinkDLL project
+2. update "natives" project
 
 
 
