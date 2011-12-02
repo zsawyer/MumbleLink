@@ -71,8 +71,6 @@ public class mod_MumbleLink extends BaseMod {
     private boolean notfied = false;
     // start for the delay timer
 	private long start = -1;    
-    // achievement to indicate that mumble was successfully linked
-    public static Achievement achMumbleLinked;
     
     
     public mod_MumbleLink() {
@@ -93,13 +91,7 @@ public class mod_MumbleLink extends BaseMod {
         // hook to game to know when to update
         ModLoader.SetInGameHook(this, true, false);
 
-        //ModLoader.getLogger().fine("[" + modName + modVersion "] Finished hooking to game tick!");
-        
-        // initialize a custom achivement
-        achMumbleLinked = new Achievement(0xA232A, "mumbleLinked", 5, 0, Item.silk, null);
-        achMumbleLinked.registerAchievement();        
-        ModLoader.AddAchievementDesc(achMumbleLinked, "Mumble Linked!", 
-        		"Use Mumble and Minecraft at the same time to get positional audio.");
+        //ModLoader.getLogger().fine("[" + modName + modVersion "] Finished hooking to game tick!");        
                        
     }
 
@@ -121,32 +113,36 @@ public class mod_MumbleLink extends BaseMod {
         
         // inform mumble of the current location
         updateMumble(game);
+                      
         
         
-        // if link was established and the client was not yet notified
-        if(!this.notfied && mumbleInited) {
-        	// make sure we are in a world
-        	if(game != null && game.ingameGUI != null) {
-        		//ModLoader.getLogger().log(Level.FINER, "[" + modName + modVersion + "] ticked {0})", game.theWorld.getWorldTime());
-        		long now = game.theWorld.getWorldTime();
-        		// if start was not yet set
-        		if(start == -1) { 
-        			// define start to now
-        			start = now;
-    			};         		
-        		
-    			// if delay time passed
-        		if(start + notificationDelay < now) {
-	        		// remember not to nag again
-	        		this.notfied = true;
+        
+        // if mumble is linked
+        if(mumbleInited) {
+	    	// make sure we got a gui
+	    	if(game != null && game.ingameGUI != null) {
+	            // if the client was not yet notified
+	            if(!this.notfied) {
+	        		//ModLoader.getLogger().log(Level.FINER, "[" + modName + modVersion + "] ticked {0})", game.theWorld.getWorldTime());
+	        		long now = game.theWorld.getWorldTime();
+	        		// if start was not yet set
+	        		if(start == -1) { 
+	        			// define start to now
+	        			start = now;
+	    			};         		
 	        		
-	        		// display a message
-	        		game.ingameGUI.addChatMessage("Mumble linked.");
-	        		
-	        		// unlock achievement
-	        		game.thePlayer.addStat(achMumbleLinked, 1);
-        		}
-        	}
+	    			// if delay time passed
+	        		if(start + notificationDelay < now) {
+		        		// remember not to nag again
+		        		this.notfied = true;
+		        		
+		        		// display a message
+		        		game.ingameGUI.addChatMessage("Mumble linked.");	        		
+	        		}
+	        	}
+	        } else {
+	        	this.notfied = false;
+	        }
         }
 
         return true;
