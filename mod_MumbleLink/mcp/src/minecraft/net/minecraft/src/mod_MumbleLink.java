@@ -38,8 +38,8 @@ import net.minecraft.client.Minecraft;
  *
  * when developing for it I suggest using "mumblePAHelper" to see coordinates 
  *
- * for Minecraft v1.1
- *  updated 2012-01-17
+ * for Minecraft v1.2.3
+ *  updated 2012-03-13
  *
  * @author zsawyer, 2011-03-20
  */
@@ -49,7 +49,7 @@ public class mod_MumbleLink extends BaseMod {
     /// display name of this mod
     private static final String modName = "MumbleLink";
     /// current version number of this mod
-    private static final String modVersion = "2.4.1";
+    private static final String modVersion = "2.4.2";
     /// name of the library
     private static final String libName = "mod_MumbleLink";    
     /// delay for user notification 
@@ -89,7 +89,7 @@ public class mod_MumbleLink extends BaseMod {
         //ModLoader.getLogger().fine("[" + modName + modVersion "] Hooking to game tick...");
 
         // hook to game to know when to update
-        ModLoader.SetInGameHook(this, true, false);
+        ModLoader.setInGameHook(this, true, false);
 
         //ModLoader.getLogger().fine("[" + modName + modVersion "] Finished hooking to game tick!");        
                        
@@ -97,8 +97,8 @@ public class mod_MumbleLink extends BaseMod {
 
     
     @Override
-    public boolean OnTickInGame(float tick, Minecraft game) {
-        super.OnTickInGame(tick, game);
+    public boolean onTickInGame(float tick, Minecraft game) {
+        super.onTickInGame(tick, game);
         //ModLoader.getLogger().fine("[" + modName + modVersion "] caught game tick");
 
         // if initiation was not successful
@@ -388,7 +388,7 @@ public class mod_MumbleLink extends BaseMod {
         /// name of the world
         String worldName = world.worldInfo.getWorldName();
         /// seed of the world
-        String worldSeed = Long.toString(world.worldInfo.getRandomSeed());
+        String worldSeed = Long.toString(world.worldInfo.getSeed());
 
 
         // string if world is not set
@@ -537,7 +537,7 @@ public class mod_MumbleLink extends BaseMod {
             ModLoader.getLogger().log(Level.SEVERE, "[" + modName + modVersion + "][ERROR] {0}", err.getMessage());
 
             // halt Minecraft
-            ModLoader.ThrowException("Couldn't load library for mod " + modName + modVersion, err);
+            ModLoader.throwException("Couldn't load library for mod " + modName + modVersion, err);
 
         }
 
