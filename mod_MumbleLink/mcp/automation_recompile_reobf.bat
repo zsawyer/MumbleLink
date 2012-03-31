@@ -14,8 +14,8 @@ IF /I %check% NEQ y exit
 
 
 
-set svn_path=D:\mod_MumbleLink\SOURCES\trunk
-set mcp_path=D:\mcp60
+set svn_path=C:\modmumblelink\SOURCES\trunk
+set mcp_path=C:\mcp61
 
 cd "%mcp_path%"
 

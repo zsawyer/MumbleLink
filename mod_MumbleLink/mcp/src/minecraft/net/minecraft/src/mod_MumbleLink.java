@@ -38,8 +38,8 @@ import net.minecraft.client.Minecraft;
  *
  * when developing for it I suggest using "mumblePAHelper" to see coordinates 
  *
- * for Minecraft v1.2.3
- *  updated 2012-03-13
+ * for Minecraft v1.2.4
+ *  updated 2012-04-01
  *
  * @author zsawyer, 2011-03-20
  */
@@ -49,7 +49,7 @@ public class mod_MumbleLink extends BaseMod {
     /// display name of this mod
     private static final String modName = "MumbleLink";
     /// current version number of this mod
-    private static final String modVersion = "2.4.2";
+    private static final String modVersion = "2.4.3";
     /// name of the library
     private static final String libName = "mod_MumbleLink";    
     /// delay for user notification 
