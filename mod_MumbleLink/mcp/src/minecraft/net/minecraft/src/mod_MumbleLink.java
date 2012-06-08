@@ -33,27 +33,28 @@ import java.util.logging.Level;
 import net.minecraft.client.Minecraft;
 
 /**
- * mod to link with mumble for positional audio 
+ * mod to link with mumble for positional audio
  *  @see http://mumble.sourceforge.net/
  *
- * when developing for it I suggest using "mumblePAHelper" to see coordinates 
+ * when developing for it I suggest using "mumblePAHelper" to see coordinates
  *
  * for Minecraft v1.2.5 (snapshot)
- *  updated 2012-04-04
+ *  updated 2012-06-08
  *
  * @author zsawyer, 2011-03-20
  */
 @SuppressWarnings("StaticNonFinalUsedInInitialization")
 public class mod_MumbleLink extends BaseMod {
 
-    /// display name of this mod
-    private static final String modName = "MumbleLink";
     /// current version number of this mod
     private static final String modVersion = "2.4.4";
+
+    /// display name of this mod
+    private static final String modName = "MumbleLink";
     /// name of the library
-    private static final String libName = "mod_MumbleLink";    
-    /// delay for user notification 
-	private static final long notificationDelay = 100;
+    private static final String libName = "mod_MumbleLink";
+    /// delay for user notification
+    private static final long notificationDelay = 100;
     /// whether or not the required native library was already loaded
     private static boolean libLoaded = false;
     /// error stack when loading libraries during mod initialization
@@ -66,13 +67,17 @@ public class mod_MumbleLink extends BaseMod {
     private final String configFileName = "mod_MumbleLink.conf";
     /// config parameters for this mod
     private Map<String, String> config;
-    
+
     // flag if the user has been notified about mumble being linked
     private boolean notfied = false;
     // start for the delay timer
-	private long start = -1;    
-    
-    
+    private long start = -1;
+
+
+    private final static boolean IS_A_FILE_PATH = true;
+    private final static boolean IS_NOT_A_FILE_PATH = false;
+
+
     public mod_MumbleLink() {
         //ModLoader.getLogger().fine("[" + modName + modVersion "] Initializing...");
 
@@ -91,11 +96,11 @@ public class mod_MumbleLink extends BaseMod {
         // hook to game to know when to update
         ModLoader.setInGameHook(this, true, false);
 
-        //ModLoader.getLogger().fine("[" + modName + modVersion "] Finished hooking to game tick!");        
-                       
+        //ModLoader.getLogger().fine("[" + modName + modVersion "] Finished hooking to game tick!");
+
     }
 
-    
+
     @Override
     public boolean onTickInGame(float tick, Minecraft game) {
         super.onTickInGame(tick, game);
@@ -108,46 +113,46 @@ public class mod_MumbleLink extends BaseMod {
                 // skip
                 return true;
             }
-            	
-        }        
-        
+
+        }
+
         // inform mumble of the current location
         updateMumble(game);
-                      
-        
-        
-        
+
+
+
+
         // if mumble is linked
         if(mumbleInited) {
-	    	// make sure we got a gui
-	    	if(game != null && game.ingameGUI != null) {
-	            // if the client was not yet notified
-	            if(!this.notfied) {
-	        		//ModLoader.getLogger().log(Level.FINER, "[" + modName + modVersion + "] ticked {0})", game.theWorld.getWorldTime());
-	        		long now = game.theWorld.getWorldTime();
-	        		// if start was not yet set
-	        		if(start == -1) { 
-	        			// define start to now
-	        			start = now;
-	    			};         		
-	        		
-	    			// if delay time passed
-	        		if(start + notificationDelay < now) {
-		        		// remember not to nag again
-		        		this.notfied = true;
-		        		
-		        		// display a message
-		        		game.ingameGUI.addChatMessage("Mumble linked.");	        		
-	        		}
-	        	}
-	        } else {
-	        	this.notfied = false;
-	        }
+            // make sure we got a gui
+            if(game != null && game.ingameGUI != null) {
+                // if the client was not yet notified
+                if(!this.notfied) {
+                    //ModLoader.getLogger().log(Level.FINER, "[" + modName + modVersion + "] ticked {0})", game.theWorld.getWorldTime());
+                    long now = game.theWorld.getWorldTime();
+                    // if start was not yet set
+                    if(start == -1) {
+                        // define start to now
+                        start = now;
+                    };
+
+                    // if delay time passed
+                    if(start + notificationDelay < now) {
+                        // remember not to nag again
+                        this.notfied = true;
+
+                        // display a message
+                        game.ingameGUI.addChatMessage("Mumble linked.");
+                    }
+                }
+            } else {
+                this.notfied = false;
+            }
         }
 
         return true;
     }
-    
+
 
     /**
      * try to initialize mumble
@@ -174,7 +179,7 @@ public class mod_MumbleLink extends BaseMod {
         return false;
     }
 
-    
+
     /**
      * do mumble preparations and call the JNI mumble link function
      *
@@ -185,6 +190,8 @@ public class mod_MumbleLink extends BaseMod {
 
         try {
             // 1 unit = 1 meter
+
+            // TODO: use full vectors (all axes)
 
             // initialize multipliers
             float fAvatarFrontX = 1;
@@ -287,31 +294,41 @@ public class mod_MumbleLink extends BaseMod {
             /// view vector
             Vec3D camera = game.thePlayer.getLookVec();
 
+            /*
+             *  TODO: calculate real camera vector from pitch and yaw
+                // camera pitch in degrees (e.g. 0.0f to 360.0f)
+                Float cameraPitch = game.thePlayer.cameraPitch;
+                // camera yaw in degrees (e.g. 0.0f to 360.0f)
+                Float cameraYaw = game.thePlayer.cameraYaw;
+            */
+
             // Position of the avatar
             float[] fAvatarPosition = {
-                Float.parseFloat(Double.toString(game.thePlayer.posX)), // TOFIX: losing precision here
-                Float.parseFloat(Double.toString(game.thePlayer.posZ)), // TOFIX: losing precision here
-                Float.parseFloat(Double.toString(game.thePlayer.posY))}; // TOFIX: losing precision here
+                Float.parseFloat(Double.toString(game.thePlayer.posX)), // note: losing precision here
+                Float.parseFloat(Double.toString(game.thePlayer.posZ)), // note: losing precision here
+                Float.parseFloat(Double.toString(game.thePlayer.posY))}; // note: losing precision here
 
-
-            // Unit vector pointing out of the avatars eyes (here Front looks into scene).
+            // Unit vector pointing out of the avatar's eyes (here Front looks into scene).
             float[] fAvatarFront = {
-                Float.parseFloat(Double.toString(camera.xCoord * fAvatarFrontX)), // TOFIX: losing precision here
-                Float.parseFloat(Double.toString(camera.zCoord * fAvatarFrontZ)), // TOFIX: losing precision here
-                Float.parseFloat(Double.toString(camera.yCoord * fAvatarFrontY))}; // TOFIX: losing precision here
+                Float.parseFloat(Double.toString(camera.xCoord * fAvatarFrontX)), // note: losing precision here
+                Float.parseFloat(Double.toString(camera.zCoord * fAvatarFrontZ)), // note: losing precision here
+                Float.parseFloat(Double.toString(camera.yCoord * fAvatarFrontY))}; // note: losing precision here
 
-            // Unit vector pointing out of the top of the avatars head (here Top looks straight up).
+            // Unit vector pointing out of the top of the avatar's head (here Top looks straight up).
             float[] fAvatarTop = {fAvatarTopX, fAvatarTopZ, fAvatarTopY};
 
-            float[] fCameraPosition = {
-                Float.parseFloat(Double.toString(game.thePlayer.posX)), // TOFIX: losing precision here
-                Float.parseFloat(Double.toString(game.thePlayer.posZ)), // TOFIX: losing precision here
-                Float.parseFloat(Double.toString(game.thePlayer.posY))}; // TOFIX: losing precision here
 
+            // TODO: use real camera position, s.a.
+            float[] fCameraPosition = {
+                Float.parseFloat(Double.toString(game.thePlayer.posX)), // note: losing precision here
+                Float.parseFloat(Double.toString(game.thePlayer.posZ)), // note: losing precision here
+                Float.parseFloat(Double.toString(game.thePlayer.posY))}; // note: losing precision here
+
+            // TODO: use real look vector, s.a.
             float[] fCameraFront = {
-                Float.parseFloat(Double.toString(camera.xCoord * fCameraFrontX)), // TOFIX: losing precision here
-                Float.parseFloat(Double.toString(camera.zCoord * fCameraFrontZ)), // TOFIX: losing precision here
-                Float.parseFloat(Double.toString(camera.yCoord * fCameraFrontY))}; // TOFIX: losing precision here
+                Float.parseFloat(Double.toString(camera.xCoord * fCameraFrontX)), // note: losing precision here
+                Float.parseFloat(Double.toString(camera.zCoord * fCameraFrontZ)), // note: losing precision here
+                Float.parseFloat(Double.toString(camera.yCoord * fCameraFrontY))}; // note: losing precision here
 
             float[] fCameraTop = {fCameraTopX, fCameraTopZ, fCameraTopY};
 
@@ -359,7 +376,7 @@ public class mod_MumbleLink extends BaseMod {
         }
     }
 
-    
+
     /**
      * create a JSON String representation of the context using world unique information
      *  keeps the output string within a certain length (256)
@@ -371,7 +388,7 @@ public class mod_MumbleLink extends BaseMod {
         int contextSize = 256; // from linkedMem.h: unsigned char context[256];
 
         // TODO: Seed is not very unique, find a better server identifier
-        // TODO: identify Nether and other worlds 
+        // TODO: identify Nether and other worlds
         // strings needed for context
         String startStr = "{";
         String gameStr = "\"game\":\"Minecraft\", ";
@@ -398,7 +415,7 @@ public class mod_MumbleLink extends BaseMod {
                 + worldSeedInit
                 + endStr;
 
-        // calcualte the rest that we can use for dynamic content
+        // calculate the rest that we can use for dynamic content
         int remainderFraction = (contextSize - context_empty.getBytes().length) / numContents; // 256 is set by linkedMem (as defined in Link plugin from mumble)
 
         // get the actual length if the string is smaller then the allocated space
@@ -415,7 +432,7 @@ public class mod_MumbleLink extends BaseMod {
         return context;
     }
 
-    
+
     /* ********* NATIVE FUNCTIONS FROM DLL ********* */
     /**
      * method from dll (heartbeat to mumble)
@@ -433,7 +450,7 @@ public class mod_MumbleLink extends BaseMod {
      *                   head (pitch, roll)
      * @param name this tool's name
      * @param description what this tool is/does
-     * @param fCameraPosition Position of the camera 
+     * @param fCameraPosition Position of the camera
      * @param fCameraFront Unit vector pointing which direction the camera is
      *                     facing (pitch, yaw)
      * @param fCameraTop Unit vector pointing out of the top of the
@@ -443,25 +460,23 @@ public class mod_MumbleLink extends BaseMod {
      * @param context Context should be equal for players which should be able
      *                to hear each other positional and differ for those who
      *                shouldn't (e.g. it could contain the server+port and team)
-     * @return error code 
+     * @return error code
      *         0: no error
      *         1: shared memory was not initialized (was initMumble() called?)
      */
     private native int updateLinkedMumble(
             float[] fAvatarPosition, // [3]
             float[] fAvatarFront, // [3]
-            float[] fAvatarTop, // [3]            
-            //char[] name, // [256]
+            float[] fAvatarTop, // [3]
             String name, // [256]
             String description,
             float[] fCameraPosition, // [3]
             float[] fCameraFront, // [3]
             float[] fCameraTop, // [3]
-            //char[] identity); // [256]
             String identity, // [256]
             String context);
 
-    
+
     /**
      * method from dll (prepare mumble)
      *
@@ -469,8 +484,8 @@ public class mod_MumbleLink extends BaseMod {
      *
      *  this basically corresponds to the suggested function as posted in the
      *  mumble wiki (http://mumble.sourceforge.net/Link)
-     * 
-     * @return error code 
+     *
+     * @return error code
      *         0: no error
      *         1: win32 specific: OpenFileMappingW failed to return a handle
      *         2: win32 specific: MapViewOfFile failed to return a structure
@@ -479,7 +494,7 @@ public class mod_MumbleLink extends BaseMod {
      */
     private native int initMumble();
 
-    
+
     /**
      * statically load the native libraries
      */
@@ -487,7 +502,7 @@ public class mod_MumbleLink extends BaseMod {
 
         // assemble the current minecraft path
         String s = File.separator;
-        String dllFolder = Minecraft.getAppDir("minecraft").getAbsolutePath() + s + "mods" + s + modName + s + "natives" + s;
+        String dllFolder = Minecraft.getMinecraftDir().getAbsolutePath() + s + "mods" + s + modName + s + "natives" + s;
 
 
         // loading the library by trying different versions and file locations
@@ -497,26 +512,26 @@ public class mod_MumbleLink extends BaseMod {
                 libName); // from path
         // windows - 32 bit library file
         attemptLoadLibrary(
-                dllFolder + libName + ".dll", true); // from file
+                dllFolder + libName + ".dll", IS_A_FILE_PATH); // from file
         // linux - 32 bit library file
         attemptLoadLibrary(
-                dllFolder + "lib" + libName + ".so", true); // from file
+                dllFolder + "lib" + libName + ".so", IS_A_FILE_PATH); // from file
         // mac - 32 bit library file
         attemptLoadLibrary(
-                dllFolder + "lib" + libName + ".dylib", true); // from file
+                dllFolder + "lib" + libName + ".dylib", IS_A_FILE_PATH); // from file
 
         // try 64 bit library
         attemptLoadLibrary(
                 libName + "_x64"); // from path
         // windows - 64 bit library file
         attemptLoadLibrary(
-                dllFolder + libName + "_x64.dll", true); // from file
+                dllFolder + libName + "_x64.dll", IS_A_FILE_PATH); // from file
         // linux - 64 bit library file
         attemptLoadLibrary(
-                dllFolder + "lib" + libName + "_x64.so", true); // from file
+                dllFolder + "lib" + libName + "_x64.so", IS_A_FILE_PATH); // from file
         // mac - 64 bit library file
         attemptLoadLibrary(
-                dllFolder + "lib" + libName + "_x64.dylib", true); // from file
+                dllFolder + "lib" + libName + "_x64.dylib", IS_A_FILE_PATH); // from file
 
         // if no library could be loaded
         if (!libLoaded) {
@@ -543,18 +558,18 @@ public class mod_MumbleLink extends BaseMod {
 
     }
 
-    
+
     /**
      * load the specified library from path
      *
-     * @param lib library name 
+     * @param lib library name
      * @throws UnsatisfiedLinkError loading of a found library failed
      */
     private static void attemptLoadLibrary(String lib) {
-        attemptLoadLibrary(lib, false);
+        attemptLoadLibrary(lib, IS_NOT_A_FILE_PATH);
     }
 
-    
+
     /**
      * load library from either path or a file
      *
@@ -604,7 +619,7 @@ public class mod_MumbleLink extends BaseMod {
         }
     }
 
-    
+
     /**
      * fetches the settings from config file
      */
@@ -612,9 +627,9 @@ public class mod_MumbleLink extends BaseMod {
     private void readConfig() {
 
         // get the config file
-        File settingsFile = new File(Minecraft.getAppDir("minecraft"), configFileName);
+        File settingsFile = new File(Minecraft.getMinecraftDir(), configFileName);
 
-        // if the settings file exsists
+        // if the settings file exists
         if (settingsFile.exists()) {
             //ModLoader.getLogger().fine("[" + modName + modVersion "] config file exists");
 
@@ -652,16 +667,16 @@ public class mod_MumbleLink extends BaseMod {
         }
     }
 
-    
-	@Override
-	public String getVersion() {
-		return modVersion;
-	}
 
-	
-	@Override
-	public void load() {
-		// nothing to do here, we do not alter Minecraft's behavior
-		
-	}
+    @Override
+    public String getVersion() {
+        return modVersion;
+    }
+
+
+    @Override
+    public void load() {
+        // nothing to do here, we do not alter Minecraft's behavior
+
+    }
 }
