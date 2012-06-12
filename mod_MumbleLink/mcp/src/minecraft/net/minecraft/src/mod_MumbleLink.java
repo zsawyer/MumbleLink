@@ -21,13 +21,9 @@ along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.minecraft.src;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import net.minecraft.client.Minecraft;
@@ -81,7 +77,7 @@ public class mod_MumbleLink extends BaseMod {
     public mod_MumbleLink() {
         //ModLoader.getLogger().fine("[" + modName + modVersion "] Initializing...");
 
-        config = new Hashtable<String, String>();
+        config = new HashMap<String, String>();
         config.put("mumbleContext", "AllTalk");
 
 
@@ -134,7 +130,7 @@ public class mod_MumbleLink extends BaseMod {
                     if(start == -1) {
                         // define start to now
                         start = now;
-                    };
+                    }
 
                     // if delay time passed
                     if(start + notificationDelay < now) {
@@ -563,7 +559,6 @@ public class mod_MumbleLink extends BaseMod {
      * load the specified library from path
      *
      * @param lib library name
-     * @throws UnsatisfiedLinkError loading of a found library failed
      */
     private static void attemptLoadLibrary(String lib) {
         attemptLoadLibrary(lib, IS_NOT_A_FILE_PATH);
@@ -575,7 +570,6 @@ public class mod_MumbleLink extends BaseMod {
      *
      * @param lib name of the library or path of the file
      * @param file if true lib is expected to specify a file
-     * @throws UnsatisfiedLinkError loading of a found library failed
      */
     private static void attemptLoadLibrary(String lib, boolean file) {
         // if the library was already loaded skip
