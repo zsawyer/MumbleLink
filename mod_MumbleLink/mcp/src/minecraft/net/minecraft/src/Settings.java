@@ -23,6 +23,8 @@ package net.minecraft.src;
 
 import java.io.*;
 import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -43,16 +45,28 @@ public class Settings {
 
         MUMBLE_CONTEXT("mumbleContext"),
         NOTIFICATION_DELAY_IN_MILLI_SECONDS("notifyDelayMS"),
-        LIBRARY_NAME("libraryName");
+        LIBRARY_NAME("libraryName"),
+        LIBRARY_FILE_PATH("libraryFilePath");
+        private final String text;
+        private static final Map<String, Key> lookup = new HashMap<String, Key>();
+
+        static {
+            for (Key key : EnumSet.allOf(Key.class)) {
+                lookup.put(key.toString(), key);
+            }
+        }
 
         private Key(final String text) {
             this.text = text;
         }
-        private final String text;
 
         @Override
         public String toString() {
             return text;
+        }
+
+        public static Key fromText(String text) {
+            return lookup.get(text);
         }
     }
 
@@ -83,6 +97,13 @@ public class Settings {
          */
         CONTEXT_ALL_TALK("MinecraftAllTalk"),
         CONTEXT_WORLD("world");
+        private static final Map<String, PresetValue> lookup = new HashMap<String, PresetValue>();
+
+        static {
+            for (PresetValue value : EnumSet.allOf(PresetValue.class)) {
+                lookup.put(value.toString(), value);
+            }
+        }
 
         private PresetValue(final String text) {
             this.text = text;
@@ -92,6 +113,10 @@ public class Settings {
         @Override
         public String toString() {
             return text;
+        }
+
+        public static PresetValue fromText(String text) {
+            return lookup.get(text);
         }
     }
 
@@ -117,11 +142,15 @@ public class Settings {
     }
 
     public void define(Key key, String value) {
-        items.put(key, value);
+        items.put(key, value.trim());
     }
 
-    String get(Key key) {
-        return items.get(key).toString();
+    String get(Key key) throws IndexOutOfBoundsException {
+        if (isDefined(key)) {
+            return items.get(key).toString();
+        }
+        throw new IndexOutOfBoundsException("'" + key.toString()
+                + "' is not defined in config file");
     }
 
     public void loadFromFile(File sourceFile) throws IOException {
@@ -161,11 +190,9 @@ public class Settings {
 
     private void define(String keyName, String valueName) {
         Key key;
-        PresetValue value;
         try {
-            key = Key.valueOf(keyName);
-            value = PresetValue.valueOf(valueName);
-            define(key, value);
+            key = Key.fromText(keyName.trim());
+            define(key, valueName);
         } catch (IllegalArgumentException ex) {
             errorHandler.handleError(ErrorHandler.ModError.CONFIG_FILE_SYNTAX, ex);
         }

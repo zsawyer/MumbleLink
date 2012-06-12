@@ -21,6 +21,9 @@
  */
 package net.minecraft.src;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 /**
@@ -33,13 +36,45 @@ public class ErrorHandler extends Singleton {
 
         CONFIG_FILE_READ("Config not loaded! Check file permissions."),
         CONFIG_FILE_SYNTAX("Unrecognized key or value in config file."),
+        CONFIG_FILE_INVALID_VALUE("Value in config file is invalid."),
         LIBRARY_LOAD_FAILED("Couldn't load library.");
-        ;
         private String message;
 
         private ModError(String message) {
             this.message = message;
         }
+
+        @Override
+        public String toString() {
+            return message;
+        }
+    }
+
+    public enum NativeError {
+
+        NO_ERROR(0);
+        private int code;
+        private static final Map<Integer, NativeError> lookup = new HashMap<Integer, NativeError>();
+
+        static {
+            for (NativeError error : EnumSet.allOf(NativeError.class)) {
+                lookup.put(error.getCode(), error);
+            }
+        }
+
+        public static NativeError fromCode(int code) {
+            return lookup.get(code);
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        private NativeError(int code) {
+            this.code = code;
+        }
+
+
     }
 
     public void throwError(ModError modError, Throwable err) {
@@ -70,5 +105,9 @@ public class ErrorHandler extends Singleton {
                 + "[" + severity.getLocalizedName() + "]"
                 + message,
                 stack);
+    }
+
+    void handleError(NativeError fromCode, Object object) {
+        // we'll just ignore native errors for now, else it would probably get too spammy
     }
 }

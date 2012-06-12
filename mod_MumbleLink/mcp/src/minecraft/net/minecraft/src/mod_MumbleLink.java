@@ -24,10 +24,15 @@ package net.minecraft.src;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import static net.minecraft.src.ErrorHandler.ModError.*;
+import static net.minecraft.src.ErrorHandler.NativeError.*;
 import static net.minecraft.src.Settings.Key.*;
 import static net.minecraft.src.Settings.PresetValue.*;
+import sun.org.mozilla.javascript.internal.NativeArray;
 
 /**
  * mod to link with mumble for positional audio
@@ -59,8 +64,6 @@ public class mod_MumbleLink extends BaseMod {
     private static ArrayList<UnsatisfiedLinkError> errors = new ArrayList<UnsatisfiedLinkError>();
     // start for the delay timer
     private long start = -1;
-    private final static boolean IS_A_FILE_PATH = true;
-    private final static boolean IS_NOT_A_FILE_PATH = false;
     private static final ErrorHandler errorHandler = ErrorHandler.getInstance();
 
     public mod_MumbleLink() {
@@ -74,6 +77,216 @@ public class mod_MumbleLink extends BaseMod {
         settings.define(LIBRARY_NAME, "mod_MumbleLink");
 
     }
+
+    @Override
+    public void load() {
+        loadSettings();
+        loadLibrary();
+
+        registerWithModLoader();
+
+        initializeMumble();
+    }
+
+    private void loadSettings() {
+
+        File settingsFile = getSettingsFile();
+
+        if (settingsFile.exists()) {
+            try {
+                settings.loadFromFile(settingsFile);
+            } catch (IOException fileError) {
+                errorHandler.handleError(CONFIG_FILE_READ, fileError);
+            }
+
+        }
+    }
+
+    private File getSettingsFile() {
+        return new File(Minecraft.getMinecraftDir(), settingsFileName);
+    }
+
+    private void loadLibrary() {
+        libLoaded = loadLibraryFromSettingsSpecification();
+
+        libLoaded = loadLibraryByBruteForce();
+
+        if (!libLoaded) {
+            handleFatalLoadError();
+        }
+
+        resetErrors();
+    }
+
+    private boolean loadLibraryFromSettingsSpecification() {
+        if (!settings.isDefined(LIBRARY_FILE_PATH)) {
+            return false;
+        }
+
+        String filePath = settings.get(LIBRARY_FILE_PATH);
+
+        File candidate = new File(filePath);
+
+        if (candidate.exists()) {
+            return attemptLoadLibrary(candidate);
+        } else {
+            Exception reason = new IllegalArgumentException("The specified file was not found: '" + filePath + "'");
+            errorHandler.handleError(CONFIG_FILE_INVALID_VALUE, reason);
+        }
+
+        return false;
+    }
+
+    private boolean attemptLoadLibrary(String lib) {
+        File fileCandidate = new File(lib);
+
+        if (fileCandidate.isFile()) {
+            return attemptLoadLibrary(fileCandidate);
+        }
+
+        return attemptLoadLibraryByName(lib);
+    }
+
+    private boolean attemptLoadLibrary(File file) {
+        try {
+            System.load(file.getAbsolutePath());
+            return true;
+        } catch (UnsatisfiedLinkError err) {
+            errors.add(err);
+        }
+        return false;
+    }
+
+    private boolean attemptLoadLibraryByName(String libName) {
+        try {
+            System.loadLibrary(libName);
+            return true;
+        } catch (UnsatisfiedLinkError err) {
+            errors.add(err);
+        }
+        return false;
+    }
+
+    private boolean loadLibraryByBruteForce() {
+        boolean loaded = false;
+        List<File> files = getLibraryCandidates();
+        while (!loaded && files.iterator().hasNext()) {
+            loaded = attemptLoadLibrary(files.iterator().next());
+        }
+
+        return loaded;
+    }
+
+    private List<File> getLibraryCandidates() {
+        List<File> files = new ArrayList<File>();
+
+        String libraryFolder = getLibraryFolder();
+
+        String[] fileNames = generateFileNames();
+        for (String fileName : fileNames) {
+            File possibleCandidate = new File(libraryFolder + fileName);
+            if (possibleCandidate.exists()) {
+                files.add(possibleCandidate);
+            }
+        }
+
+        return files;
+    }
+
+    private String getLibraryFolder() {
+        String s = File.separator;
+        return Minecraft.getMinecraftDir().getAbsolutePath()
+                + s + "mods"
+                + s + modName
+                + s + "natives"
+                + s;
+    }
+
+    private String[] generateFileNames() {
+        String libName = settings.get(LIBRARY_NAME);
+
+        String[] names = {
+            // win 32
+            generateFileName("", libName, "", "dll"),
+            // win 64
+            generateFileName("", libName, "_x64", "dll"),
+            // linux 32
+            generateFileName("lib", libName, "", "so"),
+            // linux 64
+            generateFileName("lib", libName, "_x64", "so"),
+            // osx 32
+            generateFileName("lib", libName, "", "dylib"),
+            // osx 64
+            generateFileName("lib", libName, "_x64", "dylib"),};
+        return names;
+    }
+
+    private String generateFileName(String prefix, String name, String suffix, String extension) {
+        return prefix + name + suffix + "." + extension;
+    }
+
+    private void handleFatalLoadError() {
+        UnsatisfiedLinkError err;
+
+        if (noLibraryFilesFound()) {
+            err = new UnsatisfiedLinkError("Library files not found! Searched in: \"" + getLibraryFolder() + "\"");
+        } else {
+            err = new UnsatisfiedLinkError("Required library could not be loaded, available libraries are incompatible!");
+        }
+
+        errorHandler.throwError(LIBRARY_LOAD_FAILED, err);
+    }
+
+    private boolean noLibraryFilesFound() {
+        return errors.isEmpty();
+    }
+
+    private void resetErrors() {
+        errors.clear();
+    }   
+
+    private void registerWithModLoader() {
+        ModLoader.setInGameHook(this, true, false);
+    }
+
+    private void initializeMumble() {
+        // attempt mumble initialization
+        mumbleInited = tryInitMumble();
+    }
+
+    /**
+     * try to initialize mumble does some error checking
+     *
+     * @return true if initialized
+     */
+    private boolean tryInitMumble() {
+        int err = initMumble();
+
+        // if there was an error initializing mumble
+        if (err != NO_ERROR.getCode()) {
+            errorHandler.handleError(ErrorHandler.NativeError.fromCode(err), null);
+        }
+
+        mumbleInited = false;
+        return false;
+    }
+
+    /**
+     * method from dll (prepare mumble)
+     *
+     * initializes the shared memory
+     *
+     * this basically corresponds to the suggested function as posted in the
+     * mumble wiki (http://mumble.sourceforge.net/Link)
+     *
+     * @return error code
+     *
+     * 0: no error 1: win32 specific: OpenFileMappingW failed to return a handle
+     * 2: win32 specific: MapViewOfFile failed to return a structure 3: unix
+     * specific: shm_open returned a negative integer * 4: unix specific: mmap
+     * failed to return a structure
+     */
+    private native int initMumble(); // DON'T TOUCH unless you want to recompile the libraries
 
     @Override
     public boolean onTickInGame(float tick, Minecraft game) {
@@ -125,30 +338,6 @@ public class mod_MumbleLink extends BaseMod {
         }
 
         return true;
-    }
-
-    /**
-     * try to initialize mumble does some error checking
-     *
-     * @return true if initialized
-     */
-    private boolean tryInitMumble() {
-        // initialize the mumble link, create linked memory
-        int err = initMumble();
-
-        // if there was an error initializing mumble
-        if (err != 0) {
-            // remember to try again
-            mumbleInited = false;
-
-            //ModLoader.getLogger().log(Level.WARNING, "[" + modName + modVersion "] could not link with Mumble (not started?) (code: {0})", err);
-        } else {
-            // mark as initialized
-            mumbleInited = true;
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -388,9 +577,6 @@ public class mod_MumbleLink extends BaseMod {
     }
 
 
-    /*
-     * ********* NATIVE FUNCTIONS FROM DLL *********
-     */
     /**
      * method from dll (heartbeat to mumble)
      *
@@ -420,7 +606,7 @@ public class mod_MumbleLink extends BaseMod {
      * @return error code 0: no error 1: shared memory was not initialized (was
      * initMumble() called?)
      */
-    private native int updateLinkedMumble(
+    private native int updateLinkedMumble( // DON'T TOUCH unless you want to recompile the libraries
             float[] fAvatarPosition, // [3]
             float[] fAvatarFront, // [3]
             float[] fAvatarTop, // [3]
@@ -432,176 +618,10 @@ public class mod_MumbleLink extends BaseMod {
             String identity, // [256]
             String context);
 
-    /**
-     * method from dll (prepare mumble)
-     *
-     * initializes the shared memory
-     *
-     * this basically corresponds to the suggested function as posted in the
-     * mumble wiki (http://mumble.sourceforge.net/Link)
-     *
-     * @return error code 0: no error 1: win32 specific: OpenFileMappingW failed
-     * to return a handle 2: win32 specific: MapViewOfFile failed to return a
-     * structure 3: unix specific: shm_open returned a negative integer * 4:
-     * unix specific: mmap failed to return a structure
-     */
-    private native int initMumble();
-
-    /**
-     * load the specified library from path
-     *
-     * @param lib library name
-     */
-    private void attemptLoadLibrary(String lib) {
-        attemptLoadLibrary(lib, IS_NOT_A_FILE_PATH);
-    }
-
-    /**
-     * load library from either path or a file
-     *
-     * @param lib name of the library or path of the file
-     * @param file if true lib is expected to specify a file
-     */
-    private void attemptLoadLibrary(String lib, boolean file) {
-        // if the library was already loaded skip
-        if (!libLoaded) {
-
-            // try loading lib
-            try {
-                // if supplied lib is a file path
-                if (file) {
-                    // attempt to load library file
-                    System.load(lib);
-
-                } else {
-                    // attemt to load the library from jpath
-                    System.loadLibrary(lib);
-
-                }
-
-            } catch (UnsatisfiedLinkError err) {
-                //ModLoader.getLogger().fine("[DEBUG] " + err);
-
-                // check if the library was not found
-                if (err.getMessage().startsWith("no ")
-                        || err.getMessage().startsWith("Can't load library")) {
-
-                    // library was not loaded because it was not found
-                    return;
-
-                } else {
-                    // loading failed, throw error
-                    errors.add(err);
-
-                    return;
-                }
-            }
-
-            // mark success
-            libLoaded = true;
-
-            //ModLoader.getLogger().fine("[DEBUG] loaded: " + lib);
-        }
-    }
-
-    @Override
-    public void load() {
-
-        loadSettings();
-        loadLibrary();
-        registerWithModLoader();
-        initializeMumble();
-    }
-
-    private void loadSettings() {
-
-        File settingsFile = getSettingsFile();
-
-        if (settingsFile.exists()) {
-            try {
-                settings.loadFromFile(settingsFile);
-            } catch (IOException fileError) {
-                errorHandler.handleError(CONFIG_FILE_READ, fileError);
-            }
-
-        }
-    }
-
-    private File getSettingsFile() {
-        return new File(Minecraft.getMinecraftDir(), settingsFileName);
-    }
-
-    private void loadLibrary() {
-        String libraryFolder = getLibraryFolder();
-
-        String libName = settings.get(LIBRARY_NAME);
-        // loading the library by trying different versions and file locations
-
-        // try 32 bit library
-        attemptLoadLibrary(
-                libName); // from path
-        // windows - 32 bit library file
-        attemptLoadLibrary(
-                libraryFolder + libName + ".dll", IS_A_FILE_PATH); // from file
-        // linux - 32 bit library file
-        attemptLoadLibrary(
-                libraryFolder + "lib" + libName + ".so", IS_A_FILE_PATH); // from file
-        // mac - 32 bit library file
-        attemptLoadLibrary(
-                libraryFolder + "lib" + libName + ".dylib", IS_A_FILE_PATH); // from file
-
-        // try 64 bit library
-        attemptLoadLibrary(
-                libName + "_x64"); // from path
-        // windows - 64 bit library file
-        attemptLoadLibrary(
-                libraryFolder + libName + "_x64.dll", IS_A_FILE_PATH); // from file
-        // linux - 64 bit library file
-        attemptLoadLibrary(
-                libraryFolder + "lib" + libName + "_x64.so", IS_A_FILE_PATH); // from file
-        // mac - 64 bit library file
-        attemptLoadLibrary(
-                libraryFolder + "lib" + libName + "_x64.dylib", IS_A_FILE_PATH); // from file
-
-        // if no library could be loaded
-        if (!libLoaded) {
-            UnsatisfiedLinkError err;
-            // if no errors were registered
-
-            if (errors.isEmpty()) {
-                // throw missing libraries error
-                err = new UnsatisfiedLinkError("Library files not found! Searched in: \"" + libraryFolder + "\"");
-
-            } else {
-                // throw incompatibility error
-                err = new UnsatisfiedLinkError("Required library could not be loaded, available libraries are incompatible!");
-
-            }
-
-            errorHandler.throwError(LIBRARY_LOAD_FAILED, err);
-        }
-    }
-
-    private String getLibraryFolder() {
-        String s = File.separator;
-        return Minecraft.getMinecraftDir().getAbsolutePath()
-                + s + "mods"
-                + s + modName
-                + s + "natives"
-                + s;
-    }
-
-    private void registerWithModLoader() {
-        ModLoader.setInGameHook(this, true, false);
-    }
-
-    private void initializeMumble() {
-        // attempt mumble initialization
-        tryInitMumble();
-    }
-
     @Override
     public String getVersion() {
         return modVersion;
     }
+
+
 }
