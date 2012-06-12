@@ -9,7 +9,7 @@ REM ****************************************************************************
 
 REM !!! UPDATE THESE PATHS !!!
 set svn_path=D:\mod_MumbleLink\SOURCES\trunk
-set mcp_path=D:\mcp60
+set mcp_path=D:\mcp62
 
 cd "%mcp_path%"
 

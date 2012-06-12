@@ -12,10 +12,14 @@ set /P check="Minecraft updated? Modloader installed? Eclipse closed? [y/n] "
 IF /I %check% NEQ y exit
 
 
+set svn_path=D:\mod_MumbleLink\SOURCES\trunk
+set mcp_path=D:\mcp62
 
 
-set svn_path=C:\modmumblelink\SOURCES\trunk
-set mcp_path=C:\mcp62
+
+
+REM script should not need change here - double check what you change here
+
 
 cd "%mcp_path%"
 
