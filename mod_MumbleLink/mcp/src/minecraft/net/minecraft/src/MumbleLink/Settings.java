@@ -19,7 +19,7 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src;
+package net.minecraft.src.MumbleLink;
 
 import java.io.*;
 import java.util.EnumMap;
@@ -31,14 +31,13 @@ import java.util.Map;
  *
  * @author zsawyer
  */
-public class Settings {
+public class Settings extends KeyValueContainer<Settings.Key, Settings.PresetValue> {
 
     private static final ErrorHandler errorHandler = ErrorHandler.getInstance();
     private static final String KEY_VALUE_SEPERATOR = ":";
-    private Map<Key, String> items;
 
     public Settings() {
-        items = new EnumMap<Key, String>(Key.class);
+        super(Settings.Key.class);
     }
 
     public enum Key {
@@ -46,7 +45,12 @@ public class Settings {
         MUMBLE_CONTEXT("mumbleContext"),
         NOTIFICATION_DELAY_IN_MILLI_SECONDS("notifyDelayMS"),
         LIBRARY_NAME("libraryName"),
-        LIBRARY_FILE_PATH("libraryFilePath");
+        LIBRARY_FILE_PATH("libraryFilePath"),
+        // note: values can be overridden by config file @2012.06.12, r95
+        MOD_NAME("modName"),
+        // note: values can be overridden by config file @2012.06.12, r95
+        MOD_VERSION("modVersion"),
+        MAX_CONTEXT_SIZE_IN_BYTES("maxContextSizeInBytes");
         private final String text;
         private static final Map<String, Key> lookup = new HashMap<String, Key>();
 
@@ -120,43 +124,10 @@ public class Settings {
         }
     }
 
-    public boolean compare(Key key, PresetValue expectedValue) {
-        return compare(key, expectedValue.toString());
-    }
-
-    private boolean compare(Key key, String expectedValue) {
-        if (isDefined(key)) {
-            String actualValue = items.get(key);
-            return actualValue.equals(expectedValue);
-        }
-
-        return false;
-    }
-
-    public boolean isDefined(Key key) {
-        return items.containsKey(key);
-    }
-
-    public void define(Key key, PresetValue value) {
-        define(key, value.toString());
-    }
-
-    public void define(Key key, String value) {
-        items.put(key, value.trim());
-    }
-
-    String get(Key key) throws IndexOutOfBoundsException {
-        if (isDefined(key)) {
-            return items.get(key).toString();
-        }
-        throw new IndexOutOfBoundsException("'" + key.toString()
-                + "' is not defined in config file");
-    }
-
     public void loadFromFile(File sourceFile) throws IOException {
         BufferedReader reader = createLineReader(sourceFile);
         Map<Key, String> newSettings = parseLines(reader);
-        items.putAll(newSettings);
+        defineAll(newSettings);
     }
 
     private BufferedReader createLineReader(File sourceFile) throws FileNotFoundException {

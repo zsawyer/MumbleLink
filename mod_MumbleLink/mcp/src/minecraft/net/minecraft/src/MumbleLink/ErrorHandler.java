@@ -19,12 +19,14 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src;
+package net.minecraft.src.MumbleLink;
 
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import net.minecraft.src.ModLoader;
+import net.minecraft.src.mod_MumbleLink;
 
 /**
  *
@@ -50,19 +52,19 @@ public class ErrorHandler extends Singleton {
         }
     }
 
-    public enum NativeError {
+    public enum NativeInitError {
 
         NO_ERROR(0);
         private int code;
-        private static final Map<Integer, NativeError> lookup = new HashMap<Integer, NativeError>();
+        private static final Map<Integer, NativeInitError> lookup = new HashMap<Integer, NativeInitError>();
 
         static {
-            for (NativeError error : EnumSet.allOf(NativeError.class)) {
+            for (NativeInitError error : EnumSet.allOf(NativeInitError.class)) {
                 lookup.put(error.getCode(), error);
             }
         }
 
-        public static NativeError fromCode(int code) {
+        public static NativeInitError fromCode(int code) {
             return lookup.get(code);
         }
 
@@ -70,11 +72,9 @@ public class ErrorHandler extends Singleton {
             return code;
         }
 
-        private NativeError(int code) {
+        private NativeInitError(int code) {
             this.code = code;
         }
-
-
     }
 
     public void throwError(ModError modError, Throwable err) {
@@ -107,7 +107,8 @@ public class ErrorHandler extends Singleton {
                 stack);
     }
 
-    void handleError(NativeError fromCode, Object object) {
+    public void handleError(NativeInitError fromCode) {
         // we'll just ignore native errors for now, else it would probably get too spammy
     }
+    
 }

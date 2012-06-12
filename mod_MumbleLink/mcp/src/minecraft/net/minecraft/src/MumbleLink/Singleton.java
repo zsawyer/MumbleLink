@@ -19,7 +19,7 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src;
+package net.minecraft.src.MumbleLink;
 
 /**
  *

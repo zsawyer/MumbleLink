@@ -23,16 +23,15 @@ package net.minecraft.src;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import net.minecraft.client.Minecraft;
-import static net.minecraft.src.ErrorHandler.ModError.*;
-import static net.minecraft.src.ErrorHandler.NativeError.*;
-import static net.minecraft.src.Settings.Key.*;
-import static net.minecraft.src.Settings.PresetValue.*;
-import sun.org.mozilla.javascript.internal.NativeArray;
+import net.minecraft.src.MumbleLink.*;
+import static net.minecraft.src.MumbleLink.ErrorHandler.ModError.CONFIG_FILE_READ;
+import static net.minecraft.src.MumbleLink.ErrorHandler.ModError.LIBRARY_LOAD_FAILED;
+import net.minecraft.src.MumbleLink.ErrorHandler.NativeInitError;
+import static net.minecraft.src.MumbleLink.ErrorHandler.NativeInitError.NO_ERROR;
+import static net.minecraft.src.MumbleLink.Settings.Key.*;
+import static net.minecraft.src.MumbleLink.Settings.PresetValue.CONTEXT_ALL_TALK;
+import static net.minecraft.src.MumbleLink.Settings.PresetValue.CONTEXT_WORLD;
 
 /**
  * mod to link with mumble for positional audio
@@ -53,18 +52,12 @@ public class mod_MumbleLink extends BaseMod {
     //
     //
     private final String settingsFileName = "mod_MumbleLink.conf";
-    private Settings settings;
-    //
-    //
-    private boolean libLoaded = false;
+    protected Settings settings;
     private boolean mumbleInited = false;
     private boolean userWasNotfiedAboutLinkSuccess = false;
     //
-    /// error stack when loading libraries during mod initialization
-    private static ArrayList<UnsatisfiedLinkError> errors = new ArrayList<UnsatisfiedLinkError>();
-    // start for the delay timer
     private long start = -1;
-    private static final ErrorHandler errorHandler = ErrorHandler.getInstance();
+    protected static final ErrorHandler errorHandler = ErrorHandler.getInstance();
 
     public mod_MumbleLink() {
         settings = new Settings();
@@ -75,7 +68,9 @@ public class mod_MumbleLink extends BaseMod {
         settings.define(MUMBLE_CONTEXT, CONTEXT_ALL_TALK);
         settings.define(NOTIFICATION_DELAY_IN_MILLI_SECONDS, "10000");
         settings.define(LIBRARY_NAME, "mod_MumbleLink");
-
+        settings.define(MOD_NAME, modName);
+        settings.define(MOD_VERSION, modVersion);
+        settings.define(MAX_CONTEXT_SIZE_IN_BYTES, "256");
     }
 
     @Override
@@ -89,7 +84,6 @@ public class mod_MumbleLink extends BaseMod {
     }
 
     private void loadSettings() {
-
         File settingsFile = getSettingsFile();
 
         if (settingsFile.exists()) {
@@ -106,168 +100,23 @@ public class mod_MumbleLink extends BaseMod {
         return new File(Minecraft.getMinecraftDir(), settingsFileName);
     }
 
-    private void loadLibrary() {
-        libLoaded = loadLibraryFromSettingsSpecification();
-
-        libLoaded = loadLibraryByBruteForce();
-
-        if (!libLoaded) {
-            handleFatalLoadError();
-        }
-
-        resetErrors();
-    }
-
-    private boolean loadLibraryFromSettingsSpecification() {
-        if (!settings.isDefined(LIBRARY_FILE_PATH)) {
-            return false;
-        }
-
-        String filePath = settings.get(LIBRARY_FILE_PATH);
-
-        File candidate = new File(filePath);
-
-        if (candidate.exists()) {
-            return attemptLoadLibrary(candidate);
-        } else {
-            Exception reason = new IllegalArgumentException("The specified file was not found: '" + filePath + "'");
-            errorHandler.handleError(CONFIG_FILE_INVALID_VALUE, reason);
-        }
-
-        return false;
-    }
-
-    private boolean attemptLoadLibrary(String lib) {
-        File fileCandidate = new File(lib);
-
-        if (fileCandidate.isFile()) {
-            return attemptLoadLibrary(fileCandidate);
-        }
-
-        return attemptLoadLibraryByName(lib);
-    }
-
-    private boolean attemptLoadLibrary(File file) {
-        try {
-            System.load(file.getAbsolutePath());
-            return true;
-        } catch (UnsatisfiedLinkError err) {
-            errors.add(err);
-        }
-        return false;
-    }
-
-    private boolean attemptLoadLibraryByName(String libName) {
-        try {
-            System.loadLibrary(libName);
-            return true;
-        } catch (UnsatisfiedLinkError err) {
-            errors.add(err);
-        }
-        return false;
-    }
-
-    private boolean loadLibraryByBruteForce() {
-        boolean loaded = false;
-        List<File> files = getLibraryCandidates();
-        while (!loaded && files.iterator().hasNext()) {
-            loaded = attemptLoadLibrary(files.iterator().next());
-        }
-
-        return loaded;
-    }
-
-    private List<File> getLibraryCandidates() {
-        List<File> files = new ArrayList<File>();
-
-        String libraryFolder = getLibraryFolder();
-
-        String[] fileNames = generateFileNames();
-        for (String fileName : fileNames) {
-            File possibleCandidate = new File(libraryFolder + fileName);
-            if (possibleCandidate.exists()) {
-                files.add(possibleCandidate);
-            }
-        }
-
-        return files;
-    }
-
-    private String getLibraryFolder() {
-        String s = File.separator;
-        return Minecraft.getMinecraftDir().getAbsolutePath()
-                + s + "mods"
-                + s + modName
-                + s + "natives"
-                + s;
-    }
-
-    private String[] generateFileNames() {
-        String libName = settings.get(LIBRARY_NAME);
-
-        String[] names = {
-            // win 32
-            generateFileName("", libName, "", "dll"),
-            // win 64
-            generateFileName("", libName, "_x64", "dll"),
-            // linux 32
-            generateFileName("lib", libName, "", "so"),
-            // linux 64
-            generateFileName("lib", libName, "_x64", "so"),
-            // osx 32
-            generateFileName("lib", libName, "", "dylib"),
-            // osx 64
-            generateFileName("lib", libName, "_x64", "dylib"),};
-        return names;
-    }
-
-    private String generateFileName(String prefix, String name, String suffix, String extension) {
-        return prefix + name + suffix + "." + extension;
-    }
-
-    private void handleFatalLoadError() {
-        UnsatisfiedLinkError err;
-
-        if (noLibraryFilesFound()) {
-            err = new UnsatisfiedLinkError("Library files not found! Searched in: \"" + getLibraryFolder() + "\"");
-        } else {
-            err = new UnsatisfiedLinkError("Required library could not be loaded, available libraries are incompatible!");
-        }
-
-        errorHandler.throwError(LIBRARY_LOAD_FAILED, err);
-    }
-
-    private boolean noLibraryFilesFound() {
-        return errors.isEmpty();
-    }
-
-    private void resetErrors() {
-        errors.clear();
-    }   
-
     private void registerWithModLoader() {
         ModLoader.setInGameHook(this, true, false);
     }
 
     private void initializeMumble() {
-        // attempt mumble initialization
-        mumbleInited = tryInitMumble();
+        mumbleInited = callInitMumble();
     }
 
-    /**
-     * try to initialize mumble does some error checking
-     *
-     * @return true if initialized
-     */
-    private boolean tryInitMumble() {
-        int err = initMumble();
+    private boolean callInitMumble() {
+        int responseCode = initMumble();
 
-        // if there was an error initializing mumble
-        if (err != NO_ERROR.getCode()) {
-            errorHandler.handleError(ErrorHandler.NativeError.fromCode(err), null);
+        if (responseCode == NO_ERROR.getCode()) {
+            return true;
         }
 
-        mumbleInited = false;
+        errorHandler.handleError(NativeInitError.fromCode(responseCode));
+
         return false;
     }
 
@@ -296,7 +145,7 @@ public class mod_MumbleLink extends BaseMod {
         // if initiation was not successful
         if (!mumbleInited) {
             // if retry of mumble init did not work
-            if (!tryInitMumble()) {
+            if (!callInitMumble()) {
                 // skip
                 return true;
             }
@@ -529,53 +378,24 @@ public class mod_MumbleLink extends BaseMod {
      * @return JSON string unique to a world
      */
     private String generateContextJSON(World world) {
-        int contextSize = 256; // from linkedMem.h: unsigned char context[256];
+        Context context = new Context();
 
-        // TODO: Seed is not very unique, find a better server identifier
-        // TODO: identify Nether and other worlds
-        // strings needed for context
-        String startStr = "{";
-        String gameStr = "\"game\":\"Minecraft\", ";
-        // NOTE: worldName for multiplayer servers is by default "MPServer" seed is probably unique enough
-        //String worldNameInit = "\"WorldName\":\"";
-        String worldSeedInit = "\"WorldSeed\":\"";
-        String concatinator = "\", ";
-        String endStr = "\"}";
-
-
-        // 1 for 1 dynamic context only (world seed)
-        // 2 for 2 dynamic contexts (world name, world seed)
-        int numContents = 1;
-        /// name of the world
-        String worldName = world.worldInfo.getWorldName();
-        /// seed of the world
-        String worldSeed = Long.toString(world.worldInfo.getSeed());
-
-
-        // string if world is not set
-        String context_empty = startStr
-                + gameStr
-                //      + worldNameInit + concatinator
-                + worldSeedInit
-                + endStr;
-
-        // calculate the rest that we can use for dynamic content
-        int remainderFraction = (contextSize - context_empty.getBytes().length) / numContents; // 256 is set by linkedMem (as defined in Link plugin from mumble)
-
-        // get the actual length if the string is smaller then the allocated space
-        int newWorldNameLen = Math.min(worldName.getBytes().length, remainderFraction);
-        // get the actual length if the string is smaller then the allocated space
-        int newWorldSeedLen = Math.min(worldSeed.getBytes().length, remainderFraction);
-
-        String context = startStr
-                + gameStr
-                //+ worldNameInit + worldName.substring(0, newWorldNameLen) + concatinator
-                + worldSeedInit + worldSeed.substring(0, newWorldSeedLen)
-                + endStr;
-
-        return context;
+        context = initContext(context, world);
+        
+        return context.encodeJSON(settings.getInt(MAX_CONTEXT_SIZE_IN_BYTES));
     }
 
+    private Context initContext(Context context, World sourceForValues) {
+        // TODO: Seed is not very unique, find a better server identifier
+        String worldSeed = Long.toString(sourceForValues.worldInfo.getSeed());
+        // TODO: identify Nether and other worlds
+        String worldName = sourceForValues.worldInfo.getWorldName();
+        
+        context.define(Context.Key.GAME, Context.PresetValue.MINECRAFT);
+        context.define(Context.Key.WORLD_SEED, worldSeed);
+        context.define(Context.Key.WORLD_NAME, worldName);
+        return context;
+    }
 
     /**
      * method from dll (heartbeat to mumble)
@@ -623,5 +443,13 @@ public class mod_MumbleLink extends BaseMod {
         return modVersion;
     }
 
+    private void loadLibrary() {
+        LibraryLoader loader = new LibraryLoader(settings);
 
+        try {
+            loader.loadLibrary();
+        } catch (UnsatisfiedLinkError err) {
+            errorHandler.throwError(LIBRARY_LOAD_FAILED, err);
+        }
+    }
 }
