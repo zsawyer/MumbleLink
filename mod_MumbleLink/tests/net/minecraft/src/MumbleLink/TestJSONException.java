@@ -1,10 +1,11 @@
 /*
  * File: TestJSONException.java Author: JSON.org
  */
-package net.minecraft.src.MumbleLink;
+package net.minecraft.src.mumblelink;
 
 
 
+import net.minecraft.src.mumblelink.JSONException;
 import junit.framework.TestCase;
 
 /**

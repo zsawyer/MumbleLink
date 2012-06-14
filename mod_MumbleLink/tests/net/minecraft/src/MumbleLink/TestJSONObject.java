@@ -1,8 +1,12 @@
 /*
  * File: TestJSONObject.java Author: JSON.org
  */
-package net.minecraft.src.MumbleLink;
+package net.minecraft.src.mumblelink;
 
+import net.minecraft.src.mumblelink.JSONObject;
+import net.minecraft.src.mumblelink.JSONArray;
+import net.minecraft.src.mumblelink.JSONException;
+import net.minecraft.src.mumblelink.JSONString;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;

@@ -1,8 +1,12 @@
 /*
  * File: TestJSONTokener.java Author: JSON.org
  */
-package net.minecraft.src.MumbleLink;
+package net.minecraft.src.mumblelink;
 
+import net.minecraft.src.mumblelink.JSONObject;
+import net.minecraft.src.mumblelink.JSONTokener;
+import net.minecraft.src.mumblelink.JSONException;
+import net.minecraft.src.mumblelink.JSONArray;
 import java.io.*;
 import junit.framework.TestCase;
 
