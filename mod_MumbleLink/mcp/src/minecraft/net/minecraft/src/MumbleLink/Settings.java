@@ -19,7 +19,7 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src.MumbleLink;
+package net.minecraft.src.mumblelink;
 
 import java.io.*;
 import java.util.EnumMap;
@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class Settings extends KeyValueContainer<Settings.Key, Settings.PresetValue> {
 
-    private static final ErrorHandler errorHandler = ErrorHandler.getInstance();
+    private static final ModErrorHandler errorHandler = ErrorHandlerImpl.getInstance();
     private static final String KEY_VALUE_SEPERATOR = ":";
 
     public Settings() {
@@ -50,7 +50,9 @@ public class Settings extends KeyValueContainer<Settings.Key, Settings.PresetVal
         MOD_NAME("modName"),
         // note: values can be overridden by config file @2012.06.12, r95
         MOD_VERSION("modVersion"),
-        MAX_CONTEXT_SIZE_IN_BYTES("maxContextSizeInBytes");
+        /** note: length is in amount of unicode characters */
+        MAX_CONTEXT_LENGTH("maxContextLength");
+
         private final String text;
         private static final Map<String, Key> lookup = new HashMap<String, Key>();
 
@@ -165,7 +167,7 @@ public class Settings extends KeyValueContainer<Settings.Key, Settings.PresetVal
             key = Key.fromText(keyName.trim());
             define(key, valueName);
         } catch (IllegalArgumentException ex) {
-            errorHandler.handleError(ErrorHandler.ModError.CONFIG_FILE_SYNTAX, ex);
+            errorHandler.handleError(ModErrorHandler.ModError.CONFIG_FILE_SYNTAX, ex);
         }
     }
 

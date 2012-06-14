@@ -1,11 +1,26 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package net.minecraft.src.MumbleLink;
+ mod_MumbleLink - Positional Audio Communication for Minecraft with Mumble
+ Copyright 2012 zsawyer (http://sourceforge.net/users/zsawyer)
 
-import java.util.EnumMap;
-import java.util.HashMap;
+ This file is part of mod_MumbleLink
+ (http://sourceforge.net/projects/modmumblelink/).
+
+ mod_MumbleLink is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ mod_MumbleLink is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
+
+ */
+package net.minecraft.src.mumblelink;
+
 import java.util.Iterator;
 import java.util.Map;
 
@@ -15,7 +30,7 @@ import java.util.Map;
  */
 public class Context extends KeyValueContainer<Context.Key, Context.PresetValue> {
 
-    private static final ErrorHandler errorHandler = ErrorHandler.getInstance();
+    private static final ModErrorHandler errorHandler = ErrorHandlerImpl.getInstance();
 
     public Context() {
         super(Context.Key.class);
@@ -84,7 +99,7 @@ public class Context extends KeyValueContainer<Context.Key, Context.PresetValue>
             JSONException ex = new JSONException("Context generation failed. Use AllTalk in the config file instead. And contact the developer");
             ex.initCause(cause);
 
-            errorHandler.throwError(ErrorHandler.ModError.CONFIG_FILE_READ, ex);
+            errorHandler.throwError(ModErrorHandler.ModError.CONFIG_FILE_READ, ex);
         }
 
         return contextJSONified;

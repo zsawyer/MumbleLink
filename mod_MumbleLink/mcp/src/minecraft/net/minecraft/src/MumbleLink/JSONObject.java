@@ -1,4 +1,4 @@
-package net.minecraft.src.MumbleLink;
+package net.minecraft.src.mumblelink;
 
 /*
 Copyright (c) 2002 JSON.org

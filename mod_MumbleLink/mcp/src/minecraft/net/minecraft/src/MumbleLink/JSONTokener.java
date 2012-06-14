@@ -1,4 +1,4 @@
-package net.minecraft.src.MumbleLink;
+package net.minecraft.src.mumblelink;
 
 import java.io.BufferedReader;
 import java.io.IOException;

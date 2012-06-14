@@ -1,4 +1,4 @@
-package net.minecraft.src.MumbleLink;
+package net.minecraft.src.mumblelink;
 
 /**
  * The JSONException is thrown by the JSON.org classes when things are amiss.

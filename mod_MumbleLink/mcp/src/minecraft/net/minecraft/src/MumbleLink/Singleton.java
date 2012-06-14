@@ -19,7 +19,7 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src.MumbleLink;
+package net.minecraft.src.mumblelink;
 
 /**
  *
@@ -56,7 +56,7 @@ public abstract class Singleton {
 
     /*
      * private static Singleton getInstance() { return SingletonHolder.instance;
-    }
+     * }
      */
     private static Class<?> getClassStatic() {
         try {

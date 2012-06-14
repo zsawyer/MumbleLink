@@ -21,17 +21,20 @@
  */
 package net.minecraft.src;
 
+import net.minecraft.src.mumblelink.MumbleLink;
+import net.minecraft.src.mumblelink.MumbleInitializer;
 import java.io.File;
 import java.io.IOException;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.MumbleLink.*;
-import static net.minecraft.src.MumbleLink.ErrorHandler.ModError.CONFIG_FILE_READ;
-import static net.minecraft.src.MumbleLink.ErrorHandler.ModError.LIBRARY_LOAD_FAILED;
-import net.minecraft.src.MumbleLink.ErrorHandler.NativeInitError;
-import static net.minecraft.src.MumbleLink.ErrorHandler.NativeInitError.NO_ERROR;
-import static net.minecraft.src.MumbleLink.Settings.Key.*;
-import static net.minecraft.src.MumbleLink.Settings.PresetValue.CONTEXT_ALL_TALK;
-import static net.minecraft.src.MumbleLink.Settings.PresetValue.CONTEXT_WORLD;
+import net.minecraft.src.mumblelink.ErrorHandlerImpl;
+import static net.minecraft.src.mumblelink.ModErrorHandler.ModError.CONFIG_FILE_READ;
+import static net.minecraft.src.mumblelink.ModErrorHandler.ModError.LIBRARY_LOAD_FAILED;
+import net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError;
+import net.minecraft.src.mumblelink.NativeUpdateErrorHandler.NativeUpdateError;
+import net.minecraft.src.mumblelink.Settings;
+import static net.minecraft.src.mumblelink.Settings.Key.*;
+import static net.minecraft.src.mumblelink.Settings.PresetValue.CONTEXT_ALL_TALK;
+import net.minecraft.src.mumblelink.SettingsBasedLibraryLoader;
 
 /**
  * mod to link with mumble for positional audio
@@ -45,23 +48,27 @@ import static net.minecraft.src.MumbleLink.Settings.PresetValue.CONTEXT_WORLD;
  * @author zsawyer, 2011-03-20
  */
 @SuppressWarnings("StaticNonFinalUsedInInitialization")
-public class mod_MumbleLink extends BaseMod {
+public class mod_MumbleLink extends BaseMod implements MumbleLink {
 
     public static final String modVersion = "2.4.4";
     public static final String modName = "MumbleLink";
     //
     //
     private final String settingsFileName = "mod_MumbleLink.conf";
-    protected Settings settings;
-    private boolean mumbleInited = false;
-    private boolean userWasNotfiedAboutLinkSuccess = false;
+    private Settings settings;
     //
-    private long start = -1;
-    protected static final ErrorHandler errorHandler = ErrorHandler.getInstance();
+    private static final ErrorHandlerImpl errorHandler = ErrorHandlerImpl.getInstance();
+    MumbleInitializer mumbleInititer;
+    Thread mumbleInititerThread;
+    UpdateData mumbleData;
 
     public mod_MumbleLink() {
         settings = new Settings();
+        mumbleData = new UpdateData(this, settings, errorHandler);
         initDefaultSettings();
+
+        mumbleInititer = new MumbleInitializer(this, errorHandler);
+        this.mumbleInititerThread = new Thread(mumbleInititer);
     }
 
     private void initDefaultSettings() {
@@ -70,7 +77,7 @@ public class mod_MumbleLink extends BaseMod {
         settings.define(LIBRARY_NAME, "mod_MumbleLink");
         settings.define(MOD_NAME, modName);
         settings.define(MOD_VERSION, modVersion);
-        settings.define(MAX_CONTEXT_SIZE_IN_BYTES, "256");
+        settings.define(MAX_CONTEXT_LENGTH, "256");
     }
 
     @Override
@@ -80,7 +87,8 @@ public class mod_MumbleLink extends BaseMod {
 
         registerWithModLoader();
 
-        initializeMumble();
+
+        mumbleInititerThread.start();
     }
 
     private void loadSettings() {
@@ -92,7 +100,6 @@ public class mod_MumbleLink extends BaseMod {
             } catch (IOException fileError) {
                 errorHandler.handleError(CONFIG_FILE_READ, fileError);
             }
-
         }
     }
 
@@ -104,20 +111,34 @@ public class mod_MumbleLink extends BaseMod {
         ModLoader.setInGameHook(this, true, false);
     }
 
-    private void initializeMumble() {
-        mumbleInited = callInitMumble();
+    private void loadLibrary() {
+        SettingsBasedLibraryLoader loader = new SettingsBasedLibraryLoader(settings);
+
+        try {
+            loader.loadLibrary();
+        } catch (UnsatisfiedLinkError err) {
+            errorHandler.throwError(LIBRARY_LOAD_FAILED, err);
+        }
     }
 
-    private boolean callInitMumble() {
-        int responseCode = initMumble();
+    @Override
+    public boolean onTickInGame(float tick, Minecraft game) {
+        super.onTickInGame(tick, game);
 
-        if (responseCode == NO_ERROR.getCode()) {
-            return true;
+        if (mumbleInititer.isMumbleInitialized()) {
+            mumbleData.set(game);
+            mumbleData.send();
         }
 
-        errorHandler.handleError(NativeInitError.fromCode(responseCode));
+        // no idea what this value does
+        return true;
+    }
 
-        return false;
+    @Override
+    public NativeInitError callInitMumble() {
+        int responseCode = initMumble();
+
+        return NativeInitError.fromCode(responseCode);
     }
 
     /**
@@ -138,263 +159,12 @@ public class mod_MumbleLink extends BaseMod {
     private native int initMumble(); // DON'T TOUCH unless you want to recompile the libraries
 
     @Override
-    public boolean onTickInGame(float tick, Minecraft game) {
-        super.onTickInGame(tick, game);
-        //ModLoader.getLogger().fine("[" + modName + modVersion "] caught game tick");
-
-        // if initiation was not successful
-        if (!mumbleInited) {
-            // if retry of mumble init did not work
-            if (!callInitMumble()) {
-                // skip
-                return true;
-            }
-
-        }
-
-        // inform mumble of the current location
-        updateMumble(game);
-
-
-
-
-        // if mumble is linked
-        if (mumbleInited) {
-            // make sure we got a gui
-            if (game != null && game.ingameGUI != null) {
-                // if the client was not yet notified
-                if (!this.userWasNotfiedAboutLinkSuccess) {
-                    //ModLoader.getLogger().log(Level.FINER, "[" + modName + modVersion + "] ticked {0})", game.theWorld.getWorldTime());
-                    long now = System.currentTimeMillis();
-                    // if start was not yet set
-                    if (start == -1) {
-                        // define start to now
-                        start = now;
-                    }
-
-                    // if delay time passed
-                    if (start + settings.getInt(NOTIFICATION_DELAY_IN_MILLI_SECONDS) < now) {
-                        // remember not to nag again
-                        this.userWasNotfiedAboutLinkSuccess = true;
-
-                        // display a message
-                        game.ingameGUI.addChatMessage("Mumble linked.");
-                    }
-                }
-            } else {
-                this.userWasNotfiedAboutLinkSuccess = false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * do mumble preparations and call the JNI mumble link function
-     *
-     * @param game current minecraft instance
-     */
-    private void updateMumble(Minecraft game) {
-
-
-        try {
-            // 1 unit = 1 meter
-
-            // TODO: use full vectors (all axes)
-
-            // initialize multipliers
-            float fAvatarFrontX = 1;
-            float fAvatarFrontY = 0; // cancel out if the user is looking up or down
-            float fAvatarFrontZ = 1;
-
-            float fCameraFrontX = 1;
-            float fCameraFrontY = 0; // cancel out if the user is looking up or down
-            float fCameraFrontZ = 1;
-
-            float fAvatarTopX = 0;
-            float fAvatarTopY = 1; // Y points up
-            float fAvatarTopZ = 0;
-
-            float fCameraTopX = 0;
-            float fCameraTopY = 1; // Y points up
-            float fCameraTopZ = 0;
-
-            /*
-             *
-             * DEBUG: for debugging you can copy the
-             * "mumbleMultipliers.settings" into the .minecraft folder for a
-             * sample file see SVN trunk: SOURCES\trunk\templates\confs
-             *
-             * I suggest to uncomment the "ModLoader.getLogger" lines to get
-             * debug logging into "ModLoader.txt"
-             *
-             * /
-             *
-             * try { //ModLoader.getLogger().fine("[" + modName + modVersion "]
-             * loading modifiers");
-             *
-             * // get the settings file for multipliers File settingsFile = new
-             * File(Minecraft.getAppDir("minecraft"),
-             * "mumbleMultipliers.settings");
-             *
-             * // if the settings file exsists if (settingsFile.exists()) {
-             * //ModLoader.getLogger().fine("[" + modName + modVersion "] file
-             * exists");
-             *
-             * // read file contents BufferedReader bufferedreader = new
-             * BufferedReader(new FileReader(settingsFile)); String s; // for
-             * every line while ((s = bufferedreader.readLine()) != null) {
-             * //ModLoader.getLogger().fine("[" + modName + modVersion "]
-             * reading line: " + s); // extract value String as[] =
-             * s.split(":");
-             *
-             * if (as[0].equals("fAvatarFrontX")) { fAvatarFrontX =
-             * Float.parseFloat(as[1]); } if (as[0].equals("fAvatarFrontY")) {
-             * fAvatarFrontY = Float.parseFloat(as[1]); } if
-             * (as[0].equals("fAvatarFrontZ")) { fAvatarFrontZ =
-             * Float.parseFloat(as[1]); }
-             *
-             * if (as[0].equals("fCameraFrontX")) { fCameraFrontX =
-             * Float.parseFloat(as[1]); } if (as[0].equals("fCameraFrontY")) {
-             * fCameraFrontY = Float.parseFloat(as[1]); } if
-             * (as[0].equals("fCameraFrontZ")) { fCameraFrontZ =
-             * Float.parseFloat(as[1]); }
-             *
-             * if (as[0].equals("fAvatarTopX")) { fAvatarTopX =
-             * Float.parseFloat(as[1]); } if (as[0].equals("fAvatarTopY")) {
-             * fAvatarTopY = Float.parseFloat(as[1]); } if
-             * (as[0].equals("fAvatarTopZ")) { fAvatarTopZ =
-             * Float.parseFloat(as[1]); }
-             *
-             * if (as[0].equals("fCameraTopX")) { fCameraTopX =
-             * Float.parseFloat(as[1]); } if (as[0].equals("fCameraTopY")) {
-             * fCameraTopY = Float.parseFloat(as[1]); } if
-             * (as[0].equals("fCameraTopZ")) { fCameraTopZ =
-             * Float.parseFloat(as[1]); } } }
-             *
-             * } catch (Exception ex) { // do nothing }
-             */
-
-
-            //ModLoader.getLogger().fine("[" + modName + modVersion "] preparing mumble update");
-
-
-            /// view vector
-            Vec3D camera = game.thePlayer.getLookVec();
-
-            /*
-             * TODO: calculate real camera vector from pitch and yaw // camera
-             * pitch in degrees (e.g. 0.0f to 360.0f) Float cameraPitch =
-             * game.thePlayer.cameraPitch; // camera yaw in degrees (e.g. 0.0f
-             * to 360.0f) Float cameraYaw = game.thePlayer.cameraYaw;
-             */
-
-            // Position of the avatar
-            float[] fAvatarPosition = {
-                Float.parseFloat(Double.toString(game.thePlayer.posX)), // note: losing precision here
-                Float.parseFloat(Double.toString(game.thePlayer.posZ)), // note: losing precision here
-                Float.parseFloat(Double.toString(game.thePlayer.posY))}; // note: losing precision here
-
-            // Unit vector pointing out of the avatar's eyes (here Front looks into scene).
-            float[] fAvatarFront = {
-                Float.parseFloat(Double.toString(camera.xCoord * fAvatarFrontX)), // note: losing precision here
-                Float.parseFloat(Double.toString(camera.zCoord * fAvatarFrontZ)), // note: losing precision here
-                Float.parseFloat(Double.toString(camera.yCoord * fAvatarFrontY))}; // note: losing precision here
-
-            // Unit vector pointing out of the top of the avatar's head (here Top looks straight up).
-            float[] fAvatarTop = {fAvatarTopX, fAvatarTopZ, fAvatarTopY};
-
-
-            // TODO: use real camera position, s.a.
-            float[] fCameraPosition = {
-                Float.parseFloat(Double.toString(game.thePlayer.posX)), // note: losing precision here
-                Float.parseFloat(Double.toString(game.thePlayer.posZ)), // note: losing precision here
-                Float.parseFloat(Double.toString(game.thePlayer.posY))}; // note: losing precision here
-
-            // TODO: use real look vector, s.a.
-            float[] fCameraFront = {
-                Float.parseFloat(Double.toString(camera.xCoord * fCameraFrontX)), // note: losing precision here
-                Float.parseFloat(Double.toString(camera.zCoord * fCameraFrontZ)), // note: losing precision here
-                Float.parseFloat(Double.toString(camera.yCoord * fCameraFrontY))}; // note: losing precision here
-
-            float[] fCameraTop = {fCameraTopX, fCameraTopZ, fCameraTopY};
-
-
-
-            // Identifier which uniquely identifies a certain player in a context (e.g. the ingame Name).
-            String identity = game.thePlayer.username;
-
-            // Context should be equal for players which should be able to hear each other positional and
-            //  differ for those who shouldn't (e.g. it could contain the server+port and team)
-            //  CAUTION: max len: 256
-            String context = CONTEXT_ALL_TALK.toString();
-
-            if (settings.isDefined(MUMBLE_CONTEXT)) {
-                context = settings.get(MUMBLE_CONTEXT);
-            }
-
-            if (settings.compare(MUMBLE_CONTEXT, CONTEXT_WORLD)) {
-                // create context string while staying inside bounds and keeping as much information as possible
-                context = generateContextJSON(game.theWorld);
-            }
-
-            String name = "Minecraft";
-
-            String description = "Link plugin for Minecraft with ModLoader";
-
-
-
-            /*
-             * ModLoader.getLogger().fine("[" + modName + modVersion "] updating
-             * mumble: \ncontext: " + context + "\ndescription: " + description
-             * + "\nidentity: " + identity + "\nname: " + name +
-             * "\nfAvatarFront: " + fAvatarFront[0] + ", " + fAvatarFront[1] +
-             * ", " + fAvatarFront[2] + "\fAvatarPosition: " +
-             * fAvatarPosition[0] + ", " + fAvatarPosition[1] + ", " +
-             * fAvatarPosition[2] + "\fAvatarTop: " + fAvatarTop[0] + ", " +
-             * fAvatarTop[1] + ", " + fAvatarTop[2] + "\fCameraFront: " +
-             * fCameraFront[0] + ", " + fCameraFront[1] + ", " + fCameraFront[2]
-             * + "\fCameraPosition: " + fCameraPosition[0] + ", " +
-             * fCameraPosition[1] + ", " + fCameraPosition[2] + "\fCameraTop: "
-             * + fCameraTop[0] + ", " + fCameraTop[1] + ", " + fCameraTop[2]);
-             */
-
-
-
-            int err = updateLinkedMumble(fAvatarPosition, fAvatarFront, fAvatarTop, name, description, fCameraPosition, fCameraFront, fCameraTop, identity, context);
-
-            //ModLoader.getLogger().log(Level.FINER, "[" + modName + modVersion + "] mumble updated (code: {0})", err);
-
-        } catch (Exception ex) {
-            //ModLoader.getLogger().log(Level.SEVERE, null, ex);
-        }
-    }
-
-    /**
-     * create a JSON String representation of the context using world unique
-     * information keeps the output string within a certain length (256)
-     *
-     * @param world instance in which the game takes place
-     * @return JSON string unique to a world
-     */
-    private String generateContextJSON(World world) {
-        Context context = new Context();
-
-        context = initContext(context, world);
-        
-        return context.encodeJSON(settings.getInt(MAX_CONTEXT_SIZE_IN_BYTES));
-    }
-
-    private Context initContext(Context context, World sourceForValues) {
-        // TODO: Seed is not very unique, find a better server identifier
-        String worldSeed = Long.toString(sourceForValues.worldInfo.getSeed());
-        // TODO: identify Nether and other worlds
-        String worldName = sourceForValues.worldInfo.getWorldName();
-        
-        context.define(Context.Key.GAME, Context.PresetValue.MINECRAFT);
-        context.define(Context.Key.WORLD_SEED, worldSeed);
-        context.define(Context.Key.WORLD_NAME, worldName);
-        return context;
+    public NativeUpdateError callUpdateMumble(float[] fAvatarPosition,
+            float[] fAvatarFront, float[] fAvatarTop, String name,
+            String description, float[] fCameraPosition, float[] fCameraFront,
+            float[] fCameraTop, String identity, String context) {
+        int responseCode = updateLinkedMumble(fAvatarPosition, fAvatarFront, fAvatarTop, modName, modVersion, fCameraPosition, fCameraFront, fCameraTop, modVersion, modName);
+        return NativeUpdateError.fromCode(responseCode);
     }
 
     /**
@@ -431,7 +201,7 @@ public class mod_MumbleLink extends BaseMod {
             float[] fAvatarFront, // [3]
             float[] fAvatarTop, // [3]
             String name, // [256]
-            String description,
+            String description, // [2048]
             float[] fCameraPosition, // [3]
             float[] fCameraFront, // [3]
             float[] fCameraTop, // [3]
@@ -441,15 +211,5 @@ public class mod_MumbleLink extends BaseMod {
     @Override
     public String getVersion() {
         return modVersion;
-    }
-
-    private void loadLibrary() {
-        LibraryLoader loader = new LibraryLoader(settings);
-
-        try {
-            loader.loadLibrary();
-        } catch (UnsatisfiedLinkError err) {
-            errorHandler.throwError(LIBRARY_LOAD_FAILED, err);
-        }
     }
 }
