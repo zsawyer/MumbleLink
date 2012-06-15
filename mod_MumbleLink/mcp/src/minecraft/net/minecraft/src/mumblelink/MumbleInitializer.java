@@ -21,13 +21,10 @@
  */
 package net.minecraft.src.mumblelink;
 
-import java.util.EventListener;
-import java.util.EventListenerProxy;
 import java.util.Observable;
-import net.minecraft.src.mumblelink.NativeInitErrorHandler;
 import net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError;
-import static net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError.*;
-import net.minecraft.src.mumblelink.UserNotifier;
+import static net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError.NOT_YET_INITIALIZED;
+import static net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError.NO_ERROR;
 
 /**
  *
@@ -40,13 +37,14 @@ public class MumbleInitializer extends Observable implements Runnable {
     private NativeInitError initilizationReturnCode = NOT_YET_INITIALIZED;
 
     public MumbleInitializer(MumbleLink link, NativeInitErrorHandler errorHandler) {
+        super();
         this.link = link;
         this.errorHandler = errorHandler;
     }
 
     @Override
     public void run() {
-        while(!isMumbleInitialized()) {
+        while (!isMumbleInitialized()) {
             initilizationReturnCode = link.callInitMumble();
 
             errorHandler.handleError(initilizationReturnCode);
@@ -54,6 +52,6 @@ public class MumbleInitializer extends Observable implements Runnable {
     }
 
     public boolean isMumbleInitialized() {
-        return initilizationReturnCode != NO_ERROR;
+        return initilizationReturnCode == NO_ERROR;
     }
 }

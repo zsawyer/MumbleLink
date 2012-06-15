@@ -23,6 +23,7 @@ package net.minecraft.src.mumblelink;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import static net.minecraft.src.mumblelink.ModErrorHandler.ModError.CONFIG_FILE_INVALID_VALUE;
@@ -59,15 +60,15 @@ public class SettingsBasedLibraryLoader implements LibraryLoader {
         if (!settings.isDefined(LIBRARY_FILE_PATH)) {
             return false;
         }
+
         String filePath = settings.get(LIBRARY_FILE_PATH);
-        File candidate = new File(filePath);
-        if (candidate.exists()) {
-            return attemptLoadLibrary(candidate);
-        } else {
+        if (!attemptLoadLibrary(filePath)) {
             Exception reason = new IllegalArgumentException("The specified file was not found: '" + filePath + "'");
             errorHandler.handleError(CONFIG_FILE_INVALID_VALUE, reason);
+            return false;
         }
-        return false;
+
+        return true;
     }
 
     private boolean attemptLoadLibrary(String lib) {
@@ -101,8 +102,9 @@ public class SettingsBasedLibraryLoader implements LibraryLoader {
     private boolean loadLibraryByBruteForce() {
         boolean loaded = false;
         List<File> files = getLibraryCandidates();
-        while (!loaded && files.iterator().hasNext()) {
-            loaded = attemptLoadLibrary(files.iterator().next());
+        Iterator<File> fileCrawler = files.iterator();
+        while (!loaded && fileCrawler.hasNext()) {
+            loaded = attemptLoadLibrary(fileCrawler.next());
         }
         return loaded;
     }

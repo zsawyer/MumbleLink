@@ -21,20 +21,16 @@
  */
 package net.minecraft.src;
 
-import net.minecraft.src.mumblelink.MumbleLink;
-import net.minecraft.src.mumblelink.MumbleInitializer;
 import java.io.File;
 import java.io.IOException;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.mumblelink.ErrorHandlerImpl;
 import static net.minecraft.src.mumblelink.ModErrorHandler.ModError.CONFIG_FILE_READ;
 import static net.minecraft.src.mumblelink.ModErrorHandler.ModError.LIBRARY_LOAD_FAILED;
 import net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError;
 import net.minecraft.src.mumblelink.NativeUpdateErrorHandler.NativeUpdateError;
-import net.minecraft.src.mumblelink.Settings;
 import static net.minecraft.src.mumblelink.Settings.Key.*;
 import static net.minecraft.src.mumblelink.Settings.PresetValue.CONTEXT_ALL_TALK;
-import net.minecraft.src.mumblelink.SettingsBasedLibraryLoader;
+import net.minecraft.src.mumblelink.*;
 
 /**
  * mod to link with mumble for positional audio
@@ -55,29 +51,37 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
     //
     //
     private final String settingsFileName = "mod_MumbleLink.conf";
-    private Settings settings;
     //
-    private static final ErrorHandlerImpl errorHandler = ErrorHandlerImpl.getInstance();
-    MumbleInitializer mumbleInititer;
-    Thread mumbleInititerThread;
-    UpdateData mumbleData;
+    private ErrorHandlerImpl errorHandler;
+    //
+    private Settings settings;
+    private MumbleInitializer mumbleInititer;
+    private Thread mumbleInititerThread;
+    private UpdateData mumbleData;
 
     public mod_MumbleLink() {
+        super();
+
+        errorHandler = ErrorHandlerImpl.getInstance();
+
         settings = new Settings();
-        mumbleData = new UpdateData(this, settings, errorHandler);
         initDefaultSettings();
+
+        mumbleData = new UpdateData(this, settings, errorHandler);
 
         mumbleInititer = new MumbleInitializer(this, errorHandler);
         this.mumbleInititerThread = new Thread(mumbleInititer);
     }
 
     private void initDefaultSettings() {
-        settings.define(MUMBLE_CONTEXT, CONTEXT_ALL_TALK);
-        settings.define(NOTIFICATION_DELAY_IN_MILLI_SECONDS, "10000");
-        settings.define(LIBRARY_NAME, "mod_MumbleLink");
         settings.define(MOD_NAME, modName);
         settings.define(MOD_VERSION, modVersion);
+
+        settings.define(LIBRARY_NAME, "mod_MumbleLink");
+
+        settings.define(MUMBLE_CONTEXT, CONTEXT_ALL_TALK);
         settings.define(MAX_CONTEXT_LENGTH, "256");
+        settings.define(NOTIFICATION_DELAY_IN_MILLI_SECONDS, "10000");
     }
 
     @Override

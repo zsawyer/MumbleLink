@@ -30,19 +30,19 @@ import net.minecraft.src.mod_MumbleLink;
  *
  * @author zsawyer
  */
-public class ErrorHandlerImpl extends Singleton implements ModErrorHandler, NativeInitErrorHandler, NativeUpdateErrorHandler {
+public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler, NativeUpdateErrorHandler {
 
     private UserNotifier chat;
     private static final Logger logger = ModLoader.getLogger();
 
     public ErrorHandlerImpl() {
-        chat = new ChatNotifier();
+        chat = new BufferedChatNotifier();
     }
 
     @Override
-    public void throwError(ModError modError, Throwable err) {
-        modloaderLog(Level.SEVERE, err.getMessage(), err);
-        haltMinecraftUsingAnException(modError.toString(), err);
+    public void throwError(ModError modError, Throwable cause) {
+        modloaderLog(Level.SEVERE, cause.getMessage(), cause);
+        haltMinecraftUsingAnException(modError.toString(), cause);
     }
 
     private void haltMinecraftUsingAnException(String message, Throwable err) {
@@ -54,7 +54,7 @@ public class ErrorHandlerImpl extends Singleton implements ModErrorHandler, Nati
 
     @Override
     public void handleError(ModError err, Throwable stack) {
-        chatMessage(err.toString());
+        chatMessage("[MumbleLink] Error: " + err.toString());
 
         modloaderLog(Level.WARNING, err.toString(), stack);
     }
@@ -73,15 +73,25 @@ public class ErrorHandlerImpl extends Singleton implements ModErrorHandler, Nati
 
     @Override
     public void handleError(NativeUpdateError fromCode) {
-        if(fromCode != NativeUpdateError.NO_ERROR) {
+        if (fromCode != NativeUpdateError.NO_ERROR) {
             modloaderLog(Level.WARNING, "Update failed! Error: " + fromCode.getCode() + " (" + fromCode.toString() + ")", null);
         }
     }
 
     @Override
     public void handleError(NativeInitError fromCode) {
-        if(fromCode == NativeInitError.NO_ERROR) {
+        if (fromCode == NativeInitError.NO_ERROR) {
             chat.print(UserNotifier.LINK_SUCCESS_MESSAGE);
         }
     }
+
+    public static ErrorHandlerImpl getInstance() {
+        try {
+            return SingletonFactory.getInstance(ErrorHandlerImpl.class);
+        }  catch (Exception ex) {
+            // nothing we can do
+            throw new RuntimeException(ex);
+        }
+    }
+
 }

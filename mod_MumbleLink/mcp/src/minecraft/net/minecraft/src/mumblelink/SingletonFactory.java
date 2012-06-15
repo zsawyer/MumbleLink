@@ -21,33 +21,28 @@
  */
 package net.minecraft.src.mumblelink;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.src.ModLoader;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
+ *
  * @author zsawyer
  */
-public class ChatNotifier implements UserNotifier {
+public class SingletonFactory {
 
-    protected Minecraft game;
+    private static Map<Class<?>, Object> instances = new ConcurrentHashMap<Class<?>, Object>();
 
-    public ChatNotifier() {
-        game = ModLoader.getMinecraftInstance();
-    }
-
-    @Override
-    public void print(String message) {
-        if (canSendMessage()) {
-            send(message);
+    public static <T> T getInstance(Class<T> classToGetInstanceOf) throws InstantiationException, IllegalAccessException {
+        T instance = classToGetInstanceOf.cast(instances.get(classToGetInstanceOf));
+        if (instance == null) {
+            instance = classToGetInstanceOf.newInstance();
+            instances.put(classToGetInstanceOf, instance);
         }
+
+        return instance;
     }
 
-    protected boolean canSendMessage() {
-        return game != null && game.ingameGUI != null;
-    }
-
-    protected void send(String message) {
-        game.ingameGUI.addChatMessage(message);
+    private SingletonFactory() {
     }
 }
