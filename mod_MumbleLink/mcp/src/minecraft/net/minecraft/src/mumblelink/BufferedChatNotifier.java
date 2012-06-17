@@ -57,7 +57,11 @@ public class BufferedChatNotifier extends ChatNotifier implements Runnable {
         if (canSendMessage()) {
             sendAllMessages();
         } else {
-            keepTrying.start();
+            try {
+                keepTrying.start();
+            } catch (IllegalThreadStateException alreadyStartedException) {
+                // safely ignore this because we are working on it
+            }
         }
     }
 

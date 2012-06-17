@@ -58,6 +58,8 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
     private MumbleInitializer mumbleInititer;
     private Thread mumbleInititerThread;
     private UpdateData mumbleData;
+    private LibraryLoader loader;
+    private Boolean isLibraryLoaded = false;
 
     public mod_MumbleLink() {
         super();
@@ -67,10 +69,14 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
         settings = new Settings();
         initDefaultSettings();
 
+        loader = new SettingsBasedLibraryLoader(settings);
+
         mumbleData = new UpdateData(this, settings, errorHandler);
 
         mumbleInititer = new MumbleInitializer(this, errorHandler);
-        this.mumbleInititerThread = new Thread(mumbleInititer);
+        mumbleInititerThread = new Thread(mumbleInititer);
+
+
     }
 
     private void initDefaultSettings() {
@@ -90,7 +96,6 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
         loadLibrary();
 
         registerWithModLoader();
-
 
         mumbleInititerThread.start();
     }
@@ -116,8 +121,6 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
     }
 
     private void loadLibrary() {
-        SettingsBasedLibraryLoader loader = new SettingsBasedLibraryLoader(settings);
-
         try {
             loader.loadLibrary();
         } catch (UnsatisfiedLinkError err) {
@@ -132,6 +135,8 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
         if (mumbleInititer.isMumbleInitialized()) {
             mumbleData.set(game);
             mumbleData.send();
+        } else {
+            mumbleInititerThread.start();
         }
 
         // no idea what this value does

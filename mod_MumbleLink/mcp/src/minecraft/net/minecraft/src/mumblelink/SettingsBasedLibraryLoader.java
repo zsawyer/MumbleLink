@@ -57,6 +57,10 @@ public class SettingsBasedLibraryLoader implements LibraryLoader {
     }
 
     private boolean loadLibraryFromSettingsSpecification() {
+        if(allreadyLoaded()) {
+            return true;
+        }
+
         if (!settings.isDefined(LIBRARY_FILE_PATH)) {
             return false;
         }
@@ -100,6 +104,10 @@ public class SettingsBasedLibraryLoader implements LibraryLoader {
     }
 
     private boolean loadLibraryByBruteForce() {
+        if(allreadyLoaded()) {
+            return true;
+        }
+        
         boolean loaded = false;
         List<File> files = getLibraryCandidates();
         Iterator<File> fileCrawler = files.iterator();
@@ -162,7 +170,7 @@ public class SettingsBasedLibraryLoader implements LibraryLoader {
         errors.clear();
     }
 
-    public static ArrayList<UnsatisfiedLinkError> getErrors() {
-        return errors;
+    private boolean allreadyLoaded() {
+        return libLoaded;
     }
 }

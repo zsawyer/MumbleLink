@@ -30,7 +30,7 @@ import static net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitErro
  *
  * @author zsawyer
  */
-public class MumbleInitializer extends Observable implements Runnable {
+public class MumbleInitializer implements Runnable {
 
     private MumbleLink link;
     private NativeInitErrorHandler errorHandler;
@@ -45,9 +45,14 @@ public class MumbleInitializer extends Observable implements Runnable {
     @Override
     public void run() {
         while (!isMumbleInitialized()) {
-            initilizationReturnCode = link.callInitMumble();
+            if (Thread.interrupted()) {
+                return;
+            }
+            synchronized (link) {
+                initilizationReturnCode = link.callInitMumble();
 
-            errorHandler.handleError(initilizationReturnCode);
+                errorHandler.handleError(initilizationReturnCode);
+            }
         }
     }
 

@@ -33,8 +33,8 @@ public interface NativeUpdateErrorHandler {
 
     public enum NativeUpdateError {
 
-        NOT_YET_INITIALIZED(-1),
-        NO_ERROR(0);
+        
+        NO_ERROR(0),ERROR_NOT_YET_INITIALIZED(1);
         private int code;
         private static final Map<Integer, NativeUpdateError> lookup = new HashMap<Integer, NativeUpdateError>();
 
