@@ -38,16 +38,16 @@ import static net.minecraft.src.mumblelink.Settings.PresetValue.CONTEXT_WORLD;
  */
 public class UpdateData {
 
-    float[] fAvatarPosition; // [3]
-    float[] fAvatarFront; // [3]
-    float[] fAvatarTop; // [3]
-    String name; // [256]
-    String description;
-    float[] fCameraPosition; // [3]
-    float[] fCameraFront; // [3]
-    float[] fCameraTop; // [3]
-    String identity; // [256]
-    String context;
+    float[] fAvatarPosition = {0, 0, 0}; // [3]
+    float[] fAvatarFront = {0, 0, 0}; // [3]
+    float[] fAvatarTop = {0, 0, 0}; // [3]
+    String name = ""; // [256]
+    String description = ""; // [2048]
+    float[] fCameraPosition = {0, 0, 0}; // [3]
+    float[] fCameraFront = {0, 0, 0}; // [3]
+    float[] fCameraTop = {0, 0, 0}; // [3]
+    String identity = ""; // [256]
+    String context = ""; // [256]
     MumbleLink mumbleLink;
     NativeUpdateErrorHandler errorHandler;
     Settings settings;

@@ -39,14 +39,14 @@ import net.minecraft.src.mumblelink.*;
  *
  * when developing for it I suggest using "mumblePAHelper" to see coordinates
  *
- * for Minecraft v1.2.5 (snapshot) updated 2012-06-08
+ * for Minecraft v1.2.5 (snapshot) updated 2012-06-18
  *
  * @author zsawyer, 2011-03-20
  */
 @SuppressWarnings("StaticNonFinalUsedInInitialization")
 public class mod_MumbleLink extends BaseMod implements MumbleLink {
 
-    public static final String modVersion = "2.4.4";
+    public static final String modVersion = "2.5";
     public static final String modName = "MumbleLink";
     //
     //
@@ -172,7 +172,7 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
             float[] fAvatarFront, float[] fAvatarTop, String name,
             String description, float[] fCameraPosition, float[] fCameraFront,
             float[] fCameraTop, String identity, String context) {
-        int responseCode = updateLinkedMumble(fAvatarPosition, fAvatarFront, fAvatarTop, modName, modVersion, fCameraPosition, fCameraFront, fCameraTop, modVersion, modName);
+        int responseCode = updateLinkedMumble(fAvatarPosition, fAvatarFront, fAvatarTop, name, description, fCameraPosition, fCameraFront, fCameraTop, identity, context);
         return NativeUpdateError.fromCode(responseCode);
     }
 

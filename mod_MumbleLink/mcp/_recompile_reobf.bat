@@ -16,7 +16,9 @@ cd "%mcp_path%"
 
 @echo on
 
-rem copy "%svn_path%\mod_MumbleLink\mcp\src\minecraft\net\minecraft\src\*.java" "%mcp_path%\src\minecraft\net\minecraft\src"
+copy "%svn_path%\mod_MumbleLink\mcp\src\minecraft\net\minecraft\src\*.java" "%mcp_path%\src\minecraft\net\minecraft\src"
+mkdir "%mcp_path%\src\minecraft\net\minecraft\src\mumblelink"
+copy "%svn_path%\mod_MumbleLink\mcp\src\minecraft\net\minecraft\src\mumblelink\*.java" "%mcp_path%\src\minecraft\net\minecraft\src\mumblelink"
 
 
 @echo | call recompile.bat
@@ -25,11 +27,16 @@ rem copy "%svn_path%\mod_MumbleLink\mcp\src\minecraft\net\minecraft\src\*.java" 
 
 
 
-copy "%mcp_path%\src\minecraft\net\minecraft\src\mod_*.java" "%svn_path%\mod_MumbleLink\mcp\src\minecraft\net\minecraft\src\"
+rem copy "%mcp_path%\src\minecraft\net\minecraft\src\*.java" "%svn_path%\mod_MumbleLink\mcp\src\minecraft\net\minecraft\src\"
+rem copy "%mcp_path%\src\minecraft\net\minecraft\src\mumblelink\*.java" "%svn_path%\mod_MumbleLink\mcp\src\minecraft\net\minecraft\src\mumblelink"
 
-copy "%mcp_path%\reobf\minecraft\mod_*.*" "%svn_path%\mod_MumbleLink\mcp\reobf\minecraft"
+copy "%mcp_path%\reobf\minecraft\*.class" "%svn_path%\mod_MumbleLink\mcp\reobf\minecraft"
+mkdir "%svn_path%\mod_MumbleLink\mcp\reobf\minecraft\mumblelink"
+copy "%mcp_path%\reobf\minecraft\mumblelink\*.class" "%svn_path%\mod_MumbleLink\mcp\reobf\minecraft\mumblelink"
 
-copy "%mcp_path%\reobf\minecraft\mod_*.*" "%appdata%\.minecraft\mods\MumbleLink"
+copy "%mcp_path%\reobf\minecraft\*.class" "%appdata%\.minecraft\mods\MumbleLink"
+mkdir "%appdata%\.minecraft\mods\MumbleLink\mumblelink"
+copy "%mcp_path%\reobf\minecraft\mumblelink\*.class" "%appdata%\.minecraft\mods\MumbleLink\mumblelink"
 
 
 pause
