@@ -22,6 +22,7 @@
 package net.minecraft.src.mumblelink;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,40 +40,28 @@ public class SettingsBasedLibraryLoader implements LibraryLoader {
     /// error stack when loading libraries during mod initialization
     private static ArrayList<UnsatisfiedLinkError> errors = new ArrayList<UnsatisfiedLinkError>();
     private static final ModErrorHandler errorHandler = ErrorHandlerImpl.getInstance();
-    private Settings settings;
+    private final Settings settings;
+    private String libraryFolder;
 
     public SettingsBasedLibraryLoader(Settings settings) {
         this.settings = settings;
+        updateFromSettings();
+    }
+
+    private void updateFromSettings() {
+        this.libraryFolder = getLibraryFolder();
     }
 
     @Override
     public void loadLibrary() throws UnsatisfiedLinkError {
-        libLoaded = loadLibraryFromSettingsSpecification();
+        updateFromSettings();
+
         libLoaded = loadLibraryByBruteForce();
         if (!libLoaded) {
             UnsatisfiedLinkError error = createFatalLoadError();
             resetErrors();
             throw error;
         }
-    }
-
-    private boolean loadLibraryFromSettingsSpecification() {
-        if(allreadyLoaded()) {
-            return true;
-        }
-
-        if (!settings.isDefined(LIBRARY_FILE_PATH)) {
-            return false;
-        }
-
-        String filePath = settings.get(LIBRARY_FILE_PATH);
-        if (!attemptLoadLibrary(filePath)) {
-            Exception reason = new IllegalArgumentException("The specified file was not found: '" + filePath + "'");
-            errorHandler.handleError(CONFIG_FILE_INVALID_VALUE, reason);
-            return false;
-        }
-
-        return true;
     }
 
     private boolean attemptLoadLibrary(String lib) {
@@ -104,10 +93,10 @@ public class SettingsBasedLibraryLoader implements LibraryLoader {
     }
 
     private boolean loadLibraryByBruteForce() {
-        if(allreadyLoaded()) {
+        if (allreadyLoaded()) {
             return true;
         }
-        
+
         boolean loaded = false;
         List<File> files = getLibraryCandidates();
         Iterator<File> fileCrawler = files.iterator();
@@ -119,10 +108,9 @@ public class SettingsBasedLibraryLoader implements LibraryLoader {
 
     private List<File> getLibraryCandidates() {
         List<File> files = new ArrayList<File>();
-        String libraryFolder = getLibraryFolder();
         String[] fileNames = generateFileNames();
         for (String fileName : fileNames) {
-            File possibleCandidate = new File(libraryFolder + fileName);
+            File possibleCandidate = new File(libraryFolder + File.separator + fileName);
             if (possibleCandidate.exists()) {
                 files.add(possibleCandidate);
             }
@@ -131,6 +119,41 @@ public class SettingsBasedLibraryLoader implements LibraryLoader {
     }
 
     private String getLibraryFolder() {
+
+        String filePath;
+        try {
+            filePath = getLibraryFolderFromSettings();
+        } catch (IOException reason) {
+            errorHandler.handleError(CONFIG_FILE_INVALID_VALUE, reason);
+            filePath = generateDefaultLibraryFolder();
+        } catch (NoSuchFieldError err) {
+            filePath = generateDefaultLibraryFolder();
+        }
+
+        return filePath;
+    }
+
+    private String getLibraryFolderFromSettings() throws IOException {
+        if (settings.isDefined(LIBRARY_FOLDER_PATH)) {
+            String folderPathCandidate = settings.get(LIBRARY_FOLDER_PATH);
+
+            return validateDirectory(folderPathCandidate);
+        }
+
+        throw new NoSuchFieldError("folder not specified in config");
+    }
+
+    private String validateDirectory(String filePathCandidate) throws IOException {
+        File folder = new File(filePathCandidate);
+
+        if (!folder.isDirectory()) {
+            throw new IOException("not a directory: '" + filePathCandidate + "'");
+        }
+
+        return filePathCandidate;
+    }
+
+    private String generateDefaultLibraryFolder() {
         String s = File.separator;
         return Minecraft.getMinecraftDir().getAbsolutePath() + s + "mods" + s + settings.get(MOD_NAME) + s + "natives" + s;
     }
@@ -138,6 +161,7 @@ public class SettingsBasedLibraryLoader implements LibraryLoader {
     private String[] generateFileNames() {
         String libName = settings.get(LIBRARY_NAME);
         String[] names = {
+            libName,
             generateFileName("", libName, "", "dll"),
             generateFileName("", libName, "_x64", "dll"),
             generateFileName("lib", libName, "", "so"),

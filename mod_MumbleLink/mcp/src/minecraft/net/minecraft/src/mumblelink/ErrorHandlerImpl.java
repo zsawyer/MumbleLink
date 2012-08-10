@@ -62,7 +62,7 @@ public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler
     private void modloaderLog(Level severity, String message, Throwable stack) {
         logger.log(severity,
                 "[" + mod_MumbleLink.modName + mod_MumbleLink.modVersion + "]"
-                + "[" + severity.getLocalizedName() + "]"
+                + "[" + severity.getLocalizedName() + "] "
                 + message,
                 stack);
     }

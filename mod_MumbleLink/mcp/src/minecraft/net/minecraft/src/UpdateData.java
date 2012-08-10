@@ -90,7 +90,7 @@ public class UpdateData {
             float fCameraTopZ = 0;
 
 
-            Vec3D lookDirection = game.thePlayer.getLookVec();
+            Vec3 lookDirection = game.thePlayer.getLookVec();
 
             /*
              * TODO: calculate real camera vector from pitch and yaw // camera
@@ -130,8 +130,10 @@ public class UpdateData {
             fCameraTop = new float[]{fCameraTopX, fCameraTopZ, fCameraTopY};
 
 
-
             // Identifier which uniquely identifies a certain player in a context (e.g. the ingame Name).
+            // TODO: generate some json and append additional data like server,
+            //          world, team and what not, so the player can be managed
+            //          by mumo (http://gitorious.org/mumble-scripts/mumo)
             identity = game.thePlayer.username;
 
             // Context should be equal for players which should be able to hear each other positional and

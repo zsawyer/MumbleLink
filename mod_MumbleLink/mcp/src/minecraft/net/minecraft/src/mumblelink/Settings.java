@@ -22,10 +22,7 @@
 package net.minecraft.src.mumblelink;
 
 import java.io.*;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -43,9 +40,8 @@ public class Settings extends KeyValueContainer<Settings.Key, Settings.PresetVal
     public enum Key {
 
         MUMBLE_CONTEXT("mumbleContext"),
-        NOTIFICATION_DELAY_IN_MILLI_SECONDS("notifyDelayMS"),
         LIBRARY_NAME("libraryName"),
-        LIBRARY_FILE_PATH("libraryFilePath"),
+        LIBRARY_FOLDER_PATH("libraryFolderPath"),
         // note: values can be overridden by config file @2012.06.12, r95
         MOD_NAME("modName"),
         // note: values can be overridden by config file @2012.06.12, r95
@@ -72,7 +68,11 @@ public class Settings extends KeyValueContainer<Settings.Key, Settings.PresetVal
         }
 
         public static Key fromText(String text) {
-            return lookup.get(text);
+            Key key = lookup.get(text);
+            if(key == null) {
+                throw new NoSuchElementException("unknown key: '" + text + "'");
+            }
+            return key;
         }
     }
 
@@ -167,6 +167,8 @@ public class Settings extends KeyValueContainer<Settings.Key, Settings.PresetVal
             key = Key.fromText(keyName.trim());
             define(key, valueName);
         } catch (IllegalArgumentException ex) {
+            errorHandler.handleError(ModErrorHandler.ModError.CONFIG_FILE_SYNTAX, ex);
+        } catch (NoSuchElementException ex) {
             errorHandler.handleError(ModErrorHandler.ModError.CONFIG_FILE_SYNTAX, ex);
         }
     }

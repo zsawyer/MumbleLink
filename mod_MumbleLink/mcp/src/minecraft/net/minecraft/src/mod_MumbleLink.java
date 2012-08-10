@@ -39,14 +39,14 @@ import net.minecraft.src.mumblelink.*;
  *
  * when developing for it I suggest using "mumblePAHelper" to see coordinates
  *
- * for Minecraft v1.2.5 (snapshot) updated 2012-06-18
+ * for Minecraft v1.3.1 updated 2012-08-10
  *
  * @author zsawyer, 2011-03-20
  */
 @SuppressWarnings("StaticNonFinalUsedInInitialization")
 public class mod_MumbleLink extends BaseMod implements MumbleLink {
 
-    public static final String modVersion = "2.5";
+    public static final String modVersion = "2.5.1";
     public static final String modName = "MumbleLink";
     //
     //
@@ -59,7 +59,6 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
     private Thread mumbleInititerThread;
     private UpdateData mumbleData;
     private LibraryLoader loader;
-    private Boolean isLibraryLoaded = false;
 
     public mod_MumbleLink() {
         super();
@@ -87,7 +86,6 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
 
         settings.define(MUMBLE_CONTEXT, CONTEXT_ALL_TALK);
         settings.define(MAX_CONTEXT_LENGTH, "256");
-        settings.define(NOTIFICATION_DELAY_IN_MILLI_SECONDS, "10000");
     }
 
     @Override
@@ -136,7 +134,11 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
             mumbleData.set(game);
             mumbleData.send();
         } else {
-            mumbleInititerThread.start();
+            try {
+                mumbleInititerThread.start();
+            } catch (IllegalThreadStateException ex) {
+                // thread was already started so we do nothing
+            }
         }
 
         // no idea what this value does

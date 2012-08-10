@@ -13,7 +13,7 @@ IF /I %check% NEQ y exit
 
 
 set svn_path=D:\mod_MumbleLink\SOURCES\trunk
-set mcp_path=D:\mcp62
+set mcp_path=D:\mcp70a
 
 
 
@@ -34,8 +34,7 @@ xcopy "%appdata%\.minecraft\resources\*.*" "%mcp_path%\jars\resources" /E /I /H
 
 @echo | call decompile.bat
 
-copy "%svn_path%\mod_MumbleLink\mcp\src\minecraft\net\minecraft\src\*.java" "%mcp_path%\src\minecraft\net\minecraft\src"
-
+xcopy "%svn_path%\mod_MumbleLink\mcp\src\minecraft\net\minecraft\src\*.*" "%mcp_path%\src\minecraft\net\minecraft\src" /E /I /H
 
 @echo | call recompile.bat
 
@@ -45,9 +44,9 @@ copy "%svn_path%\mod_MumbleLink\mcp\src\minecraft\net\minecraft\src\*.java" "%mc
 
 REM copy "%mcp_path%\src\minecraft\net\minecraft\src\mod_*.java" "%svn_path%\mod_MumbleLink\mcp\src\minecraft\net\minecraft\src\"
 
-copy "%mcp_path%\reobf\minecraft\mod_*.*" "%svn_path%\mod_MumbleLink\mcp\reobf\minecraft"
+xcopy "%mcp_path%\reobf\minecraft\*.*" "%svn_path%\mod_MumbleLink\mcp\reobf\minecraft" /E /I /H
 
-copy "%mcp_path%\reobf\minecraft\mod_*.*" "%appdata%\.minecraft\mods\MumbleLink"
+xcopy "%mcp_path%\reobf\minecraft\*.*" "%appdata%\.minecraft\mods\MumbleLink" /E /I /H
 
 
 pause
