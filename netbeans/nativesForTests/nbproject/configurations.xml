@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="80">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+      <itemPath>../../natives/testVersion/linkedMem.h</itemPath>
+      <itemPath>../../natives/testVersion/net_minecraft_src_mod_MumbleLink.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>../../natives/testVersion/MumbleJniLinkDll.cpp</itemPath>
+      <itemPath>../../natives/testVersion/MumbleJniLinkDll.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>../../natives/testVersion</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="2">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <commandlineTool>g++.exe</commandlineTool>
+          <incDir>
+            <pElem>C:/Program Files/Java/jdk1.7.0/include</pElem>
+            <pElem>C:/Program Files/Java/jdk1.7.0/include/win32</pElem>
+          </incDir>
+          <commandLine>-mno-cygwin</commandLine>
+        </ccTool>
+        <linkerTool>
+          <commandlineTool>g++.exe</commandlineTool>
+          <linkerLibItems>
+            <linkerOptionItem>-lstdc++</linkerOptionItem>
+            <linkerOptionItem>-lrt</linkerOptionItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+    </conf>
+    <conf name="Debug_x64" type="2">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <commandlineTool>x86_64-w64-mingw32-g++</commandlineTool>
+          <incDir>
+            <pElem>C:/Program Files/Java/jdk1.7.0/include</pElem>
+            <pElem>C:/Program Files/Java/jdk1.7.0/include/win32</pElem>
+          </incDir>
+          <commandLine>-mno-cygwin</commandLine>
+        </ccTool>
+        <linkerTool>
+          <commandlineTool>x86_64-w64-mingw32-g++</commandlineTool>
+          <linkerLibItems>
+            <linkerLibFileItem>C:/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libstdc++.a</linkerLibFileItem>
+            <linkerLibFileItem>C:/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libgcc_s.a</linkerLibFileItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+    </conf>
+    <conf name="Release" type="2">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+    </conf>
+  </confs>
+</configurationDescriptor>
