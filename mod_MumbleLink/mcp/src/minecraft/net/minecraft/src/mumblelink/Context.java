@@ -21,8 +21,10 @@
  */
 package net.minecraft.src.mumblelink;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
  *
@@ -39,8 +41,10 @@ public class Context extends KeyValueContainer<Context.Key, Context.PresetValue>
     public enum Key {
 
         GAME("game"),
+        SERVER_NAME("ServerName"),
         WORLD_SEED("WorldSeed"),
-        WORLD_NAME("WorldName");
+        WORLD_NAME("WorldName"),
+        PLAYER_DIMENSION("playerDimension");
         private final String text;
 
         private Key(final String text) {
@@ -65,6 +69,33 @@ public class Context extends KeyValueContainer<Context.Key, Context.PresetValue>
         @Override
         public String toString() {
             return text;
+        }
+
+        public enum Dimension {
+
+            NETHER(-1),
+            OVERWORLD(0);
+            //
+            //
+            private final int index;
+            private static final Map<Integer, Dimension> lookup = new HashMap<Integer, Dimension>();
+
+            static {
+                for (Dimension d : Dimension.values()) {
+                    lookup.put(d.index, d);
+                }
+            }
+
+            public static Dimension byIndex(Integer playerDimension) {
+                if (!lookup.containsKey(playerDimension)) {
+                    throw new NoSuchElementException(playerDimension.toString());
+                }
+                return lookup.get(playerDimension);
+            }
+
+            private Dimension(int index) {
+                this.index = index;
+            }
         }
     }
 

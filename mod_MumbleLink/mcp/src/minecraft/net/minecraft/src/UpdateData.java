@@ -147,7 +147,7 @@ public class UpdateData {
 
             if (settings.compare(MUMBLE_CONTEXT, CONTEXT_WORLD)) {
                 // create context string while staying inside bounds and keeping as much information as possible
-                context = generateContextJSON(game.theWorld);
+                context = generateContextJSON(game);
             }
 
 
@@ -161,25 +161,38 @@ public class UpdateData {
         }
     }
 
-    private String generateContextJSON(World world) {
+    private String generateContextJSON(Minecraft game) {
         Context contextObject = new Context();
 
-        contextObject = initContext(contextObject, world);
+        contextObject = initContext(contextObject, game);
 
         int maxStringLength = settings.getInt(MAX_CONTEXT_LENGTH);
 
         return contextObject.encodeJSON(maxStringLength);
     }
 
-    private Context initContext(Context context, World sourceForValues) {
-        // TODO: Seed is not very unique, find a better server identifier
-        String worldSeed = Long.toString(sourceForValues.worldInfo.getSeed());
-        // TODO: identify Nether and other worlds
-        String worldName = sourceForValues.worldInfo.getWorldName();
-
+    private Context initContext(Context context, Minecraft sourceForValues) {
         context.define(Context.Key.GAME, Context.PresetValue.MINECRAFT);
-        context.define(Context.Key.WORLD_SEED, worldSeed);
+
+        String serverName;
+        if (sourceForValues.getServerData() != null) {
+            serverName = sourceForValues.getServerData().field_78843_d;
+            context.define(Context.Key.SERVER_NAME, serverName);
+        }
+
+        // TODO: support for multi world server
+        // TOFIX: this one seems to always give MpServer
+        String worldName = sourceForValues.theWorld.worldInfo.getWorldName();
         context.define(Context.Key.WORLD_NAME, worldName);
+
+        int playerDimensionValue = sourceForValues.thePlayer.dimension;
+        String playerDimension = Context.PresetValue.Dimension.byIndex(playerDimensionValue).toString();
+        context.define(Context.Key.PLAYER_DIMENSION, playerDimension);
+
+        // TODO: Seed is always 0 on MP since the server never tells the client
+        //  the only way to get this so far is via chat on /seed command
+        //String worldSeed = Long.toString(sourceForValues.theWorld.getSeed());
+        //context.define(Context.Key.WORLD_SEED, worldSeed);
 
         return context;
     }
