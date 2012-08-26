@@ -176,7 +176,8 @@ public class UpdateData {
 
         String serverName;
         if (sourceForValues.getServerData() != null) {
-            serverName = sourceForValues.getServerData().field_78843_d;
+            // TOFIX: note that "serverMOTD" is actually the hostname
+            serverName = sourceForValues.getServerData().serverMOTD;
             context.define(Context.Key.SERVER_NAME, serverName);
         }
 
