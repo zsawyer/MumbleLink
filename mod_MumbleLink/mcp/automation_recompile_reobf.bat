@@ -7,18 +7,36 @@ REM     In addition it will copy the result to your svn trunk again.
 REM     It also copies the result to the minecraft directory
 REM ****************************************************************************
 
-REM !!! UPDATE THESE PATHS !!!
 set /P check="Minecraft updated? Modloader installed? Eclipse closed? [y/n] "
 IF /I %check% NEQ y exit
 
-
+REM !!! UPDATE THESE PATHS !!!
+:svnPathPoint
 set svn_path=D:\mod_MumbleLink\SOURCES\trunk
-set mcp_path=D:\mcp72
+set /P svn_path_query="SVN-Path [%svn_path%]: "
+IF /I "%svn_path_query%" NEQ "" (
+    set svn_path=%svn_path_query%
+)
+IF NOT EXIST "%svn_path%" (
+    @echo Error: SVN-Path is invalid!
+    goto svnPathPoint
+)
+
+
+set mcp_path=D:\mcp725
+:mcpPathPoint
+set /P mcp_path_query="MCP-Path [%mcp_path%]: "
+IF /I "%mcp_path_query%" NEQ "" (
+    set mcp_path=%mcp_path_query%   
+)
+IF NOT EXIST "%mcp_path%" (
+    @echo Error: MCP-Path is invalid!
+    goto mcpPathPoint
+)
 
 
 
-
-REM script should not need change here - double check what you change here
+REM !!! script should NOT need changed below here - double check what you change here
 
 
 cd "%mcp_path%"
