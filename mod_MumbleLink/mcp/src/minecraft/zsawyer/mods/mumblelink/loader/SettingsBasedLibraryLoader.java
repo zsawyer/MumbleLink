@@ -19,16 +19,20 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src.mumblelink;
+package zsawyer.mods.mumblelink.loader;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import zsawyer.mods.mumblelink.error.ErrorHandlerImpl;
+import zsawyer.mods.mumblelink.error.ModErrorHandler;
+import zsawyer.mods.mumblelink.error.ModErrorHandler.ModError;
+import zsawyer.mods.mumblelink.settings.Settings;
+import zsawyer.mods.mumblelink.settings.Settings.Key;
 import net.minecraft.client.Minecraft;
-import static net.minecraft.src.mumblelink.ModErrorHandler.ModError.CONFIG_FILE_INVALID_VALUE;
-import static net.minecraft.src.mumblelink.Settings.Key.*;
 
 /**
  *
@@ -124,7 +128,7 @@ public class SettingsBasedLibraryLoader implements LibraryLoader {
         try {
             filePath = getLibraryFolderFromSettings();
         } catch (IOException reason) {
-            errorHandler.handleError(CONFIG_FILE_INVALID_VALUE, reason);
+            errorHandler.handleError(ModError.CONFIG_FILE_INVALID_VALUE, reason);
             filePath = generateDefaultLibraryFolder();
         } catch (NoSuchFieldError err) {
             filePath = generateDefaultLibraryFolder();
@@ -134,8 +138,8 @@ public class SettingsBasedLibraryLoader implements LibraryLoader {
     }
 
     private String getLibraryFolderFromSettings() throws IOException {
-        if (settings.isDefined(LIBRARY_FOLDER_PATH)) {
-            String folderPathCandidate = settings.get(LIBRARY_FOLDER_PATH);
+        if (settings.isDefined(Key.LIBRARY_FOLDER_PATH)) {
+            String folderPathCandidate = settings.get(Key.LIBRARY_FOLDER_PATH);
 
             return validateDirectory(folderPathCandidate);
         }
@@ -155,11 +159,11 @@ public class SettingsBasedLibraryLoader implements LibraryLoader {
 
     private String generateDefaultLibraryFolder() {
         String s = File.separator;
-        return Minecraft.getMinecraftDir().getAbsolutePath() + s + "mods" + s + settings.get(MOD_NAME) + s + "natives" + s;
+        return Minecraft.getMinecraftDir().getAbsolutePath() + s + "mods" + s + settings.get(Key.MOD_NAME) + s + "natives" + s;
     }
 
     private String[] generateFileNames() {
-        String libName = settings.get(LIBRARY_NAME);
+        String libName = settings.get(Key.LIBRARY_NAME);
         String[] names = {
             libName,
             generateFileName("", libName, "", "dll"),

@@ -19,18 +19,26 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src;
+package zsawyer.mods.mumblelink;
 
 import java.io.File;
 import java.io.IOException;
+
 import net.minecraft.client.Minecraft;
-import static net.minecraft.src.mumblelink.ModErrorHandler.ModError.CONFIG_FILE_READ;
-import static net.minecraft.src.mumblelink.ModErrorHandler.ModError.LIBRARY_LOAD_FAILED;
-import net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError;
-import net.minecraft.src.mumblelink.NativeUpdateErrorHandler.NativeUpdateError;
-import static net.minecraft.src.mumblelink.Settings.Key.*;
-import static net.minecraft.src.mumblelink.Settings.PresetValue.CONTEXT_ALL_TALK;
-import net.minecraft.src.mumblelink.*;
+import net.minecraft.src.BaseMod;
+import net.minecraft.src.ModLoader;
+import zsawyer.mods.mumblelink.error.ErrorHandlerImpl;
+import zsawyer.mods.mumblelink.error.ModErrorHandler.ModError;
+import zsawyer.mods.mumblelink.error.NativeInitErrorHandler.NativeInitError;
+import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler.NativeUpdateError;
+import zsawyer.mods.mumblelink.loader.LibraryLoader;
+import zsawyer.mods.mumblelink.loader.SettingsBasedLibraryLoader;
+import zsawyer.mods.mumblelink.mumble.MumbleInitializer;
+import zsawyer.mods.mumblelink.mumble.MumbleLink;
+import zsawyer.mods.mumblelink.mumble.UpdateData;
+import zsawyer.mods.mumblelink.settings.Settings;
+import zsawyer.mods.mumblelink.settings.Settings.Key;
+import zsawyer.mods.mumblelink.settings.Settings.PresetValue;
 
 /**
  * mod to link with mumble for positional audio
@@ -39,14 +47,13 @@ import net.minecraft.src.mumblelink.*;
  *
  * when developing for it I suggest using "mumblePAHelper" to see coordinates
  *
- * for Minecraft v1.4.6 updated 2012-12-22
+ * for Minecraft v1.4.7 updated 2012-12-22
  *
  * @author zsawyer, 2011-03-20
  */
-@SuppressWarnings("StaticNonFinalUsedInInitialization")
 public class mod_MumbleLink extends BaseMod implements MumbleLink {
 
-    public static final String modVersion = "2.5.5";
+    public static final String modVersion = "3.0.0";
     public static final String modName = "MumbleLink";
     //
     //
@@ -79,13 +86,13 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
     }
 
     private void initDefaultSettings() {
-        settings.define(MOD_NAME, modName);
-        settings.define(MOD_VERSION, modVersion);
+        settings.define(Key.MOD_NAME, modName);
+        settings.define(Key.MOD_VERSION, modVersion);
 
-        settings.define(LIBRARY_NAME, "mod_MumbleLink");
+        settings.define(Key.LIBRARY_NAME, "mod_MumbleLink");
 
-        settings.define(MUMBLE_CONTEXT, CONTEXT_ALL_TALK);
-        settings.define(MAX_CONTEXT_LENGTH, "256");
+        settings.define(Key.MUMBLE_CONTEXT, PresetValue.CONTEXT_ALL_TALK);
+        settings.define(Key.MAX_CONTEXT_LENGTH, "256");
     }
 
     @Override
@@ -105,7 +112,7 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
             try {
                 settings.loadFromFile(settingsFile);
             } catch (IOException fileError) {
-                errorHandler.handleError(CONFIG_FILE_READ, fileError);
+                errorHandler.handleError(ModError.CONFIG_FILE_READ, fileError);
             }
         }
     }
@@ -122,7 +129,7 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
         try {
             loader.loadLibrary();
         } catch (UnsatisfiedLinkError err) {
-            errorHandler.throwError(LIBRARY_LOAD_FAILED, err);
+            errorHandler.throwError(ModError.LIBRARY_LOAD_FAILED, err);
         }
     }
 

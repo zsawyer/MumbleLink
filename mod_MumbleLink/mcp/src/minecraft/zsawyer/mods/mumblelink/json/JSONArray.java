@@ -1,4 +1,4 @@
-package net.minecraft.src.mumblelink;
+package zsawyer.mods.mumblelink.json;
 
 /*
 Copyright (c) 2002 JSON.org

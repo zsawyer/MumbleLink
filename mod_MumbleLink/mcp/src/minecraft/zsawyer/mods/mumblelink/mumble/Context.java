@@ -19,12 +19,17 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src.mumblelink;
+package zsawyer.mods.mumblelink.mumble;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
+import zsawyer.mods.mumblelink.error.ErrorHandlerImpl;
+import zsawyer.mods.mumblelink.error.ModErrorHandler;
+import zsawyer.mods.mumblelink.json.JSONException;
+import zsawyer.mods.mumblelink.json.JSONObject;
 
 /**
  *

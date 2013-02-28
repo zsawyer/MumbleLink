@@ -19,10 +19,14 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src.mumblelink;
+package zsawyer.mods.mumblelink.settings;
 
 import java.io.*;
 import java.util.*;
+
+import zsawyer.mods.mumblelink.error.ErrorHandlerImpl;
+import zsawyer.mods.mumblelink.error.ModErrorHandler;
+import zsawyer.mods.mumblelink.mumble.KeyValueContainer;
 
 /**
  *

@@ -19,7 +19,7 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src.mumblelink;
+package zsawyer.mods.mumblelink.notification;
 
 import java.util.ArrayList;
 import java.util.Collections;

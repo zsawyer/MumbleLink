@@ -19,18 +19,16 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src;
+package zsawyer.mods.mumblelink.mumble;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.mumblelink.Context;
-import net.minecraft.src.mumblelink.MumbleLink;
-import net.minecraft.src.mumblelink.NativeUpdateErrorHandler;
-import net.minecraft.src.mumblelink.NativeUpdateErrorHandler.NativeUpdateError;
-import net.minecraft.src.mumblelink.Settings;
-import static net.minecraft.src.mumblelink.Settings.Key.MAX_CONTEXT_LENGTH;
-import static net.minecraft.src.mumblelink.Settings.Key.MUMBLE_CONTEXT;
-import static net.minecraft.src.mumblelink.Settings.PresetValue.CONTEXT_ALL_TALK;
-import static net.minecraft.src.mumblelink.Settings.PresetValue.CONTEXT_WORLD;
+import net.minecraft.util.Vec3;
+import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler;
+import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler.NativeUpdateError;
+import zsawyer.mods.mumblelink.mumble.Context;
+import zsawyer.mods.mumblelink.settings.Settings;
+import zsawyer.mods.mumblelink.settings.Settings.Key;
+import zsawyer.mods.mumblelink.settings.Settings.PresetValue;
 
 /**
  *
@@ -139,13 +137,13 @@ public class UpdateData {
             // Context should be equal for players which should be able to hear each other positional and
             //  differ for those who shouldn't (e.g. it could contain the server+port and team)
             //  CAUTION: max len: 256
-            context = CONTEXT_ALL_TALK.toString();
+            context = Settings.PresetValue.CONTEXT_ALL_TALK.toString();
 
-            if (settings.isDefined(MUMBLE_CONTEXT)) {
-                context = settings.get(MUMBLE_CONTEXT);
+            if (settings.isDefined(Key.MUMBLE_CONTEXT)) {
+                context = settings.get(Key.MUMBLE_CONTEXT);
             }
 
-            if (settings.compare(MUMBLE_CONTEXT, CONTEXT_WORLD)) {
+            if (settings.compare(Key.MUMBLE_CONTEXT, PresetValue.CONTEXT_WORLD)) {
                 // create context string while staying inside bounds and keeping as much information as possible
                 context = generateContextJSON(game);
             }
@@ -166,7 +164,7 @@ public class UpdateData {
 
         contextObject = initContext(contextObject, game);
 
-        int maxStringLength = settings.getInt(MAX_CONTEXT_LENGTH);
+        int maxStringLength = settings.getInt(Key.MAX_CONTEXT_LENGTH);
 
         return contextObject.encodeJSON(maxStringLength);
     }
@@ -183,7 +181,7 @@ public class UpdateData {
 
         // TODO: support for multi world server
         // TOFIX: this one seems to always give MpServer
-        String worldName = sourceForValues.theWorld.worldInfo.getWorldName();
+        String worldName = sourceForValues.theWorld.getWorldInfo().getWorldName();
         context.define(Context.Key.WORLD_NAME, worldName);
 
         int playerDimensionValue = sourceForValues.thePlayer.dimension;

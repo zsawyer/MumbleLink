@@ -1,4 +1,4 @@
-package net.minecraft.src.mumblelink;
+package zsawyer.mods.mumblelink.json;
 
 /**
  * The JSONException is thrown by the JSON.org classes when things are amiss.

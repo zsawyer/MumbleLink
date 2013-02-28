@@ -19,12 +19,10 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src.mumblelink;
+package zsawyer.mods.mumblelink.mumble;
 
-import java.util.Observable;
-import net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError;
-import static net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError.NOT_YET_INITIALIZED;
-import static net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError.NO_ERROR;
+import zsawyer.mods.mumblelink.error.NativeInitErrorHandler;
+import zsawyer.mods.mumblelink.error.NativeInitErrorHandler.NativeInitError;
 
 /**
  *
@@ -34,7 +32,7 @@ public class MumbleInitializer implements Runnable {
 
     private MumbleLink link;
     private NativeInitErrorHandler errorHandler;
-    private NativeInitError initilizationReturnCode = NOT_YET_INITIALIZED;
+    private NativeInitError initilizationReturnCode = NativeInitError.NOT_YET_INITIALIZED;
 
     public MumbleInitializer(MumbleLink link, NativeInitErrorHandler errorHandler) {
         super();
@@ -57,6 +55,6 @@ public class MumbleInitializer implements Runnable {
     }
 
     public boolean isMumbleInitialized() {
-        return initilizationReturnCode == NO_ERROR;
+        return initilizationReturnCode == NativeInitError.NO_ERROR;
     }
 }

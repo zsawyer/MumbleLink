@@ -19,12 +19,17 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src.mumblelink;
+package zsawyer.mods.mumblelink.error;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import zsawyer.mods.mumblelink.mod_MumbleLink;
+import zsawyer.mods.mumblelink.notification.BufferedChatNotifier;
+import zsawyer.mods.mumblelink.notification.UserNotifier;
+import zsawyer.mods.mumblelink.util.SingletonFactory;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.mod_MumbleLink;
+
 
 /**
  *

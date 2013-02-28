@@ -19,10 +19,10 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package net.minecraft.src.mumblelink;
+package zsawyer.mods.mumblelink.mumble;
 
-import net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError;
-import net.minecraft.src.mumblelink.NativeUpdateErrorHandler.NativeUpdateError;
+import zsawyer.mods.mumblelink.error.NativeInitErrorHandler.NativeInitError;
+import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler.NativeUpdateError;
 
 /**
  *
