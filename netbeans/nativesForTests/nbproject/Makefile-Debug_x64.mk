@@ -22,6 +22,7 @@ AS=as.exe
 
 # Macros
 CND_PLATFORM=Cygwin_4.x-Windows
+CND_DLIB_EXT=dll
 CND_CONF=Debug_x64
 CND_DISTDIR=dist
 CND_BUILDDIR=build
@@ -55,20 +56,20 @@ LDLIBSOPTIONS=/cygdrive/C/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libstdc++.a /c
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.dll
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.${CND_DLIB_EXT}
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.dll: /cygdrive/C/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libstdc++.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.${CND_DLIB_EXT}: /cygdrive/C/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libstdc++.a
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.dll: /cygdrive/C/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libgcc_s.a
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.${CND_DLIB_EXT}: /cygdrive/C/cygwin/lib/gcc/x86_64-w64-mingw32/4.5.3/libgcc_s.a
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.dll: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.${CND_DLIB_EXT}: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	x86_64-w64-mingw32-g++ -shared -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.dll ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	x86_64-w64-mingw32-g++ -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.${CND_DLIB_EXT} ${OBJECTFILES} ${LDLIBSOPTIONS} -shared
 
 ${OBJECTDIR}/_ext/1640021005/MumbleJniLinkDll.o: ../../natives/testVersion/MumbleJniLinkDll.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1640021005
 	${RM} $@.d
-	$(COMPILE.cc) -g -I/cygdrive/C/Program\ Files/Java/jdk1.7.0/include -I/cygdrive/C/Program\ Files/Java/jdk1.7.0/include/win32  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1640021005/MumbleJniLinkDll.o ../../natives/testVersion/MumbleJniLinkDll.cpp
+	$(COMPILE.cc) -g -I/cygdrive/C/Program\ Files/Java/jdk1.7.0/include -I/cygdrive/C/Program\ Files/Java/jdk1.7.0/include/win32 -mno-cygwin  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1640021005/MumbleJniLinkDll.o ../../natives/testVersion/MumbleJniLinkDll.cpp
 
 # Subprojects
 .build-subprojects:
@@ -76,7 +77,7 @@ ${OBJECTDIR}/_ext/1640021005/MumbleJniLinkDll.o: ../../natives/testVersion/Mumbl
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.dll
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.${CND_DLIB_EXT}
 
 # Subprojects
 .clean-subprojects:

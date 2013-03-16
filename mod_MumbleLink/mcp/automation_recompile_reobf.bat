@@ -1,8 +1,8 @@
 @echo off
 REM ****************************************************************************
-REM     This script will copy the .java-file from your local copy of the 
-REM         svn repository to your MCP source directory 
-REM     Then it will attempt to recompile and reobfuscate. 
+REM     This script will copy the .java-file from your local copy of the
+REM         svn repository to your MCP source directory
+REM     Then it will attempt to recompile and reobfuscate.
 REM     In addition it will copy the result to your svn trunk again.
 REM     It also copies the result to the minecraft directory
 REM ****************************************************************************
@@ -27,7 +27,7 @@ set mcp_path=D:\mcp725
 :mcpPathPoint
 set /P mcp_path_query="MCP-Path [%mcp_path%]: "
 IF /I "%mcp_path_query%" NEQ "" (
-    set mcp_path=%mcp_path_query%   
+    set mcp_path=%mcp_path_query%
 )
 IF NOT EXIST "%mcp_path%" (
     @echo Error: MCP-Path is invalid!
