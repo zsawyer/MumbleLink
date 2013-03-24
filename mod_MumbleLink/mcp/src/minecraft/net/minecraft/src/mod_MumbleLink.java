@@ -39,14 +39,14 @@ import net.minecraft.src.mumblelink.*;
  *
  * when developing for it I suggest using "mumblePAHelper" to see coordinates
  *
- * for Minecraft v1.5 updated 2013-03-16
+ * for Minecraft v1.5.1 updated 2013-03-25
  *
  * @author zsawyer, 2011-03-20
  */
 @SuppressWarnings("StaticNonFinalUsedInInitialization")
 public class mod_MumbleLink extends BaseMod implements MumbleLink {
 
-    public static final String modVersion = "2.5.6";
+    public static final String modVersion = "2.5.7";
     public static final String modName = "MumbleLink";
     //
     //
