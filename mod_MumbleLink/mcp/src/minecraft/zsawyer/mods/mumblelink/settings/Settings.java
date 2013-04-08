@@ -45,7 +45,6 @@ public class Settings extends KeyValueContainer<Settings.Key, Settings.PresetVal
 
         MUMBLE_CONTEXT("mumbleContext"),
         LIBRARY_NAME("libraryName"),
-        LIBRARY_FOLDER_PATH("libraryFolderPath"),
         // note: values can be overridden by config file @2012.06.12, r95
         MOD_NAME("modName"),
         // note: values can be overridden by config file @2012.06.12, r95

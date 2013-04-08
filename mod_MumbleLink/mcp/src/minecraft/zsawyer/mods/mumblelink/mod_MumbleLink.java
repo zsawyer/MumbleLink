@@ -35,9 +35,11 @@ import zsawyer.mods.mumblelink.loader.LibraryLoader;
 import zsawyer.mods.mumblelink.loader.PackageLibraryLoader;
 import zsawyer.mods.mumblelink.mumble.MumbleInitializer;
 import zsawyer.mods.mumblelink.mumble.UpdateData;
+import zsawyer.mods.mumblelink.mumble.jna.LinkAPIHelper;
 import zsawyer.mods.mumblelink.settings.Settings;
 import zsawyer.mods.mumblelink.settings.Settings.Key;
 import zsawyer.mods.mumblelink.settings.Settings.PresetValue;
+import zsawyer.mumble.jna.LinkAPILibrary;
 
 /**
  * mod to link with mumble for positional audio
@@ -64,7 +66,7 @@ public class mod_MumbleLink extends BaseMod {
     private MumbleInitializer mumbleInititer;
     private Thread mumbleInititerThread;
     private UpdateData mumbleData;
-    private PackageLibraryLoader loader;
+    private LinkAPILibrary library;
     private UpdateTicker updateTicker;
 
     public mod_MumbleLink() {
@@ -76,15 +78,14 @@ public class mod_MumbleLink extends BaseMod {
         initDefaultSettings();
 
         try {
-			loader  = new PackageLibraryLoader(settings.get(Key.LIBRARY_NAME));
-			loader.loadLibrary();
+			library = new PackageLibraryLoader().loadLibrary(settings.get(Key.LIBRARY_NAME));
 		} catch (Exception e) {
 			errorHandler.throwError(ModError.LIBRARY_LOAD_FAILED, e);
 		}
         
-        mumbleData = new UpdateData(loader.getLibraryInstance(), settings, errorHandler);
+        mumbleData = new UpdateData(library, settings, errorHandler);
 
-        mumbleInititer = new MumbleInitializer(loader.getLibraryInstance(), errorHandler);
+        mumbleInititer = new MumbleInitializer(library, errorHandler);
         mumbleInititerThread = new Thread(mumbleInititer);
                 
     	updateTicker = new UpdateTicker(this);

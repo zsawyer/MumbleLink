@@ -17,73 +17,25 @@ import com.google.common.io.Resources;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 
-public class PackageLibraryLoader extends BruteForceLibraryLoader {
-
-	private LinkAPILibrary libraryInstance;
-	private File libraryFile;
-	private static final ModErrorHandler errorHandler = ErrorHandlerImpl
-			.getInstance();
-
-	public PackageLibraryLoader(String libraryName) throws IOException {
-		super(libraryName);
-	}
+public class PackageLibraryLoader implements LibraryLoader {
 
 	@Override
-	public boolean attemptLoadLibrary(String lib) {
+	public LinkAPILibrary loadLibrary(String libraryName)
+			throws UnsatisfiedLinkError {
 
-		try {
-			writeEmbeddedResourceToLocalFile(lib);
-		} catch (Exception e) {
-			return false;
-		}
-
-		NativeLibrary loadedLibrary = NativeLibrary
-				.getInstance(libraryFile.getAbsolutePath());		
+		NativeLibrary loadedLibrary = NativeLibrary.getInstance(libraryName);
 
 		if (loadedLibrary != null) {
-			libraryInstance = (LinkAPILibrary) Native.loadLibrary(
-					libraryFile.getAbsolutePath(), LinkAPILibrary.class);
+			LinkAPILibrary libraryInstance = (LinkAPILibrary) Native
+					.loadLibrary(libraryName, LinkAPILibrary.class);
 			if (libraryInstance != null) {
-				return true;
+				return libraryInstance;
 			}
 		}
 
-		return false;
-	}
+		throw new UnsatisfiedLinkError(
+				"Required library could not be loaded, available libraries are incompatible!");
 
-	/**
-	 * 
-	 * Writes an embedded resource to a local file
-	 * 
-	 * @param resourceName
-	 *            the name of the resource to be copied
-	 * @throws IOException
-	 * @throws Throwable
-	 */
-	private void writeEmbeddedResourceToLocalFile(final String resourceName)
-			throws IOException {
-		final URL resourceUrl = Resources.getResource(resourceName);
-
-		String[] split = resourceName.split("\\.");
-		String extension = split[split.length - 1];
-		libraryFile = new File(getLibraryName() + "." + extension);
-
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(this.libraryFile);
-			Resources.copy(resourceUrl, fos);
-			fos.flush();
-		} catch (Throwable t) {
-			throw new RuntimeException(t);
-		} finally {
-			if (fos != null) {
-				fos.close();
-			}
-		}
-	}
-
-	public synchronized LinkAPILibrary getLibraryInstance() {
-		return libraryInstance;
 	}
 
 }
