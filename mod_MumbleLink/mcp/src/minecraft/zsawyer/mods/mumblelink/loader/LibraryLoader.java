@@ -27,5 +27,5 @@ package zsawyer.mods.mumblelink.loader;
  */
 public interface LibraryLoader {
 
-    void loadLibrary() throws UnsatisfiedLinkError;
+    public void loadLibrary() throws UnsatisfiedLinkError;
 }

@@ -23,6 +23,8 @@ package zsawyer.mods.mumblelink.mumble;
 
 import zsawyer.mods.mumblelink.error.NativeInitErrorHandler;
 import zsawyer.mods.mumblelink.error.NativeInitErrorHandler.NativeInitError;
+import zsawyer.mods.mumblelink.mumble.jna.LinkAPIHelper;
+import zsawyer.mumble.jna.LinkAPILibrary;
 
 /**
  *
@@ -30,13 +32,17 @@ import zsawyer.mods.mumblelink.error.NativeInitErrorHandler.NativeInitError;
  */
 public class MumbleInitializer implements Runnable {
 
-    private MumbleLink link;
+    private LinkAPIHelper link;
     private NativeInitErrorHandler errorHandler;
     private NativeInitError initilizationReturnCode = NativeInitError.NOT_YET_INITIALIZED;
+    
+    public static final String PLUGIN_NAME = "Minecraft";
+    public static final String PLUGIN_DESCRIPTION = "Link plugin for Minecraft with ModLoader";
+    public static final int PLUGIN_UI_VERSION = 2;
 
-    public MumbleInitializer(MumbleLink link, NativeInitErrorHandler errorHandler) {
+    public MumbleInitializer(LinkAPILibrary link, NativeInitErrorHandler errorHandler) {
         super();
-        this.link = link;
+        this.link = new LinkAPIHelper(link);
         this.errorHandler = errorHandler;
     }
 
@@ -47,7 +53,7 @@ public class MumbleInitializer implements Runnable {
                 return;
             }
             synchronized (link) {
-                initilizationReturnCode = link.callInitMumble();
+                initilizationReturnCode = link.initialize(PLUGIN_NAME, PLUGIN_DESCRIPTION, PLUGIN_UI_VERSION);
 
                 errorHandler.handleError(initilizationReturnCode);
             }

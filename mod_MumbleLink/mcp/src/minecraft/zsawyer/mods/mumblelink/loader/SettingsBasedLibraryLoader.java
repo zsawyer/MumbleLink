@@ -35,170 +35,119 @@ import zsawyer.mods.mumblelink.settings.Settings.Key;
 import net.minecraft.client.Minecraft;
 
 /**
- *
+ * 
  * @author zsawyer
  */
-public class SettingsBasedLibraryLoader implements LibraryLoader {
+public class SettingsBasedLibraryLoader extends BruteForceLibraryLoader {
 
-    private boolean libLoaded = false;
-    /// error stack when loading libraries during mod initialization
-    private static ArrayList<UnsatisfiedLinkError> errors = new ArrayList<UnsatisfiedLinkError>();
-    private static final ModErrorHandler errorHandler = ErrorHandlerImpl.getInstance();
-    private final Settings settings;
-    private String libraryFolder;
+	// / error stack when loading libraries during mod initialization
+	private static ArrayList<UnsatisfiedLinkError> errors = new ArrayList<UnsatisfiedLinkError>();
+	private static final ModErrorHandler errorHandler = ErrorHandlerImpl
+			.getInstance();
+	private final Settings settings;
 
-    public SettingsBasedLibraryLoader(Settings settings) {
-        this.settings = settings;
-        updateFromSettings();
-    }
+	public SettingsBasedLibraryLoader(Settings settings) {
+		super(settings.get(Key.LIBRARY_NAME));
+		this.settings = settings;
+		updateFromSettings();
 
-    private void updateFromSettings() {
-        this.libraryFolder = getLibraryFolder();
-    }
+	}
 
-    @Override
-    public void loadLibrary() throws UnsatisfiedLinkError {
-        updateFromSettings();
+	private void updateFromSettings() {
+		setLibraryFolder(retrieveLibraryFolder());
+	}
 
-        libLoaded = loadLibraryByBruteForce();
-        if (!libLoaded) {
-            UnsatisfiedLinkError error = createFatalLoadError();
-            resetErrors();
-            throw error;
-        }
-    }
+	@Override
+	public boolean attemptLoadLibrary(String lib) {
+		File fileCandidate = new File(lib);
+		if (fileCandidate.isFile()) {
+			return attemptLoadLibrary(fileCandidate);
+		}
+		return attemptLoadLibraryByName(lib);
+	}
 
-    private boolean attemptLoadLibrary(String lib) {
-        File fileCandidate = new File(lib);
-        if (fileCandidate.isFile()) {
-            return attemptLoadLibrary(fileCandidate);
-        }
-        return attemptLoadLibraryByName(lib);
-    }
+	private boolean attemptLoadLibrary(File file) {
+		try {
+			System.load(file.getAbsolutePath());
+			return true;
+		} catch (UnsatisfiedLinkError err) {
+			errors.add(err);
+		}
+		return false;
+	}
 
-    private boolean attemptLoadLibrary(File file) {
-        try {
-            System.load(file.getAbsolutePath());
-            return true;
-        } catch (UnsatisfiedLinkError err) {
-            errors.add(err);
-        }
-        return false;
-    }
+	private boolean attemptLoadLibraryByName(String libName) {
+		try {
+			System.loadLibrary(libName);
+			return true;
+		} catch (UnsatisfiedLinkError err) {
+			errors.add(err);
+		}
+		return false;
+	}
 
-    private boolean attemptLoadLibraryByName(String libName) {
-        try {
-            System.loadLibrary(libName);
-            return true;
-        } catch (UnsatisfiedLinkError err) {
-            errors.add(err);
-        }
-        return false;
-    }
+	private String retrieveLibraryFolder() {
 
-    private boolean loadLibraryByBruteForce() {
-        if (allreadyLoaded()) {
-            return true;
-        }
+		String filePath;
+		try {
+			filePath = getLibraryFolderFromSettings();
+		} catch (IOException reason) {
+			errorHandler
+					.handleError(ModError.CONFIG_FILE_INVALID_VALUE, reason);
+			filePath = generateDefaultLibraryFolder();
+		} catch (NoSuchFieldError err) {
+			filePath = generateDefaultLibraryFolder();
+		}
 
-        boolean loaded = false;
-        List<File> files = getLibraryCandidates();
-        Iterator<File> fileCrawler = files.iterator();
-        while (!loaded && fileCrawler.hasNext()) {
-            loaded = attemptLoadLibrary(fileCrawler.next());
-        }
-        return loaded;
-    }
+		return filePath;
+	}
 
-    private List<File> getLibraryCandidates() {
-        List<File> files = new ArrayList<File>();
-        String[] fileNames = generateFileNames();
-        for (String fileName : fileNames) {
-            File possibleCandidate = new File(libraryFolder + File.separator + fileName);
-            if (possibleCandidate.exists()) {
-                files.add(possibleCandidate);
-            }
-        }
-        return files;
-    }
+	private String getLibraryFolderFromSettings() throws IOException {
+		if (settings.isDefined(Key.LIBRARY_FOLDER_PATH)) {
+			String folderPathCandidate = settings.get(Key.LIBRARY_FOLDER_PATH);
 
-    private String getLibraryFolder() {
+			return validateDirectory(folderPathCandidate);
+		}
 
-        String filePath;
-        try {
-            filePath = getLibraryFolderFromSettings();
-        } catch (IOException reason) {
-            errorHandler.handleError(ModError.CONFIG_FILE_INVALID_VALUE, reason);
-            filePath = generateDefaultLibraryFolder();
-        } catch (NoSuchFieldError err) {
-            filePath = generateDefaultLibraryFolder();
-        }
+		throw new NoSuchFieldError("folder not specified in config");
+	}
 
-        return filePath;
-    }
+	private String validateDirectory(String filePathCandidate)
+			throws IOException {
+		File folder = new File(filePathCandidate);
 
-    private String getLibraryFolderFromSettings() throws IOException {
-        if (settings.isDefined(Key.LIBRARY_FOLDER_PATH)) {
-            String folderPathCandidate = settings.get(Key.LIBRARY_FOLDER_PATH);
+		if (!folder.isDirectory()) {
+			throw new IOException("not a directory: '" + filePathCandidate
+					+ "'");
+		}
 
-            return validateDirectory(folderPathCandidate);
-        }
+		return filePathCandidate;
+	}
 
-        throw new NoSuchFieldError("folder not specified in config");
-    }
+	private String generateDefaultLibraryFolder() {
+		String s = File.separator;
+		return Minecraft.getMinecraftDir().getAbsolutePath() + s + "mods" + s
+				+ settings.get(Key.MOD_NAME) + s + "natives" + s;
+	}
 
-    private String validateDirectory(String filePathCandidate) throws IOException {
-        File folder = new File(filePathCandidate);
+	private UnsatisfiedLinkError createFatalLoadError() {
+		UnsatisfiedLinkError err;
+		if (noLibraryFilesFound()) {
+			err = new UnsatisfiedLinkError(
+					"Library files not found! Searched in: \""
+							+ getLibraryFolder() + "\"");
+		} else {
+			err = new UnsatisfiedLinkError(
+					"Required library could not be loaded, available libraries are incompatible!");
+		}
+		return err;
+	}
 
-        if (!folder.isDirectory()) {
-            throw new IOException("not a directory: '" + filePathCandidate + "'");
-        }
+	private boolean noLibraryFilesFound() {
+		return errors.isEmpty();
+	}
 
-        return filePathCandidate;
-    }
-
-    private String generateDefaultLibraryFolder() {
-        String s = File.separator;
-        return Minecraft.getMinecraftDir().getAbsolutePath() + s + "mods" + s + settings.get(Key.MOD_NAME) + s + "natives" + s;
-    }
-
-    private String[] generateFileNames() {
-        String libName = settings.get(Key.LIBRARY_NAME);
-        String[] names = {
-            libName,
-            generateFileName("", libName, "", "dll"),
-            generateFileName("", libName, "_x64", "dll"),
-            generateFileName("lib", libName, "", "so"),
-            generateFileName("lib", libName, "_x64", "so"),
-            generateFileName("lib", libName, "", "dylib"),
-            generateFileName("lib", libName, "_x64", "dylib")
-        };
-        return names;
-    }
-
-    private String generateFileName(String prefix, String name, String suffix, String extension) {
-        return prefix + name + suffix + "." + extension;
-    }
-
-    private UnsatisfiedLinkError createFatalLoadError() {
-        UnsatisfiedLinkError err;
-        if (noLibraryFilesFound()) {
-            err = new UnsatisfiedLinkError("Library files not found! Searched in: \"" + getLibraryFolder() + "\"");
-        } else {
-            err = new UnsatisfiedLinkError("Required library could not be loaded, available libraries are incompatible!");
-        }
-        return err;
-    }
-
-    private boolean noLibraryFilesFound() {
-        return errors.isEmpty();
-    }
-
-    private void resetErrors() {
-        errors.clear();
-    }
-
-    private boolean allreadyLoaded() {
-        return libLoaded;
-    }
+	private void resetErrors() {
+		errors.clear();
+	}
 }

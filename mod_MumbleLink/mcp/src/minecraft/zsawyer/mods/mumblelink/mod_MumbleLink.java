@@ -32,9 +32,8 @@ import zsawyer.mods.mumblelink.error.ModErrorHandler.ModError;
 import zsawyer.mods.mumblelink.error.NativeInitErrorHandler.NativeInitError;
 import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler.NativeUpdateError;
 import zsawyer.mods.mumblelink.loader.LibraryLoader;
-import zsawyer.mods.mumblelink.loader.SettingsBasedLibraryLoader;
+import zsawyer.mods.mumblelink.loader.PackageLibraryLoader;
 import zsawyer.mods.mumblelink.mumble.MumbleInitializer;
-import zsawyer.mods.mumblelink.mumble.MumbleLink;
 import zsawyer.mods.mumblelink.mumble.UpdateData;
 import zsawyer.mods.mumblelink.settings.Settings;
 import zsawyer.mods.mumblelink.settings.Settings.Key;
@@ -47,11 +46,11 @@ import zsawyer.mods.mumblelink.settings.Settings.PresetValue;
  *
  * when developing for it I suggest using "mumblePAHelper" to see coordinates
  *
- * for Minecraft v1.4.7 updated 2012-12-22
+ * for Minecraft v1.5.1 updated 2012-04-05
  *
  * @author zsawyer, 2011-03-20
  */
-public class mod_MumbleLink extends BaseMod implements MumbleLink {
+public class mod_MumbleLink extends BaseMod {
 
     public static final String modVersion = "3.0.0";
     public static final String modName = "MumbleLink";
@@ -65,7 +64,8 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
     private MumbleInitializer mumbleInititer;
     private Thread mumbleInititerThread;
     private UpdateData mumbleData;
-    private LibraryLoader loader;
+    private PackageLibraryLoader loader;
+    private UpdateTicker updateTicker;
 
     public mod_MumbleLink() {
         super();
@@ -75,13 +75,19 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
         settings = new Settings();
         initDefaultSettings();
 
-        loader = new SettingsBasedLibraryLoader(settings);
+        try {
+			loader  = new PackageLibraryLoader(settings.get(Key.LIBRARY_NAME));
+			loader.loadLibrary();
+		} catch (Exception e) {
+			errorHandler.throwError(ModError.LIBRARY_LOAD_FAILED, e);
+		}
+        
+        mumbleData = new UpdateData(loader.getLibraryInstance(), settings, errorHandler);
 
-        mumbleData = new UpdateData(this, settings, errorHandler);
-
-        mumbleInititer = new MumbleInitializer(this, errorHandler);
+        mumbleInititer = new MumbleInitializer(loader.getLibraryInstance(), errorHandler);
         mumbleInititerThread = new Thread(mumbleInititer);
-
+                
+    	updateTicker = new UpdateTicker(this);
 
     }
 
@@ -89,7 +95,7 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
         settings.define(Key.MOD_NAME, modName);
         settings.define(Key.MOD_VERSION, modVersion);
 
-        settings.define(Key.LIBRARY_NAME, "mod_MumbleLink");
+        settings.define(Key.LIBRARY_NAME, "LinkAPI");
 
         settings.define(Key.MUMBLE_CONTEXT, PresetValue.CONTEXT_ALL_TALK);
         settings.define(Key.MAX_CONTEXT_LENGTH, "256");
@@ -98,7 +104,6 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
     @Override
     public void load() {
         loadSettings();
-        loadLibrary();
 
         registerWithModLoader();
 
@@ -125,19 +130,18 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
         ModLoader.setInGameHook(this, true, false);
     }
 
-    private void loadLibrary() {
-        try {
-            loader.loadLibrary();
-        } catch (UnsatisfiedLinkError err) {
-            errorHandler.throwError(ModError.LIBRARY_LOAD_FAILED, err);
-        }
-    }
-
     @Override
     public boolean onTickInGame(float tick, Minecraft game) {
         super.onTickInGame(tick, game);
 
-        if (mumbleInititer.isMumbleInitialized()) {
+        tryUpdateMumble(game);
+
+        // no idea what this value does
+        return true;
+    } 
+
+	public void tryUpdateMumble(Minecraft game) {
+		if (mumbleInititer.isMumbleInitialized()) {
             mumbleData.set(game);
             mumbleData.send();
         } else {
@@ -147,84 +151,7 @@ public class mod_MumbleLink extends BaseMod implements MumbleLink {
                 // thread was already started so we do nothing
             }
         }
-
-        // no idea what this value does
-        return true;
-    }
-
-    @Override
-    public NativeInitError callInitMumble() {
-        int responseCode = initMumble();
-
-        return NativeInitError.fromCode(responseCode);
-    }
-
-    /**
-     * method from dll (prepare mumble)
-     *
-     * initializes the shared memory
-     *
-     * this basically corresponds to the suggested function as posted in the
-     * mumble wiki (http://mumble.sourceforge.net/Link)
-     *
-     * @return error code
-     *
-     * 0: no error 1: win32 specific: OpenFileMappingW failed to return a handle
-     * 2: win32 specific: MapViewOfFile failed to return a structure 3: unix
-     * specific: shm_open returned a negative integer * 4: unix specific: mmap
-     * failed to return a structure
-     */
-    private native int initMumble(); // DON'T TOUCH unless you want to recompile the libraries
-
-    @Override
-    public NativeUpdateError callUpdateMumble(float[] fAvatarPosition,
-            float[] fAvatarFront, float[] fAvatarTop, String name,
-            String description, float[] fCameraPosition, float[] fCameraFront,
-            float[] fCameraTop, String identity, String context) {
-        int responseCode = updateLinkedMumble(fAvatarPosition, fAvatarFront, fAvatarTop, name, description, fCameraPosition, fCameraFront, fCameraTop, identity, context);
-        return NativeUpdateError.fromCode(responseCode);
-    }
-
-    /**
-     * method from dll (heartbeat to mumble)
-     *
-     * updates the shared memory with the newest data
-     *
-     * this basically corresponds to the suggested function as posted in the
-     * mumble wiki (http://mumble.sourceforge.net/Link)
-     *
-     *
-     * @param fAvatarPosition Position of the avatar
-     * @param fAvatarFront Unit vector pointing out of the avatar's eyes (pitch,
-     * yaw)
-     * @param fAvatarTop Unit vector pointing out of the top of the avatar's
-     * head (pitch, roll)
-     * @param name this tool's name
-     * @param description what this tool is/does
-     * @param fCameraPosition Position of the camera
-     * @param fCameraFront Unit vector pointing which direction the camera is
-     * facing (pitch, yaw)
-     * @param fCameraTop Unit vector pointing out of the top of the camera
-     * (pitch, roll)
-     * @param identity Identifier which uniquely identifies a certain player in
-     * a context (e.g. the ingame Name)
-     * @param context Context should be equal for players which should be able
-     * to hear each other positional and differ for those who shouldn't (e.g. it
-     * could contain the server+port and team)
-     * @return error code 0: no error 1: shared memory was not initialized (was
-     * initMumble() called?)
-     */
-    private native int updateLinkedMumble( // DON'T TOUCH unless you want to recompile the libraries
-            float[] fAvatarPosition, // [3]
-            float[] fAvatarFront, // [3]
-            float[] fAvatarTop, // [3]
-            String name, // [256]
-            String description, // [2048]
-            float[] fCameraPosition, // [3]
-            float[] fCameraFront, // [3]
-            float[] fCameraTop, // [3]
-            String identity, // [256]
-            String context);
+	}
 
     @Override
     public String getVersion() {

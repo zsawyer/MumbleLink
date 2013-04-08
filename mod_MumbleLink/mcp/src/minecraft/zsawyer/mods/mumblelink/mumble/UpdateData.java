@@ -21,14 +21,21 @@
  */
 package zsawyer.mods.mumblelink.mumble;
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.FloatBuffer;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Vec3;
 import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler;
 import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler.NativeUpdateError;
 import zsawyer.mods.mumblelink.mumble.Context;
+import zsawyer.mods.mumblelink.mumble.jna.LinkAPIHelper;
 import zsawyer.mods.mumblelink.settings.Settings;
 import zsawyer.mods.mumblelink.settings.Settings.Key;
 import zsawyer.mods.mumblelink.settings.Settings.PresetValue;
+import zsawyer.mumble.jna.LinkAPILibrary;
 
 /**
  *
@@ -46,22 +53,49 @@ public class UpdateData {
     float[] fCameraTop = {0, 0, 0}; // [3]
     String identity = ""; // [256]
     String context = ""; // [256]
-    MumbleLink mumbleLink;
+    LinkAPILibrary mumbleLink;
     NativeUpdateErrorHandler errorHandler;
     Settings settings;
+	private int uiTick = 0;	
 
-    public UpdateData(MumbleLink mumbleLink, Settings settings, NativeUpdateErrorHandler errorHandler) {
+    public UpdateData(LinkAPILibrary mumbleLink, Settings settings, NativeUpdateErrorHandler errorHandler) {
         this.mumbleLink = mumbleLink;
         this.settings = settings;
         this.errorHandler = errorHandler;
 
-        name = "Minecraft";
-        description = "Link plugin for Minecraft with ModLoader";
+        name = MumbleInitializer.PLUGIN_NAME;
+        description = MumbleInitializer.PLUGIN_DESCRIPTION;
     }
 
     public void send() {
-        NativeUpdateError errorCode = mumbleLink.callUpdateMumble(fAvatarPosition, fAvatarFront, fAvatarTop, name, description, fCameraPosition, fCameraFront, fCameraTop, identity, context);
-        errorHandler.handleError(errorCode);
+    	LinkAPILibrary.LinkedMem lm = new LinkAPILibrary.LinkedMem();
+
+		lm.identity = LinkAPIHelper.parseToCharBuffer(LinkAPILibrary.MAX_IDENTITY_LENGTH, identity).array();
+		lm.context = LinkAPIHelper.parseToByteBuffer(LinkAPILibrary.MAX_CONTEXT_LENGTH, context).array();
+		lm.context_len = context.length();
+
+		lm.name = LinkAPIHelper.parseToCharBuffer(LinkAPILibrary.MAX_NAME_LENGTH, name).array();
+		lm.description = LinkAPIHelper.parseToCharBuffer(LinkAPILibrary.MAX_DESCRIPTION_LENGTH, description).array();
+	
+		lm.uiTick = ++uiTick;
+		lm.uiVersion = MumbleInitializer.PLUGIN_UI_VERSION;
+
+
+		lm.fAvatarPosition = fAvatarPosition;
+		lm.fAvatarFront = fAvatarFront;
+		lm.fAvatarTop = fAvatarTop;
+
+		lm.fCameraPosition = fCameraPosition;
+		lm.fCameraFront = fCameraFront;
+		lm.fCameraTop = fCameraTop;
+
+		byte successMessage = mumbleLink.updateData(lm);
+		boolean success = (successMessage != 0); 
+		
+		if(!success) {    	 
+			errorHandler.handleError(NativeUpdateError.ERROR_NOT_YET_INITIALIZED);	
+		}
+		
     }
 
     public void set(Minecraft game) {
@@ -148,13 +182,8 @@ public class UpdateData {
                 context = generateContextJSON(game);
             }
 
-
-
-            NativeUpdateError errorCode = mumbleLink.callUpdateMumble(fAvatarPosition, fAvatarFront, fAvatarTop, name, description, fCameraPosition, fCameraFront, fCameraTop, identity, context);
-            errorHandler.handleError(errorCode);
-            //ModLoader.getLogger().log(Level.FINER, "[" + modName + modVersion + "] mumble updated (code: {0})", err);
-
         } catch (Exception ex) {
+        	// we'll just ignore errors since they would become to spammy and we will retry anyways 
             //ModLoader.getLogger().log(Level.SEVERE, null, ex);
         }
     }
@@ -194,5 +223,6 @@ public class UpdateData {
         //context.define(Context.Key.WORLD_SEED, worldSeed);
 
         return context;
-    }
+    }      
+
 }
