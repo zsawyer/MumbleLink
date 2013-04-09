@@ -20,36 +20,33 @@
 
  */
 
-package zsawyer.mods.mumblelink.loader;
+package zsawyer.mods.mumblelink;
 
-import zsawyer.mumble.jna.LinkAPILibrary;
-
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 
  * @author zsawyer
  */
-public class PackageLibraryLoader implements LibraryLoader {
+public class MumbleLinkConstants {
 
-	@Override
-	public LinkAPILibrary loadLibrary(String libraryName)
-			throws UnsatisfiedLinkError {
+	public static final String MOD_ID = "MumbleLink";
+	public static final String MOD_NAME = "MumbleLink (forge)";
+	public static final String MOD_VERSION = "3.0.0";
 
-		NativeLibrary loadedLibrary = NativeLibrary.getInstance(libraryName);
+	//
 
-		if (loadedLibrary != null) {
-			LinkAPILibrary libraryInstance = (LinkAPILibrary) Native
-					.loadLibrary(libraryName, LinkAPILibrary.class);
-			if (libraryInstance != null) {
-				return libraryInstance;
-			}
-		}
+	public static final String LIBRARY_NAME = "LinkAPI";
+	public static final String MUMBLE_CONTEXT = "MinecraftAllTalk";
 
-		throw new UnsatisfiedLinkError(
-				"Required library could not be loaded, available libraries are incompatible!");
+	//
 
+	public static final String FML_MARKER = "fmlMarker";
+
+	private MumbleLinkConstants() {
 	}
 
 }

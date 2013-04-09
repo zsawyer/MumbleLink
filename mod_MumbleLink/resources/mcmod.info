@@ -1,9 +1,27 @@
 {
   "modinfoversion": 2,
   "modlist": [{
+    "modid": "MumbleLink",
+    "name": "MumbleLink for Forge",
+    "description": "A client-side Mod so that Minecraft now natively supports Mumble's positional audio feature. This means: Directional and positionally attenuated VOIP in relation to the game world. This is the forge based version.",
+    "version": "3.0.0",
+    "mcversion": "1.5.1",
+    "url": "http://www.minecraftforum.net/topic/217587-151-mod-mumblelink-ml-smp-lan-mumble-realism-directional-voip/",
+    "updateUrl": "",
+    "authors": [ "zsawyer" ],
+    "credits": "zsawyer, 2011-2013",
+    "logoFile": "",
+    "screenshots": [ ],
+    "parent": "",
+    "requiredMods": [ "FML" ],
+    "dependencies": [ "FML" ],
+    "dependants": [ ],
+    "useDependencyInformation": "true"
+  }, 
+  {
     "modid": "mod_MumbleLink",
     "name": "MumbleLink",
-    "description": "A client-side Mod so that Minecraft now natively supports Mumble's positional audio feature. This means: Directional and positionally attenuated VOIP in relation to the game world. ",
+    "description": "A client-side Mod so that Minecraft now natively supports Mumble's positional audio feature. This means: Directional and positionally attenuated VOIP in relation to the game world. This is the Risugami ModLoader based version.",
     "version": "3.0.0",
     "mcversion": "1.5.1",
     "url": "http://www.minecraftforum.net/topic/217587-151-mod-mumblelink-ml-smp-lan-mumble-realism-directional-voip/",
@@ -13,8 +31,8 @@
     "logoFile": "",
     "screenshots": [ ],
     "parent": "",
-    "requiredMods": [ "FML" ],
-    "dependencies": [ "FML" ],
+    "requiredMods": [ ],
+    "dependencies": [ ],
     "dependants": [ ],
     "useDependencyInformation": "true"
   }]

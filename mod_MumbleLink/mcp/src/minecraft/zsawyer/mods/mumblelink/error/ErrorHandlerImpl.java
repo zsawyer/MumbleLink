@@ -24,6 +24,7 @@ package zsawyer.mods.mumblelink.error;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import zsawyer.mods.mumblelink.MumbleLinkConstants;
 import zsawyer.mods.mumblelink.mod_MumbleLink;
 import zsawyer.mods.mumblelink.notification.BufferedChatNotifier;
 import zsawyer.mods.mumblelink.notification.UserNotifier;
@@ -52,7 +53,7 @@ public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler
 
     private void haltMinecraftUsingAnException(String message, Throwable err) {
         ModLoader.throwException("Error in mod "
-                + mod_MumbleLink.modName + mod_MumbleLink.modVersion
+                + MumbleLinkConstants.MOD_NAME + MumbleLinkConstants.MOD_VERSION
                 + ": " + message,
                 err);
     }
@@ -66,7 +67,7 @@ public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler
 
     private void modloaderLog(Level severity, String message, Throwable stack) {
         logger.log(severity,
-                "[" + mod_MumbleLink.modName + mod_MumbleLink.modVersion + "]"
+                "[" + MumbleLinkConstants.MOD_NAME + MumbleLinkConstants.MOD_VERSION + "]"
                 + "[" + severity.getLocalizedName() + "] "
                 + message,
                 stack);

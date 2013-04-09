@@ -1,6 +1,6 @@
 /*
  mod_MumbleLink - Positional Audio Communication for Minecraft with Mumble
- Copyright 2011 zsawyer (http://sourceforge.net/users/zsawyer)
+ Copyright 2011-2013 zsawyer (http://sourceforge.net/users/zsawyer)
 
  This file is part of mod_MumbleLink
  (http://sourceforge.net/projects/modmumblelink/).
@@ -28,6 +28,8 @@ import zsawyer.mods.mumblelink.util.SingletonFactory;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * 
@@ -35,12 +37,7 @@ import cpw.mods.fml.common.TickType;
  */
 public class UpdateTicker implements ITickHandler {
 
-	private mod_MumbleLink parent;
-	private boolean enabled = false;
-
-	public UpdateTicker(mod_MumbleLink parent) {
-		this.parent = parent;
-	}
+	private boolean enabled = false;	
 
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {
@@ -50,13 +47,10 @@ public class UpdateTicker implements ITickHandler {
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		if (enabled) {
-			tryUpdateMumble();
+			MumbleLink.instance.tryUpdateMumble(FMLClientHandler.instance().getClient());
 		}
 	}
 
-	private void tryUpdateMumble() {
-		parent.tryUpdateMumble(FMLClientHandler.instance().getClient());
-	}
 
 	@Override
 	public EnumSet<TickType> ticks() {
@@ -77,6 +71,11 @@ public class UpdateTicker implements ITickHandler {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public void engage() {
+		TickRegistry.registerTickHandler(this, Side.CLIENT);	
+		enabled = true;
 	}
 
 }

@@ -21,20 +21,12 @@
  */
 package zsawyer.mods.mumblelink.mumble;
 
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.FloatBuffer;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Vec3;
+import zsawyer.mods.mumblelink.MumbleLinkConstants;
 import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler;
 import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler.NativeUpdateError;
-import zsawyer.mods.mumblelink.mumble.Context;
 import zsawyer.mods.mumblelink.mumble.jna.LinkAPIHelper;
-import zsawyer.mods.mumblelink.settings.Settings;
-import zsawyer.mods.mumblelink.settings.Settings.Key;
-import zsawyer.mods.mumblelink.settings.Settings.PresetValue;
 import zsawyer.mumble.jna.LinkAPILibrary;
 
 /**
@@ -55,12 +47,10 @@ public class UpdateData {
     String context = ""; // [256]
     LinkAPILibrary mumbleLink;
     NativeUpdateErrorHandler errorHandler;
-    Settings settings;
 	private int uiTick = 0;	
 
-    public UpdateData(LinkAPILibrary mumbleLink, Settings settings, NativeUpdateErrorHandler errorHandler) {
+    public UpdateData(LinkAPILibrary mumbleLink, NativeUpdateErrorHandler errorHandler) {
         this.mumbleLink = mumbleLink;
-        this.settings = settings;
         this.errorHandler = errorHandler;
 
         name = MumbleInitializer.PLUGIN_NAME;
@@ -163,24 +153,12 @@ public class UpdateData {
 
 
             // Identifier which uniquely identifies a certain player in a context (e.g. the ingame Name).
-            // TODO: generate some json and append additional data like server,
-            //          world, team and what not, so the player can be managed
-            //          by mumo (http://gitorious.org/mumble-scripts/mumo)
-            identity = game.thePlayer.username;
+            identity = generateIdentity(game, LinkAPILibrary.MAX_IDENTITY_LENGTH);
 
             // Context should be equal for players which should be able to hear each other positional and
             //  differ for those who shouldn't (e.g. it could contain the server+port and team)
             //  CAUTION: max len: 256
-            context = Settings.PresetValue.CONTEXT_ALL_TALK.toString();
-
-            if (settings.isDefined(Key.MUMBLE_CONTEXT)) {
-                context = settings.get(Key.MUMBLE_CONTEXT);
-            }
-
-            if (settings.compare(Key.MUMBLE_CONTEXT, PresetValue.CONTEXT_WORLD)) {
-                // create context string while staying inside bounds and keeping as much information as possible
-                context = generateContextJSON(game);
-            }
+            context = generateContext(game, LinkAPILibrary.MAX_CONTEXT_LENGTH);
 
         } catch (Exception ex) {
         	// we'll just ignore errors since they would become to spammy and we will retry anyways 
@@ -188,41 +166,14 @@ public class UpdateData {
         }
     }
 
-    private String generateContextJSON(Minecraft game) {
-        Context contextObject = new Context();
-
-        contextObject = initContext(contextObject, game);
-
-        int maxStringLength = settings.getInt(Key.MAX_CONTEXT_LENGTH);
-
-        return contextObject.encodeJSON(maxStringLength);
+    protected String generateIdentity(Minecraft game, int maxLength) {
+        // TODO: generate some json and append additional data like server,
+        //          world, team and what not, so the player can be managed
+        //          by mumo (http://gitorious.org/mumble-scripts/mumo)
+    	return game.thePlayer.username;
     }
 
-    private Context initContext(Context context, Minecraft sourceForValues) {
-        context.define(Context.Key.GAME, Context.PresetValue.MINECRAFT);
-
-        String serverName;
-        if (sourceForValues.getServerData() != null) {
-            // TOFIX: note that "serverMOTD" is actually the hostname
-            serverName = sourceForValues.getServerData().serverMOTD;
-            context.define(Context.Key.SERVER_NAME, serverName);
-        }
-
-        // TODO: support for multi world server
-        // TOFIX: this one seems to always give MpServer
-        String worldName = sourceForValues.theWorld.getWorldInfo().getWorldName();
-        context.define(Context.Key.WORLD_NAME, worldName);
-
-        int playerDimensionValue = sourceForValues.thePlayer.dimension;
-        String playerDimension = Context.PresetValue.Dimension.byIndex(playerDimensionValue).toString();
-        context.define(Context.Key.PLAYER_DIMENSION, playerDimension);
-
-        // TODO: Seed is always 0 on MP since the server never tells the client
-        //  the only way to get this so far is via chat on /seed command
-        //String worldSeed = Long.toString(sourceForValues.theWorld.getSeed());
-        //context.define(Context.Key.WORLD_SEED, worldSeed);
-
-        return context;
-    }      
-
+    protected String generateContext(Minecraft game, int maxLength) {
+    	return MumbleLinkConstants.MUMBLE_CONTEXT;
+    }
 }

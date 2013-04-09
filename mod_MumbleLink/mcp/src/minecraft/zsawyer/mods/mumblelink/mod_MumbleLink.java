@@ -21,141 +21,74 @@
  */
 package zsawyer.mods.mumblelink;
 
-import java.io.File;
-import java.io.IOException;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.BaseMod;
 import net.minecraft.src.ModLoader;
 import zsawyer.mods.mumblelink.error.ErrorHandlerImpl;
-import zsawyer.mods.mumblelink.error.ModErrorHandler.ModError;
-import zsawyer.mods.mumblelink.error.NativeInitErrorHandler.NativeInitError;
-import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler.NativeUpdateError;
-import zsawyer.mods.mumblelink.loader.LibraryLoader;
-import zsawyer.mods.mumblelink.loader.PackageLibraryLoader;
-import zsawyer.mods.mumblelink.mumble.MumbleInitializer;
-import zsawyer.mods.mumblelink.mumble.UpdateData;
-import zsawyer.mods.mumblelink.mumble.jna.LinkAPIHelper;
-import zsawyer.mods.mumblelink.settings.Settings;
-import zsawyer.mods.mumblelink.settings.Settings.Key;
-import zsawyer.mods.mumblelink.settings.Settings.PresetValue;
-import zsawyer.mumble.jna.LinkAPILibrary;
 
 /**
  * mod to link with mumble for positional audio
- *
+ * 
  * @see http://mumble.sourceforge.net/
- *
- * when developing for it I suggest using "mumblePAHelper" to see coordinates
- *
- * for Minecraft v1.5.1 updated 2012-04-05
- *
+ * 
+ *      when developing for it I suggest using "mumblePAHelper" to see
+ *      coordinates
+ * 
+ *      for Minecraft v1.5.1 updated 2012-04-05
+ * 
  * @author zsawyer, 2011-03-20
  */
 public class mod_MumbleLink extends BaseMod {
 
-    public static final String modVersion = "3.0.0";
-    public static final String modName = "MumbleLink";
-    //
-    //
-    private final String settingsFileName = "mod_MumbleLink.conf";
-    //
-    private ErrorHandlerImpl errorHandler;
-    //
-    private Settings settings;
-    private MumbleInitializer mumbleInititer;
-    private Thread mumbleInititerThread;
-    private UpdateData mumbleData;
-    private LinkAPILibrary library;
-    private UpdateTicker updateTicker;
+	public static mod_MumbleLink instance;
 
-    public mod_MumbleLink() {
-        super();
+	private ErrorHandlerImpl errorHandler;
+	private MumbleLink actualMod;
 
-        errorHandler = ErrorHandlerImpl.getInstance();
+	public mod_MumbleLink() {
+		super();
 
-        settings = new Settings();
-        initDefaultSettings();
-
-        try {
-			library = new PackageLibraryLoader().loadLibrary(settings.get(Key.LIBRARY_NAME));
-		} catch (Exception e) {
-			errorHandler.throwError(ModError.LIBRARY_LOAD_FAILED, e);
+		if (instance != null) {
+			throw new RuntimeException(mod_MumbleLink.class.getSimpleName()
+					+ " was already loaded.");
 		}
-        
-        mumbleData = new UpdateData(library, settings, errorHandler);
+		instance = this;
 
-        mumbleInititer = new MumbleInitializer(library, errorHandler);
-        mumbleInititerThread = new Thread(mumbleInititer);
-                
-    	updateTicker = new UpdateTicker(this);
+		errorHandler = ErrorHandlerImpl.getInstance();
 
-    }
-
-    private void initDefaultSettings() {
-        settings.define(Key.MOD_NAME, modName);
-        settings.define(Key.MOD_VERSION, modVersion);
-
-        settings.define(Key.LIBRARY_NAME, "LinkAPI");
-
-        settings.define(Key.MUMBLE_CONTEXT, PresetValue.CONTEXT_ALL_TALK);
-        settings.define(Key.MAX_CONTEXT_LENGTH, "256");
-    }
-
-    @Override
-    public void load() {
-        loadSettings();
-
-        registerWithModLoader();
-
-        mumbleInititerThread.start();
-    }
-
-    private void loadSettings() {
-        File settingsFile = getSettingsFile();
-
-        if (settingsFile.exists()) {
-            try {
-                settings.loadFromFile(settingsFile);
-            } catch (IOException fileError) {
-                errorHandler.handleError(ModError.CONFIG_FILE_READ, fileError);
-            }
-        }
-    }
-
-    private File getSettingsFile() {
-        return new File(Minecraft.getMinecraftDir(), settingsFileName);
-    }
-
-    private void registerWithModLoader() {
-        ModLoader.setInGameHook(this, true, false);
-    }
-
-    @Override
-    public boolean onTickInGame(float tick, Minecraft game) {
-        super.onTickInGame(tick, game);
-
-        tryUpdateMumble(game);
-
-        // no idea what this value does
-        return true;
-    } 
-
-	public void tryUpdateMumble(Minecraft game) {
-		if (mumbleInititer.isMumbleInitialized()) {
-            mumbleData.set(game);
-            mumbleData.send();
-        } else {
-            try {
-                mumbleInititerThread.start();
-            } catch (IllegalThreadStateException ex) {
-                // thread was already started so we do nothing
-            }
-        }
+		actualMod = new MumbleLink();
 	}
 
-    @Override
-    public String getVersion() {
-        return modVersion;
-    }
+	@Override
+	public void load() {
+		boolean isForge = true;
+		try {
+			ModLoader.class.getDeclaredField(MumbleLinkConstants.FML_MARKER);
+		} catch (NoSuchFieldException e) {
+			isForge = false;
+		}
+		
+		if (!isForge) {
+			registerWithModLoader();
+			actualMod.load();
+		}
+	}
+
+	private void registerWithModLoader() {
+		ModLoader.setInGameHook(this, true, false);
+	}
+
+	@Override
+	public boolean onTickInGame(float tick, Minecraft game) {
+		super.onTickInGame(tick, game);
+
+		actualMod.tryUpdateMumble(game);
+
+		return true;
+	}
+
+	@Override
+	public String getVersion() {
+		return MumbleLinkConstants.MOD_VERSION;
+	}
 }
