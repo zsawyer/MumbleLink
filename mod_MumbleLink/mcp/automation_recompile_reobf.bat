@@ -7,12 +7,12 @@ REM     In addition it will copy the result to your svn trunk again.
 REM     It also copies the result to the minecraft directory
 REM ****************************************************************************
 
-set /P check="Minecraft updated? Modloader installed? Eclipse closed? [y/n] "
-IF /I %check% NEQ y exit
+set /P check="Eclipse closed? [y/n] "
+IF /I "%check%" NEQ "y" exit /B
 
 REM !!! UPDATE THESE PATHS !!!
 :svnPathPoint
-set svn_path=D:\mod_MumbleLink\SOURCES\trunk
+set svn_path=..\..
 set /P svn_path_query="SVN-Path [%svn_path%]: "
 IF /I "%svn_path_query%" NEQ "" (
     set svn_path=%svn_path_query%
@@ -34,46 +34,66 @@ IF NOT EXIST "%mcp_path%" (
     goto mcpPathPoint
 )
 
-
+set decompile=n
+:decompilePathPoint
+@echo For use with Forge choose "n". Else Modloader should be installed!
+set /P decompile="Force decompile? [y/n]: "
+set err=false
+IF /I "%decompile%" NEQ "y" (
+  IF /I "%decompile%" NEQ "n" (
+    set err=true
+  )
+)
+IF /I "%err%" EQU "true" (
+    @echo Error: What? Type "y" or "n"!
+    goto decompilePathPoint
+)
 
 REM !!! script should NOT need changed below here - double check what you change here
 
 
-cd "%mcp_path%"
+REM   ###  generate exclude file
+echo \.svn\ > excludes.txt
+echo.\cpw\ >> excludes.txt
+
+IF /I "%decompile%" EQU "y" (
+  REM get minecraft libraries required for MCP
+  rd /S /Q "%mcp_path%\jars\bin"
+  xcopy "%appdata%\.minecraft\bin\*.*" "%mcp_path%\jars\bin" /E /I /H /EXCLUDE:excludes.txt
+
+  REM get minecraft libraries required for MCP
+  rd /S /Q "%mcp_path%\jars\resources"
+  xcopy "%appdata%\.minecraft\resources\*.*" "%mcp_path%\jars\resources" /E /I /H /EXCLUDE:excludes.txt
+
+  @echo | call decompile.bat
+)
 
 @echo on
 
-REM   ###  generate exclude file
-echo \.svn\ > excludes.txt
-
-
-REM get minecraft libraries required for MCP
-rd /S /Q "%mcp_path%\jars\bin"
-xcopy "%appdata%\.minecraft\bin\*.*" "%mcp_path%\jars\bin" /E /I /H /EXCLUDE:excludes.txt
-
-REM get minecraft libraries required for MCP
-rd /S /Q "%mcp_path%\jars\resources"
-xcopy "%appdata%\.minecraft\resources\*.*" "%mcp_path%\jars\resources" /E /I /H /EXCLUDE:excludes.txt
-
-
-@echo | call decompile.bat
-
 REM import mod into MCP src folder
-xcopy "%svn_path%\mod_MumbleLink\mcp\src\minecraft\net\minecraft\src\*.*" "%mcp_path%\src\minecraft\net\minecraft\src" /E /I /H /EXCLUDE:excludes.txt
+xcopy "%svn_path%\mod_MumbleLink\mcp\src\minecraft\*.*" "%mcp_path%\src\minecraft" /E /I /H /EXCLUDE:excludes.txt
+
+REM import mod's required libraries into MCP lib folder
+xcopy "%svn_path%\mod_MumbleLink\resources\lib\*.*" "%mcp_path%\lib" /E /I /H /EXCLUDE:excludes.txt
+
+pushd .
+cd "%mcp_path%"
 
 @echo | call recompile.bat
 
 @echo | call reobfuscate.bat
 
+popd
 
 REM update svn with modified files from MCP src folder
-REM xcopy "%mcp_path%\src\minecraft\net\minecraft\src\*.*" "%svn_path%\mod_MumbleLink\mcp\src\minecraft\net\minecraft\src" /E /I /H /EXCLUDE:excludes.txt
+REM xcopy "%mcp_path%\src\minecraft\*.*" "%svn_path%\mod_MumbleLink\mcp\src\minecraft" /E /I /H /EXCLUDE:excludes.txt
 
 REM update svn with reobfed files from MCP folder
+del /S "%svn_path%\mod_MumbleLink\mcp\reobf\minecraft\*.class"
 xcopy "%mcp_path%\reobf\minecraft\*.*" "%svn_path%\mod_MumbleLink\mcp\reobf\minecraft" /E /I /H /EXCLUDE:excludes.txt
 
 REM update minecraft installation with reobfed files from MCP folder
-xcopy "%mcp_path%\reobf\minecraft\*.*" "%appdata%\.minecraft\mods\MumbleLink" /E /I /H /EXCLUDE:excludes.txt
+rem xcopy "%mcp_path%\reobf\minecraft\*.*" "%appdata%\.minecraft\mods\MumbleLink" /E /I /H /EXCLUDE:excludes.txt
 
 
 REM   ###  cleanup exclude file

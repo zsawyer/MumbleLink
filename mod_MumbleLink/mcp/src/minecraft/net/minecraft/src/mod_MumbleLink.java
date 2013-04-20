@@ -21,206 +21,97 @@
  */
 package net.minecraft.src;
 
-import java.io.File;
-import java.io.IOException;
 import net.minecraft.client.Minecraft;
-import static net.minecraft.src.mumblelink.ModErrorHandler.ModError.CONFIG_FILE_READ;
-import static net.minecraft.src.mumblelink.ModErrorHandler.ModError.LIBRARY_LOAD_FAILED;
-import net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError;
-import net.minecraft.src.mumblelink.NativeUpdateErrorHandler.NativeUpdateError;
-import static net.minecraft.src.mumblelink.Settings.Key.*;
-import static net.minecraft.src.mumblelink.Settings.PresetValue.CONTEXT_ALL_TALK;
-import net.minecraft.src.mumblelink.*;
+import zsawyer.mods.mumblelink.MumbleLink;
+import zsawyer.mods.mumblelink.MumbleLinkBase;
+import zsawyer.mods.mumblelink.MumbleLinkConstants;
+import zsawyer.mods.mumblelink.error.ErrorHandlerImpl;
 
 /**
  * mod to link with mumble for positional audio
- *
+ * 
+ * this is an implementation intended for Risugami's ModLoader but it also
+ * handles if Forge is used
+ * 
+ * the main reason this class is still present is to support RML and FML
+ * side-by-side
+ * 
  * @see http://mumble.sourceforge.net/
- *
- * when developing for it I suggest using "mumblePAHelper" to see coordinates
- *
- * for Minecraft v1.5.1 updated 2013-03-25
- *
+ * 
+ *      when developing for it I suggest using "mumblePAHelper" to see
+ *      coordinates
+ * 
  * @author zsawyer, 2011-03-20
  */
-@SuppressWarnings("StaticNonFinalUsedInInitialization")
-public class mod_MumbleLink extends BaseMod implements MumbleLink {
+public class mod_MumbleLink extends BaseMod {
 
-    public static final String modVersion = "2.5.7";
-    public static final String modName = "MumbleLink";
-    //
-    //
-    private final String settingsFileName = "mod_MumbleLink.conf";
-    //
-    private ErrorHandlerImpl errorHandler;
-    //
-    private Settings settings;
-    private MumbleInitializer mumbleInititer;
-    private Thread mumbleInititerThread;
-    private UpdateData mumbleData;
-    private LibraryLoader loader;
+	public static mod_MumbleLink instance;
 
-    public mod_MumbleLink() {
-        super();
+	private ErrorHandlerImpl errorHandler;
+	private MumbleLinkBase actualMod;
 
-        errorHandler = ErrorHandlerImpl.getInstance();
+	private Boolean isForge = null;
 
-        settings = new Settings();
-        initDefaultSettings();
+	public mod_MumbleLink() {
+		super();
 
-        loader = new SettingsBasedLibraryLoader(settings);
+		if (instance != null) {
+			throw new RuntimeException(mod_MumbleLink.class.getSimpleName()
+					+ " was already loaded.");
+		}
 
-        mumbleData = new UpdateData(this, settings, errorHandler);
+		instance = this;
 
-        mumbleInititer = new MumbleInitializer(this, errorHandler);
-        mumbleInititerThread = new Thread(mumbleInititer);
+		errorHandler = ErrorHandlerImpl.getInstance();
+	}
 
-
+	@Override
+	public void load() {
+		/*
+		 * only do something if FML is not used, else the actual FML
+		 * implementation will take over so this one will just be loaded but do
+		 * nothing
+		 */
+		if (!isForge()) {
+      actualMod = new MumbleLinkBase();
+			registerWithModLoader();
+			ClassLoader backupLoader = Thread.currentThread().getContextClassLoader(); 
+			Thread.currentThread().setContextClassLoader(Minecraft.class.getClassLoader());
+			actualMod.load();
+			Thread.currentThread().setContextClassLoader(backupLoader);
+		} else {
+      actualMod = new MumbleLink();
     }
+	}
 
-    private void initDefaultSettings() {
-        settings.define(MOD_NAME, modName);
-        settings.define(MOD_VERSION, modVersion);
+	private void registerWithModLoader() {
+		ModLoader.setInGameHook(this, true, false);
+	}
 
-        settings.define(LIBRARY_NAME, "mod_MumbleLink");
+	@Override
+	public boolean onTickInGame(float tick, Minecraft game) {
+		super.onTickInGame(tick, game);
 
-        settings.define(MUMBLE_CONTEXT, CONTEXT_ALL_TALK);
-        settings.define(MAX_CONTEXT_LENGTH, "256");
-    }
+		actualMod.tryUpdateMumble(game);
 
-    @Override
-    public void load() {
-        loadSettings();
-        loadLibrary();
+		return true;
+	}
 
-        registerWithModLoader();
+	@Override
+	public String getVersion() {
+		return MumbleLinkConstants.MOD_VERSION;
+	}
 
-        mumbleInititerThread.start();
-    }
-
-    private void loadSettings() {
-        File settingsFile = getSettingsFile();
-
-        if (settingsFile.exists()) {
-            try {
-                settings.loadFromFile(settingsFile);
-            } catch (IOException fileError) {
-                errorHandler.handleError(CONFIG_FILE_READ, fileError);
-            }
-        }
-    }
-
-    private File getSettingsFile() {
-        return new File(Minecraft.getMinecraftDir(), settingsFileName);
-    }
-
-    private void registerWithModLoader() {
-        ModLoader.setInGameHook(this, true, false);
-    }
-
-    private void loadLibrary() {
-        try {
-            loader.loadLibrary();
-        } catch (UnsatisfiedLinkError err) {
-            errorHandler.throwError(LIBRARY_LOAD_FAILED, err);
-        }
-    }
-
-    @Override
-    public boolean onTickInGame(float tick, Minecraft game) {
-        super.onTickInGame(tick, game);
-
-        if (mumbleInititer.isMumbleInitialized()) {
-            mumbleData.set(game);
-            mumbleData.send();
-        } else {
-            try {
-                mumbleInititerThread.start();
-            } catch (IllegalThreadStateException ex) {
-                // thread was already started so we do nothing
-            }
-        }
-
-        // no idea what this value does
-        return true;
-    }
-
-    @Override
-    public NativeInitError callInitMumble() {
-        int responseCode = initMumble();
-
-        return NativeInitError.fromCode(responseCode);
-    }
-
-    /**
-     * method from dll (prepare mumble)
-     *
-     * initializes the shared memory
-     *
-     * this basically corresponds to the suggested function as posted in the
-     * mumble wiki (http://mumble.sourceforge.net/Link)
-     *
-     * @return error code
-     *
-     * 0: no error 1: win32 specific: OpenFileMappingW failed to return a handle
-     * 2: win32 specific: MapViewOfFile failed to return a structure 3: unix
-     * specific: shm_open returned a negative integer * 4: unix specific: mmap
-     * failed to return a structure
-     */
-    private native int initMumble(); // DON'T TOUCH unless you want to recompile the libraries
-
-    @Override
-    public NativeUpdateError callUpdateMumble(float[] fAvatarPosition,
-            float[] fAvatarFront, float[] fAvatarTop, String name,
-            String description, float[] fCameraPosition, float[] fCameraFront,
-            float[] fCameraTop, String identity, String context) {
-        int responseCode = updateLinkedMumble(fAvatarPosition, fAvatarFront, fAvatarTop, name, description, fCameraPosition, fCameraFront, fCameraTop, identity, context);
-        return NativeUpdateError.fromCode(responseCode);
-    }
-
-    /**
-     * method from dll (heartbeat to mumble)
-     *
-     * updates the shared memory with the newest data
-     *
-     * this basically corresponds to the suggested function as posted in the
-     * mumble wiki (http://mumble.sourceforge.net/Link)
-     *
-     *
-     * @param fAvatarPosition Position of the avatar
-     * @param fAvatarFront Unit vector pointing out of the avatar's eyes (pitch,
-     * yaw)
-     * @param fAvatarTop Unit vector pointing out of the top of the avatar's
-     * head (pitch, roll)
-     * @param name this tool's name
-     * @param description what this tool is/does
-     * @param fCameraPosition Position of the camera
-     * @param fCameraFront Unit vector pointing which direction the camera is
-     * facing (pitch, yaw)
-     * @param fCameraTop Unit vector pointing out of the top of the camera
-     * (pitch, roll)
-     * @param identity Identifier which uniquely identifies a certain player in
-     * a context (e.g. the ingame Name)
-     * @param context Context should be equal for players which should be able
-     * to hear each other positional and differ for those who shouldn't (e.g. it
-     * could contain the server+port and team)
-     * @return error code 0: no error 1: shared memory was not initialized (was
-     * initMumble() called?)
-     */
-    private native int updateLinkedMumble( // DON'T TOUCH unless you want to recompile the libraries
-            float[] fAvatarPosition, // [3]
-            float[] fAvatarFront, // [3]
-            float[] fAvatarTop, // [3]
-            String name, // [256]
-            String description, // [2048]
-            float[] fCameraPosition, // [3]
-            float[] fCameraFront, // [3]
-            float[] fCameraTop, // [3]
-            String identity, // [256]
-            String context);
-
-    @Override
-    public String getVersion() {
-        return modVersion;
-    }
+	private boolean isForge() {
+		if (isForge == null) {
+			isForge = true;
+			try {
+				ModLoader.class
+						.getDeclaredField(MumbleLinkConstants.FML_MARKER);
+			} catch (NoSuchFieldException e) {
+				isForge = false;
+			}
+		}
+		return isForge;
+	}
 }
