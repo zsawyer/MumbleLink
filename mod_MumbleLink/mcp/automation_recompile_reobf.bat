@@ -52,8 +52,6 @@ IF /I "%err%" EQU "true" (
 REM !!! script should NOT need changed below here - double check what you change here
 
 
-@echo on
-
 REM   ###  generate exclude file
 echo \.svn\ > excludes.txt
 echo.\cpw\ >> excludes.txt
@@ -69,6 +67,8 @@ IF /I "%decompile%" EQU "y" (
 
   @echo | call decompile.bat
 )
+
+@echo on
 
 REM import mod into MCP src folder
 xcopy "%svn_path%\mod_MumbleLink\mcp\src\minecraft\*.*" "%mcp_path%\src\minecraft" /E /I /H /EXCLUDE:excludes.txt
@@ -89,6 +89,7 @@ REM update svn with modified files from MCP src folder
 REM xcopy "%mcp_path%\src\minecraft\*.*" "%svn_path%\mod_MumbleLink\mcp\src\minecraft" /E /I /H /EXCLUDE:excludes.txt
 
 REM update svn with reobfed files from MCP folder
+del /S "%svn_path%\mod_MumbleLink\mcp\reobf\minecraft\*.class"
 xcopy "%mcp_path%\reobf\minecraft\*.*" "%svn_path%\mod_MumbleLink\mcp\reobf\minecraft" /E /I /H /EXCLUDE:excludes.txt
 
 REM update minecraft installation with reobfed files from MCP folder

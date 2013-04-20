@@ -24,7 +24,6 @@ package zsawyer.mods.mumblelink;
 
 import java.util.logging.Logger;
 
-import net.minecraft.client.Minecraft;
 import zsawyer.mods.mumblelink.error.ErrorHandlerImpl;
 import zsawyer.mods.mumblelink.error.ModErrorHandler.ModError;
 import zsawyer.mods.mumblelink.loader.PackageLibraryLoader;
@@ -47,31 +46,22 @@ import cpw.mods.fml.relauncher.SideOnly;
 /**
  * mod to link with mumble for positional audio
  * 
- * @see http://mumble.sourceforge.net/
+ * this is a forge based implementation
  * 
- *      when developing for it I suggest using "mumblePAHelper" to see
- *      coordinates
- * 
- *      for Minecraft v1.5.1 updated 2012-04-05
+ * for Minecraft v1.4.7 updated 2012-04-19
  * 
  * @author zsawyer, 2013-04-09
  */
 @Mod(modid = MumbleLinkConstants.MOD_ID, name = MumbleLinkConstants.MOD_NAME, version = MumbleLinkConstants.MOD_VERSION)
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 @SideOnly(Side.CLIENT)
-public class MumbleLink {
+public class MumbleLink extends MumbleLinkBase {
 	public static Logger LOG;
 
 	// The instance of the mod that Forge uses.
 	@Instance(MumbleLinkConstants.MOD_ID)
 	public static MumbleLink instance;
 	//
-	private ErrorHandlerImpl errorHandler;
-	//
-	private MumbleInitializer mumbleInititer;
-	private Thread mumbleInititerThread;
-	private UpdateData mumbleData;
-	private LinkAPILibrary library;
 	private UpdateTicker updateTicker;
 
 	@PreInit
@@ -87,28 +77,11 @@ public class MumbleLink {
 	@Init
 	public void load(FMLInitializationEvent event) {
 		load();
-	}
-
-	public void load() {
 		initComponents();
 		updateTicker.setEnabled(true);
 	}
 
 	private void initComponents() {
-		errorHandler = ErrorHandlerImpl.getInstance();
-
-		try {
-			library = new PackageLibraryLoader()
-					.loadLibrary(MumbleLinkConstants.LIBRARY_NAME);
-		} catch (Exception e) {
-			errorHandler.throwError(ModError.LIBRARY_LOAD_FAILED, e);
-		}
-
-		mumbleData = new UpdateData(library, errorHandler);
-
-		mumbleInititer = new MumbleInitializer(library, errorHandler);
-		mumbleInititerThread = new Thread(mumbleInititer);
-
 		updateTicker = new UpdateTicker();
 		updateTicker.engage();
 
@@ -117,19 +90,6 @@ public class MumbleLink {
 	@SideOnly(Side.CLIENT)
 	@PostInit
 	public void postInit(FMLPostInitializationEvent event) {
-	}
-
-	public void tryUpdateMumble(Minecraft game) {
-		if (mumbleInititer.isMumbleInitialized()) {
-			mumbleData.set(game);
-			mumbleData.send();
-		} else {
-			try {
-				mumbleInititerThread.start();
-			} catch (IllegalThreadStateException ex) {
-				// thread was already started so we do nothing
-			}
-		}
 	}
 
 }

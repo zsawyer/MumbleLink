@@ -21,9 +21,6 @@
  */
 package zsawyer.mods.mumblelink.error;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *

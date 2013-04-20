@@ -19,22 +19,27 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package zsawyer.mods.mumblelink;
+package net.minecraft.src;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.BaseMod;
-import net.minecraft.src.ModLoader;
+import zsawyer.mods.mumblelink.MumbleLink;
+import zsawyer.mods.mumblelink.MumbleLinkBase;
+import zsawyer.mods.mumblelink.MumbleLinkConstants;
 import zsawyer.mods.mumblelink.error.ErrorHandlerImpl;
 
 /**
  * mod to link with mumble for positional audio
  * 
+ * this is an implementation intended for Risugami's ModLoader but it also
+ * handles if Forge is used
+ * 
+ * the main reason this class is still present is to support RML and FML
+ * side-by-side
+ * 
  * @see http://mumble.sourceforge.net/
  * 
  *      when developing for it I suggest using "mumblePAHelper" to see
  *      coordinates
- * 
- *      for Minecraft v1.5.1 updated 2012-04-05
  * 
  * @author zsawyer, 2011-03-20
  */
@@ -43,7 +48,9 @@ public class mod_MumbleLink extends BaseMod {
 	public static mod_MumbleLink instance;
 
 	private ErrorHandlerImpl errorHandler;
-	private MumbleLink actualMod;
+	private MumbleLinkBase actualMod;
+
+	private Boolean isForge = null;
 
 	public mod_MumbleLink() {
 		super();
@@ -52,26 +59,29 @@ public class mod_MumbleLink extends BaseMod {
 			throw new RuntimeException(mod_MumbleLink.class.getSimpleName()
 					+ " was already loaded.");
 		}
+
 		instance = this;
 
 		errorHandler = ErrorHandlerImpl.getInstance();
-
-		actualMod = new MumbleLink();
 	}
 
 	@Override
 	public void load() {
-		boolean isForge = true;
-		try {
-			ModLoader.class.getDeclaredField(MumbleLinkConstants.FML_MARKER);
-		} catch (NoSuchFieldException e) {
-			isForge = false;
-		}
-		
-		if (!isForge) {
+		/*
+		 * only do something if FML is not used, else the actual FML
+		 * implementation will take over so this one will just be loaded but do
+		 * nothing
+		 */
+		if (!isForge()) {
+      actualMod = new MumbleLinkBase();
 			registerWithModLoader();
+			ClassLoader backupLoader = Thread.currentThread().getContextClassLoader(); 
+			Thread.currentThread().setContextClassLoader(Minecraft.class.getClassLoader());
 			actualMod.load();
-		}
+			Thread.currentThread().setContextClassLoader(backupLoader);
+		} else {
+      actualMod = new MumbleLink();
+    }
 	}
 
 	private void registerWithModLoader() {
@@ -90,5 +100,18 @@ public class mod_MumbleLink extends BaseMod {
 	@Override
 	public String getVersion() {
 		return MumbleLinkConstants.MOD_VERSION;
+	}
+
+	private boolean isForge() {
+		if (isForge == null) {
+			isForge = true;
+			try {
+				ModLoader.class
+						.getDeclaredField(MumbleLinkConstants.FML_MARKER);
+			} catch (NoSuchFieldException e) {
+				isForge = false;
+			}
+		}
+		return isForge;
 	}
 }

@@ -29,15 +29,14 @@
  */
 package zsawyer.mumble.jna;
 
-import com.sun.jna.Library;
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-import com.sun.jna.Structure;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.List;
+
+import com.sun.jna.Library;
+import com.sun.jna.Structure;
 
 /**
  * JNA Wrapper for library <b>LinkAPI</b><br>

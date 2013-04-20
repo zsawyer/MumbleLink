@@ -22,10 +22,6 @@
 
 package zsawyer.mods.mumblelink;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
  * 
@@ -35,7 +31,7 @@ public class MumbleLinkConstants {
 
 	public static final String MOD_ID = "MumbleLink";
 	public static final String MOD_NAME = "MumbleLink (forge)";
-	public static final String MOD_VERSION = "3.0.0";
+	public static final String MOD_VERSION = "3.0.1";
 
 	//
 

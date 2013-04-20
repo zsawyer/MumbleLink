@@ -24,12 +24,11 @@ package zsawyer.mods.mumblelink.error;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.minecraft.src.ModLoader;
 import zsawyer.mods.mumblelink.MumbleLinkConstants;
-import zsawyer.mods.mumblelink.mod_MumbleLink;
 import zsawyer.mods.mumblelink.notification.BufferedChatNotifier;
 import zsawyer.mods.mumblelink.notification.UserNotifier;
 import zsawyer.mods.mumblelink.util.SingletonFactory;
-import net.minecraft.src.ModLoader;
 
 
 /**
