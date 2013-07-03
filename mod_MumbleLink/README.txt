@@ -29,7 +29,19 @@ If you are modifying the native methods be sure to create a new .h for JNI
 10. follow mod installation instructions: http://www.minecraftforum.net/viewtopic.php?f=1032&t=235800
 
 
-
+## Using Eclipse (4+) and Forge ##
+1. start Eclipse with the workspace at "forge/mcp/eclipse"
+2. Add sources:
+    "Properties" -> "Java Build Path" -> "Source"
+        -> "Link Source..." -> "Browse..." (browse to "mod_MumbleLink/SOURCES/trunk/mod_MumbleLink/mcp/src/minecraft")
+        -> set "Folder name:" to "mod_MumbleLink"
+        -> "Finish"
+3. Add JNA libraries requied for launching out of the box
+    "Properties" -> "Java Build Path" -> "Libraries"
+        -> "Add External JARs..." (browse to "mod_MumbleLink/SOURCES/trunk/mod_MumbleLink/resources/lib")
+        -> select both "natives.jar" and "jna-x.x.x.jar"
+        -> "Open" -> "OK"
+    
 
 ## Using NetBeans (6.9.1) ##
 1. create a new Java Application (no sources, do not generate any classes/files)

@@ -73,15 +73,17 @@ public class mod_MumbleLink extends BaseMod {
 		 * nothing
 		 */
 		if (!isForge()) {
-      actualMod = new MumbleLinkBase();
+			actualMod = new MumbleLinkBase();
 			registerWithModLoader();
-			ClassLoader backupLoader = Thread.currentThread().getContextClassLoader(); 
-			Thread.currentThread().setContextClassLoader(Minecraft.class.getClassLoader());
+			ClassLoader backupLoader = Thread.currentThread()
+					.getContextClassLoader();
+			Thread.currentThread().setContextClassLoader(
+					Minecraft.class.getClassLoader());
 			actualMod.load();
 			Thread.currentThread().setContextClassLoader(backupLoader);
 		} else {
-      actualMod = new MumbleLink();
-    }
+			actualMod = new MumbleLink();
+		}
 	}
 
 	private void registerWithModLoader() {

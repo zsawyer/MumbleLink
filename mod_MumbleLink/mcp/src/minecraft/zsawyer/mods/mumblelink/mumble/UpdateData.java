@@ -170,7 +170,7 @@ public class UpdateData {
         // TODO: generate some json and append additional data like server,
         //          world, team and what not, so the player can be managed
         //          by mumo (http://gitorious.org/mumble-scripts/mumo)
-    	return game.thePlayer.username;
+    	return game.thePlayer.getEntityName();
     }
 
     protected String generateContext(Minecraft game, int maxLength) {

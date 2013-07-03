@@ -32,6 +32,7 @@ import zsawyer.mods.mumblelink.mumble.UpdateData;
 import zsawyer.mumble.jna.LinkAPILibrary;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.Mod.PostInit;
@@ -48,8 +49,6 @@ import cpw.mods.fml.relauncher.SideOnly;
  * 
  * this is a forge based implementation
  * 
- * for Minecraft v1.4.7 updated 2012-04-19
- * 
  * @author zsawyer, 2013-04-09
  */
 @Mod(modid = MumbleLinkConstants.MOD_ID, name = MumbleLinkConstants.MOD_NAME, version = MumbleLinkConstants.MOD_VERSION)
@@ -64,7 +63,7 @@ public class MumbleLink extends MumbleLinkBase {
 	//
 	private UpdateTicker updateTicker;
 
-	@PreInit
+	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		LOG = event.getModLog();
 
@@ -74,7 +73,7 @@ public class MumbleLink extends MumbleLinkBase {
 	}
 
 	@SideOnly(Side.CLIENT)
-	@Init
+	@EventHandler
 	public void load(FMLInitializationEvent event) {
 		load();
 		initComponents();
@@ -88,7 +87,7 @@ public class MumbleLink extends MumbleLinkBase {
 	}
 
 	@SideOnly(Side.CLIENT)
-	@PostInit
+	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 	}
 

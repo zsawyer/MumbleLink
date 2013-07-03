@@ -23,7 +23,7 @@ IF NOT EXIST "%svn_path%" (
 )
 
 
-set mcp_path=D:\mcp725
+set mcp_path=D:\minecraftforge-src-1.6.1-8.9.0.762\forge\mcp
 :mcpPathPoint
 set /P mcp_path_query="MCP-Path [%mcp_path%]: "
 IF /I "%mcp_path_query%" NEQ "" (
