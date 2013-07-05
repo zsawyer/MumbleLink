@@ -23,8 +23,7 @@ package zsawyer.mods.mumblelink;
 
 import java.util.EnumSet;
 
-import zsawyer.mods.mumblelink.util.SingletonFactory;
-
+import zsawyer.mods.Activateable;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
@@ -35,9 +34,9 @@ import cpw.mods.fml.relauncher.Side;
  * 
  * @author zsawyer
  */
-public class UpdateTicker implements ITickHandler {
+public class UpdateTicker implements ITickHandler, Activateable {
 
-	private boolean enabled = false;	
+	private boolean enabled = false;
 
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {
@@ -47,10 +46,10 @@ public class UpdateTicker implements ITickHandler {
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		if (enabled) {
-			MumbleLink.instance.tryUpdateMumble(FMLClientHandler.instance().getClient());
+			MumbleLink.instance.tryUpdateMumble(FMLClientHandler.instance()
+					.getClient());
 		}
 	}
-
 
 	@Override
 	public EnumSet<TickType> ticks() {
@@ -73,9 +72,15 @@ public class UpdateTicker implements ITickHandler {
 		this.enabled = enabled;
 	}
 
-	public void engage() {
-		TickRegistry.registerTickHandler(this, Side.CLIENT);	
+	@Override
+	public void activate() {
+		TickRegistry.registerTickHandler(this, Side.CLIENT);
 		enabled = true;
+	}
+
+	@Override
+	public void deactivate() {
+		enabled = false;
 	}
 
 }

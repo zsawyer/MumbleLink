@@ -15,7 +15,7 @@
     "parent": "",
     "requiredMods": [ "FML" ],
     "dependencies": [ "FML" ],
-    "dependants": [ ],
+    "dependants": [ "ExtendedPASupport" ],
     "useDependencyInformation": "true"
   }, 
   {
@@ -33,6 +33,24 @@
     "parent": "",
     "requiredMods": [ ],
     "dependencies": [ ],
+    "dependants": [ ],
+    "useDependencyInformation": "true"
+  }, 
+  {
+    "modid": "ExtendedPASupport",
+    "name": "ExtendedPASupport for MumbleLink",
+    "description": "An addon to the MumbleLink mod (forge version) which injects extended positional audio support (i.e. context and identity) based on vanilla minecraft.",
+    "version": "0.0.1",
+    "mcversion": "1.6.1",
+    "url": "http://www.minecraftforum.net/topic/217587-151-mod-mumblelink-ml-smp-lan-mumble-realism-directional-voip/",
+    "updateUrl": "",
+    "authors": [ "zsawyer" ],
+    "credits": "zsawyer, 2011-2013",
+    "logoFile": "",
+    "screenshots": [ ],
+    "parent": "",
+    "requiredMods": [ "FML", "MumbleLink" ],
+    "dependencies": [ "FML", "MumbleLink" ],
     "dependants": [ ],
     "useDependencyInformation": "true"
   }]

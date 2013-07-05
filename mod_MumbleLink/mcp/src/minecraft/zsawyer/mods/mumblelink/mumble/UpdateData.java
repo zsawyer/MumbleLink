@@ -161,15 +161,12 @@ public class UpdateData {
             context = generateContext(game, LinkAPILibrary.MAX_CONTEXT_LENGTH);
 
         } catch (Exception ex) {
-        	// we'll just ignore errors since they would become to spammy and we will retry anyways 
+        	// we'll just ignore errors since they would become too spammy and we will retry anyways 
             //ModLoader.getLogger().log(Level.SEVERE, null, ex);
         }
     }
 
     protected String generateIdentity(Minecraft game, int maxLength) {
-        // TODO: generate some json and append additional data like server,
-        //          world, team and what not, so the player can be managed
-        //          by mumo (http://gitorious.org/mumble-scripts/mumo)
     	return game.thePlayer.getEntityName();
     }
 
