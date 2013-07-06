@@ -31,7 +31,7 @@ public class MumbleLinkConstants {
 
 	public static final String MOD_ID = "MumbleLink";
 	public static final String MOD_NAME = "MumbleLink (forge)";
-	public static final String MOD_VERSION = "3.0.4";
+	public static final String MOD_VERSION = "4.0.0";
 
 	//
 

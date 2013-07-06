@@ -81,7 +81,7 @@ cd "%mcp_path%"
 
 @echo | call recompile.bat
 
-@echo | call reobfuscate.bat
+@echo | call reobfuscate_srg.bat
 
 popd
 

@@ -48,15 +48,18 @@ public class ExtendedUpdateData extends UpdateData {
 		String context = super.generateContext(game, maxLength);
 
 		for (ContextManipulator contextManipulator : contextManipulators) {
-			context = contextManipulator.manipulateContext(context, game,
-					maxLength);
+			String newContext = contextManipulator.manipulateContext(context,
+					game, maxLength);
+			if (verify("context", newContext, maxLength)) {
+				context = newContext;
+			}
 		}
 
-		if(MumbleLink.debug()){
+		if (MumbleLink.debug()) {
 			MumbleLink.LOG.log(Level.INFO, "context: " + context);
 		}
-		
-		return context;		
+
+		return context;
 	}
 
 	@Override
@@ -64,15 +67,29 @@ public class ExtendedUpdateData extends UpdateData {
 		String identity = super.generateIdentity(game, maxLength);
 
 		for (IdentityManipulator identityManipulator : identityManipulators) {
-			identity = identityManipulator.manipulateIdentity(identity, game,
-					maxLength);
+			String newIdentity = identityManipulator.manipulateIdentity(
+					identity, game, maxLength);
+			if (verify("identity", newIdentity, maxLength)) {
+				identity = newIdentity;
+			}
 		}
 
-		if(MumbleLink.debug()){
+		if (MumbleLink.debug()) {
 			MumbleLink.LOG.log(Level.INFO, "identity: " + identity);
-		}		
-		
+		}
+
 		return identity;
+	}
+
+	private boolean verify(String type, String value, int maxLength) {
+		if (value.length() > maxLength) {
+			MumbleLink.LOG
+					.log(Level.SEVERE, type + " (" + value.length()
+							+ ") is too long (max. " + maxLength + "): '"
+							+ value + "'");
+			return false;
+		}
+		return true;
 	}
 
 	public void register(IdentityManipulator manipulator) {

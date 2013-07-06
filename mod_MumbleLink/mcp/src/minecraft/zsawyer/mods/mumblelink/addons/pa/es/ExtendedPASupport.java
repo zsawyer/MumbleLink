@@ -23,28 +23,27 @@
 package zsawyer.mods.mumblelink.addons.pa.es;
 
 /*
-mod_MumbleLink - Positional Audio Communication for Minecraft with Mumble
-Copyright 2011-2013 zsawyer (http://sourceforge.net/users/zsawyer)
+ mod_MumbleLink - Positional Audio Communication for Minecraft with Mumble
+ Copyright 2011-2013 zsawyer (http://sourceforge.net/users/zsawyer)
 
-This file is part of mod_MumbleLink
-(http://sourceforge.net/projects/modmumblelink/).
+ This file is part of mod_MumbleLink
+ (http://sourceforge.net/projects/modmumblelink/).
 
-mod_MumbleLink is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+ mod_MumbleLink is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-mod_MumbleLink is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
+ mod_MumbleLink is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU Lesser General Public License
+ along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
-*/
+ */
 
-import java.security.PublicKey;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -52,6 +51,9 @@ import net.minecraft.client.Minecraft;
 import zsawyer.mods.Activateable;
 import zsawyer.mods.mumblelink.MumbleLink;
 import zsawyer.mods.mumblelink.MumbleLinkConstants;
+import zsawyer.mods.mumblelink.addons.pa.es.ExtendedPASupportConstants.ContextKey;
+import zsawyer.mods.mumblelink.addons.pa.es.ExtendedPASupportConstants.IdentityKey;
+import zsawyer.mods.mumblelink.json.JSONArray;
 import zsawyer.mods.mumblelink.json.JSONException;
 import zsawyer.mods.mumblelink.json.JSONObject;
 import zsawyer.mods.mumblelink.mumble.ContextManipulator;
@@ -126,7 +128,7 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator,
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 	}
-	
+
 	@Override
 	public void activate() {
 		MumbleLink.instance.getApi().register((IdentityManipulator) this);
@@ -137,28 +139,29 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator,
 	public void deactivate() {
 		MumbleLink.instance.getApi().unregister((IdentityManipulator) this);
 		MumbleLink.instance.getApi().unregister((ContextManipulator) this);
-	}	
+	}
 
 	@Override
 	public String manipulateContext(String context, Minecraft game,
 			int maxLength) {
 
 		JSONObject newContext = new JSONObject();
-		
+
 		try {
-			newContext.put("domain", MumbleLinkConstants.MUMBLE_CONTEXT);
+			
+			newContext.put(ContextKey.DOMAIN, MumbleLinkConstants.MUMBLE_CONTEXT);
+			
 		} catch (JSONException e) {
 			LOG.log(Level.SEVERE, "could not generate identity", e);
 			return context;
 		}
-		
+
 		if (debug) {
-			ExtendedPASupport.LOG.log(Level.INFO, "contexts: "
-					+ context.toString());
-		}		
-		
-		// TODO: //return newContext;
-		return context;
+			ExtendedPASupport.LOG.log(Level.INFO,
+					"contexts: " + context.toString());
+		}
+
+		return newContext.toString();
 	}
 
 	@Override
@@ -168,13 +171,15 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator,
 		JSONObject newIdentity = new JSONObject();
 
 		try {
-			newIdentity.put("name", game.thePlayer.getEntityName());
+			newIdentity.put(IdentityKey.NAME, game.thePlayer.getEntityName());
 
-			// TODO: check if unique server ID!?
-			PublicKey pk = game.getIntegratedServer().getKeyPair().getPublic();
-			newIdentity.put("serverkey", pk.toString());
-			newIdentity.put("world", game.theWorld.getSeed());
-			newIdentity.put("dimension", game.thePlayer.dimension);
+			JSONArray spawnCoordinates = new JSONArray();
+			spawnCoordinates.put(game.theWorld.getWorldInfo().getSpawnX());
+			spawnCoordinates.put(game.theWorld.getWorldInfo().getSpawnY());
+			spawnCoordinates.put(game.theWorld.getWorldInfo().getSpawnZ());
+			newIdentity.put(IdentityKey.WORLD_SPAWN, spawnCoordinates);
+
+			newIdentity.put(IdentityKey.DIMENSION, game.thePlayer.dimension);
 
 		} catch (JSONException e) {
 			LOG.log(Level.SEVERE, "could not generate identity", e);
@@ -182,13 +187,10 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator,
 		}
 
 		if (debug) {
-			ExtendedPASupport.LOG.log(Level.INFO, "identity: "
-					+ newIdentity.toString());
+			ExtendedPASupport.LOG.log(Level.INFO,
+					"identity: " + newIdentity.toString());
 		}
 
-		// TODO: //return newIdentity.toString();
-		return identity;
+		return newIdentity.toString();
 	}
-
-
 }

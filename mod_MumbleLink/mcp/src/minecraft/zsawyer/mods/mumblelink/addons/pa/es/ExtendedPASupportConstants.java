@@ -25,7 +25,23 @@ package zsawyer.mods.mumblelink.addons.pa.es;
 public class ExtendedPASupportConstants {
 	public static final String MOD_ID = "ExtendedPASupport";
 	public static final String MOD_NAME = "ExtendedPASupport for MumbleLink";
-	public static final String MOD_VERSION = "0.0.1";
+	public static final String MOD_VERSION = "0.0.2";
+
+	public static class IdentityKey {
+		public static final String NAME = "name";
+		public static final String DIMENSION = "dimension";
+		public static final String WORLD_SPAWN = "worldSpawn";
+
+		private IdentityKey() {
+		}
+	}
+
+	public static class ContextKey {
+		public static final String DOMAIN = "domain";
+
+		private ContextKey() {
+		};
+	}
 
 	private ExtendedPASupportConstants() {
 	}
