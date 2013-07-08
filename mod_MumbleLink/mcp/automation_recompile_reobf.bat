@@ -84,8 +84,8 @@ REM recompile
 @echo | call recompile.bat
 
 REM reobfuscate
-@echo | call reobfuscate.bat
-REM @echo | call reobfuscate_srg.bat
+REM @echo | call reobfuscate.bat
+@echo | call reobfuscate_srg.bat
 
 popd
 
