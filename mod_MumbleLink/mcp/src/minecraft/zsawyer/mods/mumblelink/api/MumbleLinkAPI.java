@@ -22,16 +22,56 @@
 
 package zsawyer.mods.mumblelink.api;
 
+import zsawyer.mods.mumblelink.MumbleLink;
 import zsawyer.mods.mumblelink.mumble.ContextManipulator;
 import zsawyer.mods.mumblelink.mumble.IdentityManipulator;
 
+/**
+ * The MumbleLinkAPI is an access point for addons to interface with the
+ * forge-based MumbleLink mod.<br>
+ * <br>
+ * Get an instance of the API with: <br>
+ * <code>MumbleLink.instance.getApi()</code>
+ * 
+ * Use this to (un)subscribe/(un)register your context and identity
+ * manipulators.
+ * 
+ * @author zsawyer
+ * 
+ */
 public interface MumbleLinkAPI {
 
+	/**
+	 * register an identity manipulator for injecting a custom positional audio
+	 * (PA) identity
+	 * 
+	 * @param manipulator
+	 *            subscriber to be registered
+	 */
 	public void register(IdentityManipulator manipulator);
 
+	/**
+	 * unsubscribe the listener
+	 * 
+	 * @param manipulator
+	 *            previously registered subscriber to unsubscribe
+	 */
 	public void unregister(IdentityManipulator manipulator);
 
+	/**
+	 * register a context manipulator for injecting a custom positional audio
+	 * (PA) context
+	 * 
+	 * @param manipulator
+	 *            subscriber to be registered
+	 */
 	public void register(ContextManipulator manipulator);
 
+	/**
+	 * unsubscribe the listener
+	 * 
+	 * @param manipulator
+	 *            previously registered subscriber to unsubscribe
+	 */
 	public void unregister(ContextManipulator manipulator);
 }

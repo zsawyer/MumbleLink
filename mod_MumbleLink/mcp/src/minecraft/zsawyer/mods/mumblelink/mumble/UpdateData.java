@@ -21,55 +21,67 @@
  */
 package zsawyer.mods.mumblelink.mumble;
 
+import java.util.logging.Level;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.src.ModLoader;
 import net.minecraft.util.Vec3;
+import zsawyer.mods.mumblelink.MumbleLinkBase;
 import zsawyer.mods.mumblelink.MumbleLinkConstants;
+import zsawyer.mods.mumblelink.addons.pa.es.ExtendedPASupportConstants.ContextKey;
+import zsawyer.mods.mumblelink.addons.pa.es.ExtendedPASupportConstants.IdentityKey;
 import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler;
 import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler.NativeUpdateError;
+import zsawyer.mods.mumblelink.json.JSONException;
+import zsawyer.mods.mumblelink.json.JSONObject;
 import zsawyer.mods.mumblelink.mumble.jna.LinkAPIHelper;
 import zsawyer.mumble.jna.LinkAPILibrary;
 
 /**
- *
+ * 
  * @author zsawyer
  */
 public class UpdateData {
 
-    float[] fAvatarPosition = {0, 0, 0}; // [3]
-    float[] fAvatarFront = {0, 0, 0}; // [3]
-    float[] fAvatarTop = {0, 0, 0}; // [3]
-    String name = ""; // [256]
-    String description = ""; // [2048]
-    float[] fCameraPosition = {0, 0, 0}; // [3]
-    float[] fCameraFront = {0, 0, 0}; // [3]
-    float[] fCameraTop = {0, 0, 0}; // [3]
-    String identity = ""; // [256]
-    String context = ""; // [256]
-    LinkAPILibrary mumbleLink;
-    NativeUpdateErrorHandler errorHandler;
-	private int uiTick = 0;	
+	float[] fAvatarPosition = { 0, 0, 0 }; // [3]
+	float[] fAvatarFront = { 0, 0, 0 }; // [3]
+	float[] fAvatarTop = { 0, 0, 0 }; // [3]
+	String name = ""; // [256]
+	String description = ""; // [2048]
+	float[] fCameraPosition = { 0, 0, 0 }; // [3]
+	float[] fCameraFront = { 0, 0, 0 }; // [3]
+	float[] fCameraTop = { 0, 0, 0 }; // [3]
+	String identity = ""; // [256]
+	String context = ""; // [256]
+	LinkAPILibrary mumbleLink;
+	NativeUpdateErrorHandler errorHandler;
+	private int uiTick = 0;
 
-    public UpdateData(LinkAPILibrary mumbleLink, NativeUpdateErrorHandler errorHandler) {
-        this.mumbleLink = mumbleLink;
-        this.errorHandler = errorHandler;
+	public UpdateData(LinkAPILibrary mumbleLink,
+			NativeUpdateErrorHandler errorHandler) {
+		this.mumbleLink = mumbleLink;
+		this.errorHandler = errorHandler;
 
-        name = MumbleInitializer.PLUGIN_NAME;
-        description = MumbleInitializer.PLUGIN_DESCRIPTION;
-    }
+		name = MumbleInitializer.PLUGIN_NAME;
+		description = MumbleInitializer.PLUGIN_DESCRIPTION;
+	}
 
-    public void send() {
-    	LinkAPILibrary.LinkedMem lm = new LinkAPILibrary.LinkedMem();
+	public void send() {
+		LinkAPILibrary.LinkedMem lm = new LinkAPILibrary.LinkedMem();
 
-		lm.identity = LinkAPIHelper.parseToCharBuffer(LinkAPILibrary.MAX_IDENTITY_LENGTH, identity).array();
-		lm.context = LinkAPIHelper.parseToByteBuffer(LinkAPILibrary.MAX_CONTEXT_LENGTH, context).array();
+		lm.identity = LinkAPIHelper.parseToCharBuffer(
+				LinkAPILibrary.MAX_IDENTITY_LENGTH, identity).array();
+		lm.context = LinkAPIHelper.parseToByteBuffer(
+				LinkAPILibrary.MAX_CONTEXT_LENGTH, context).array();
 		lm.context_len = context.length();
 
-		lm.name = LinkAPIHelper.parseToCharBuffer(LinkAPILibrary.MAX_NAME_LENGTH, name).array();
-		lm.description = LinkAPIHelper.parseToCharBuffer(LinkAPILibrary.MAX_DESCRIPTION_LENGTH, description).array();
-	
+		lm.name = LinkAPIHelper.parseToCharBuffer(
+				LinkAPILibrary.MAX_NAME_LENGTH, name).array();
+		lm.description = LinkAPIHelper.parseToCharBuffer(
+				LinkAPILibrary.MAX_DESCRIPTION_LENGTH, description).array();
+
 		lm.uiTick = ++uiTick;
 		lm.uiVersion = MumbleInitializer.PLUGIN_UI_VERSION;
-
 
 		lm.fAvatarPosition = fAvatarPosition;
 		lm.fAvatarFront = fAvatarFront;
@@ -80,97 +92,147 @@ public class UpdateData {
 		lm.fCameraTop = fCameraTop;
 
 		byte successMessage = mumbleLink.updateData(lm);
-		boolean success = (successMessage != 0); 
-		
-		if(!success) {    	 
-			errorHandler.handleError(NativeUpdateError.ERROR_NOT_YET_INITIALIZED);	
+		boolean success = (successMessage != 0);
+
+		if (!success) {
+			errorHandler
+					.handleError(NativeUpdateError.ERROR_NOT_YET_INITIALIZED);
 		}
-		
-    }
 
-    public void set(Minecraft game) {
-        try {
-            // 1 unit = 1 meter
+	}
 
-            // TODO: use full vectors (all axes)
+	public void set(Minecraft game) {
+		try {
+			// 1 unit = 1 meter
 
-            // initialize multipliers
-            float fAvatarFrontX = 1;
-            float fAvatarFrontY = 0; // cancel out if the user is looking up or down
-            float fAvatarFrontZ = 1;
+			// TODO: use full vectors (all axes)
 
-            float fCameraFrontX = 1;
-            float fCameraFrontY = 0; // cancel out if the user is looking up or down
-            float fCameraFrontZ = 1;
+			// initialize multipliers
+			float fAvatarFrontX = 1;
+			float fAvatarFrontY = 0; // cancel out if the user is looking up or
+										// down
+			float fAvatarFrontZ = 1;
 
-            float fAvatarTopX = 0;
-            float fAvatarTopY = 1; // Y points up
-            float fAvatarTopZ = 0;
+			float fCameraFrontX = 1;
+			float fCameraFrontY = 0; // cancel out if the user is looking up or
+										// down
+			float fCameraFrontZ = 1;
 
-            float fCameraTopX = 0;
-            float fCameraTopY = 1; // Y points up
-            float fCameraTopZ = 0;
+			float fAvatarTopX = 0;
+			float fAvatarTopY = 1; // Y points up
+			float fAvatarTopZ = 0;
 
+			float fCameraTopX = 0;
+			float fCameraTopY = 1; // Y points up
+			float fCameraTopZ = 0;
 
-            Vec3 lookDirection = game.thePlayer.getLookVec();
+			Vec3 lookDirection = game.thePlayer.getLookVec();
 
-            /*
-             * TODO: calculate real camera vector from pitch and yaw // camera
-             * pitch in degrees (e.g. 0.0f to 360.0f) Float cameraPitch =
-             * game.thePlayer.cameraPitch; // camera yaw in degrees (e.g. 0.0f
-             * to 360.0f) Float cameraYaw = game.thePlayer.cameraYaw;
-             */
+			/*
+			 * TODO: calculate real camera vector from pitch and yaw // camera
+			 * pitch in degrees (e.g. 0.0f to 360.0f) Float cameraPitch =
+			 * game.thePlayer.cameraPitch; // camera yaw in degrees (e.g. 0.0f
+			 * to 360.0f) Float cameraYaw = game.thePlayer.cameraYaw;
+			 */
 
-            // Position of the avatar
-            fAvatarPosition = new float[]{
-                Float.parseFloat(Double.toString(game.thePlayer.posX)), // note: losing precision here
-                Float.parseFloat(Double.toString(game.thePlayer.posZ)), // note: losing precision here
-                Float.parseFloat(Double.toString(game.thePlayer.posY))}; // note: losing precision here
+			// Position of the avatar
+			fAvatarPosition = new float[] {
+					Float.parseFloat(Double.toString(game.thePlayer.posX)), // note:
+																			// losing
+																			// precision
+																			// here
+					Float.parseFloat(Double.toString(game.thePlayer.posZ)), // note:
+																			// losing
+																			// precision
+																			// here
+					Float.parseFloat(Double.toString(game.thePlayer.posY)) }; // note:
+																				// losing
+																				// precision
+																				// here
 
-            // Unit vector pointing out of the avatar's eyes (here Front looks into scene).
-            fAvatarFront = new float[]{
-                Float.parseFloat(Double.toString(lookDirection.xCoord * fAvatarFrontX)), // note: losing precision here
-                Float.parseFloat(Double.toString(lookDirection.zCoord * fAvatarFrontZ)), // note: losing precision here
-                Float.parseFloat(Double.toString(lookDirection.yCoord * fAvatarFrontY))}; // note: losing precision here
+			// Unit vector pointing out of the avatar's eyes (here Front looks
+			// into scene).
+			fAvatarFront = new float[] {
+					Float.parseFloat(Double.toString(lookDirection.xCoord
+							* fAvatarFrontX)), // note: losing precision here
+					Float.parseFloat(Double.toString(lookDirection.zCoord
+							* fAvatarFrontZ)), // note: losing precision here
+					Float.parseFloat(Double.toString(lookDirection.yCoord
+							* fAvatarFrontY)) }; // note: losing precision here
 
-            // Unit vector pointing out of the top of the avatar's head (here Top looks straight up).
-            fAvatarTop = new float[]{fAvatarTopX, fAvatarTopZ, fAvatarTopY};
+			// Unit vector pointing out of the top of the avatar's head (here
+			// Top looks straight up).
+			fAvatarTop = new float[] { fAvatarTopX, fAvatarTopZ, fAvatarTopY };
 
+			// TODO: use real camera position, s.a.
+			fCameraPosition = new float[] {
+					Float.parseFloat(Double.toString(game.thePlayer.posX)), // note:
+																			// losing
+																			// precision
+																			// here
+					Float.parseFloat(Double.toString(game.thePlayer.posZ)), // note:
+																			// losing
+																			// precision
+																			// here
+					Float.parseFloat(Double.toString(game.thePlayer.posY)) }; // note:
+																				// losing
+																				// precision
+																				// here
 
-            // TODO: use real camera position, s.a.
-            fCameraPosition = new float[]{
-                Float.parseFloat(Double.toString(game.thePlayer.posX)), // note: losing precision here
-                Float.parseFloat(Double.toString(game.thePlayer.posZ)), // note: losing precision here
-                Float.parseFloat(Double.toString(game.thePlayer.posY))}; // note: losing precision here
+			// TODO: use real look vector, s.a.
+			fCameraFront = new float[] {
+					Float.parseFloat(Double.toString(lookDirection.xCoord
+							* fCameraFrontX)), // note: losing precision here
+					Float.parseFloat(Double.toString(lookDirection.zCoord
+							* fCameraFrontZ)), // note: losing precision here
+					Float.parseFloat(Double.toString(lookDirection.yCoord
+							* fCameraFrontY)) }; // note: losing precision here
 
-            // TODO: use real look vector, s.a.
-            fCameraFront = new float[]{
-                Float.parseFloat(Double.toString(lookDirection.xCoord * fCameraFrontX)), // note: losing precision here
-                Float.parseFloat(Double.toString(lookDirection.zCoord * fCameraFrontZ)), // note: losing precision here
-                Float.parseFloat(Double.toString(lookDirection.yCoord * fCameraFrontY))}; // note: losing precision here
+			fCameraTop = new float[] { fCameraTopX, fCameraTopZ, fCameraTopY };
 
-            fCameraTop = new float[]{fCameraTopX, fCameraTopZ, fCameraTopY};
+			// Identifier which uniquely identifies a certain player in a
+			// context (e.g. the ingame Name).
+			identity = generateIdentity(game,
+					LinkAPILibrary.MAX_IDENTITY_LENGTH);
 
+			// Context should be equal for players which should be able to hear
+			// each other positional and
+			// differ for those who shouldn't (e.g. it could contain the
+			// server+port and team)
+			// CAUTION: max len: 256
+			context = generateContext(game, LinkAPILibrary.MAX_CONTEXT_LENGTH);
 
-            // Identifier which uniquely identifies a certain player in a context (e.g. the ingame Name).
-            identity = generateIdentity(game, LinkAPILibrary.MAX_IDENTITY_LENGTH);
+		} catch (Exception ex) {
+			// we'll just ignore errors since they would become too spammy and
+			// we will retry anyways
+			// ModLoader.getLogger().log(Level.SEVERE, null, ex);
+		}
+	}
 
-            // Context should be equal for players which should be able to hear each other positional and
-            //  differ for those who shouldn't (e.g. it could contain the server+port and team)
-            //  CAUTION: max len: 256
-            context = generateContext(game, LinkAPILibrary.MAX_CONTEXT_LENGTH);
+	protected String generateIdentity(Minecraft game, int maxLength) {
+		try {
+			JSONObject newIdentity = new JSONObject();
+			newIdentity.put(IdentityKey.NAME, game.thePlayer.getEntityName());
+			return newIdentity.toString();
+		} catch (JSONException e) {
+			ModLoader.getLogger().log(Level.SEVERE,
+					"could not generate identity", e);
+		}
 
-        } catch (Exception ex) {
-        	// we'll just ignore errors since they would become too spammy and we will retry anyways 
-            //ModLoader.getLogger().log(Level.SEVERE, null, ex);
-        }
-    }
+		return game.thePlayer.getEntityName();
+	}
 
-    protected String generateIdentity(Minecraft game, int maxLength) {
-    	return game.thePlayer.getEntityName();
-    }
+	protected String generateContext(Minecraft game, int maxLength) {
+		try {
+			JSONObject newContext = new JSONObject();
+			newContext.put(ContextKey.DOMAIN,
+					MumbleLinkConstants.MUMBLE_CONTEXT_DOMAIN_ALL_TALK);
+			return newContext.toString();
+		} catch (JSONException e) {
+			ModLoader.getLogger().log(Level.SEVERE,
+					"could not generate context", e);
+		}
 
-    protected String generateContext(Minecraft game, int maxLength) {
-    	return MumbleLinkConstants.MUMBLE_CONTEXT;
-    }
+		return MumbleLinkConstants.MUMBLE_CONTEXT_DOMAIN_ALL_TALK;
+	}
 }

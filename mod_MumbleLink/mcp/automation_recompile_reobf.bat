@@ -65,6 +65,7 @@ IF /I "%decompile%" EQU "y" (
   rd /S /Q "%mcp_path%\jars\resources"
   xcopy "%appdata%\.minecraft\resources\*.*" "%mcp_path%\jars\resources" /E /I /H /EXCLUDE:excludes.txt
 
+  REM decompile
   @echo | call decompile.bat
 )
 
@@ -79,9 +80,12 @@ xcopy "%svn_path%\mod_MumbleLink\resources\lib\*.*" "%mcp_path%\lib" /E /I /H /E
 pushd .
 cd "%mcp_path%"
 
+REM recompile
 @echo | call recompile.bat
 
-@echo | call reobfuscate_srg.bat
+REM reobfuscate
+@echo | call reobfuscate.bat
+REM @echo | call reobfuscate_srg.bat
 
 popd
 

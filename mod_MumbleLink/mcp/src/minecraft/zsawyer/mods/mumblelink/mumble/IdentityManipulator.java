@@ -24,6 +24,61 @@ package zsawyer.mods.mumblelink.mumble;
 
 import net.minecraft.client.Minecraft;
 
+/**
+ * A class implementing this interface can register at the MumbleLinkAPI to be
+ * consulted when generating the identity to send to Mumble. There is no
+ * exclusive privilege, expect other manipulators to run after and before your
+ * implementation. Use JSON formatting for compatibility.
+ * 
+ * @author zsawyer
+ */
 public interface IdentityManipulator {
-	public String manipulateIdentity(String identity, Minecraft game, int maxLength);
+	/**
+	 * This method is expected to return a string for use as the Mumble
+	 * positional audio (PA) identity. The result is required to adhere to the
+	 * maxLength requirement which is dictated by the Link Plugin's internal
+	 * data structure and specifies the number of characters that can be sent.
+	 * 
+	 * The possibly previously manipulated identity is handed over and expected
+	 * to be respected by each implementation. Respecting herein means that the
+	 * previous identity should be - if possible - appended to, or at least be
+	 * reparsed (e.g. if length is likely to be over stepped).
+	 * 
+	 * For compatibility with other addons the suggested format is JSON.
+	 * 
+	 * 
+	 * Excerpt from Mumble Wiki (http://mumble.sourceforge.net/Link 2013-07-08):
+	 * 
+	 * Identity should contain a string which uniquely identifies the player in
+	 * the given context. This is usually satisfied by the in-game player name
+	 * or the players ID (player-/connection-ID on the server or a global ID).
+	 * 
+	 * Additionally the identity can contain any additional information about
+	 * the player that might be interesting for the mumble server.
+	 * 
+	 * For example by including team information in the identity a script on the
+	 * mumble server can move players into team channels automatically.
+	 * Additional information like squad number, squad leader status and so on
+	 * can be used to trigger even more behavior like automatically maintaining
+	 * a leadership structure inside mumble which is kept in-sync with in-game
+	 * state. E.g. someone is elected squad leader and now can whisper to all
+	 * other squad leaders and the team leader. For an example of such a
+	 * server-side script see the Battlefield 2 MuMo plugin.
+	 * 
+	 * 
+	 * @param identity
+	 *            the identity with all previous manipulations applied expect it
+	 *            to be a string representation of a JSON-Object which you can
+	 *            append key-value pairs to
+	 * @param game
+	 *            the Minecraft instance for convenience
+	 * @param maxLength
+	 *            the maximum number of characters the returned string may have,
+	 *            else it will not fit into the Link-Plugin's data structure
+	 * @return (preferably) a string representation of a JSON-Object (keep in
+	 *         mind that not using JSON will probably make your addon
+	 *         incompatible with other manipulator instances)
+	 */
+	public String manipulateIdentity(String identity, Minecraft game,
+			int maxLength);
 }

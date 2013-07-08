@@ -72,8 +72,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * An addon to the MumbleLink mod (forge version) which injects extended
- * positional audio support (i.e. context and identity) based on vanilla
- * minecraft.
+ * positional audio support (i.e. identity) based on vanilla Minecraft.
  * 
  * @author zsawyer, 2013-07-05
  */
@@ -83,21 +82,24 @@ import cpw.mods.fml.relauncher.SideOnly;
 		dependencies = "required-after:" + MumbleLinkConstants.MOD_ID)
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 @SideOnly(Side.CLIENT)
-public class ExtendedPASupport implements Activateable, IdentityManipulator,
-		ContextManipulator {
+public class ExtendedPASupport implements Activateable, IdentityManipulator {
 	public static Logger LOG;
 
 	// The instance of the mod that Forge uses.
 	@Instance(ExtendedPASupportConstants.MOD_ID)
 	public static ExtendedPASupport instance;
 
+	// whether this mod is active
 	private boolean enabled = true;
+	// whether debugging mode is on
 	private boolean debug = false;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
+		// initialize logger
 		LOG = event.getModLog();
 
+		// save guard because this mod should only run on the client
 		if (FMLCommonHandler.instance().getSide().isServer())
 			throw new RuntimeException(ExtendedPASupportConstants.MOD_NAME
 					+ " should not be installed on a server!");
@@ -105,14 +107,23 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator,
 		loadConfig(event);
 
 		if (!debug) {
+			// step up log level to only severe and higher messages
 			LOG.setLevel(Level.SEVERE);
 		}
 	}
 
+	/**
+	 * load the configuration from the config file
+	 * 
+	 * @param event
+	 *            the event from which to get the configuration from
+	 */
 	private void loadConfig(FMLPreInitializationEvent event) {
 		ConfigHelper configHelper = new ConfigHelper(event);
 
+		// load the debug variable from config file
 		debug = configHelper.loadDebug(debug);
+		// load the enabled variable from config file
 		enabled = configHelper.loadEnabled(enabled);
 	}
 
@@ -124,73 +135,76 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator,
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-	}
-
 	@Override
 	public void activate() {
 		MumbleLink.instance.getApi().register((IdentityManipulator) this);
-		MumbleLink.instance.getApi().register((ContextManipulator) this);
 	}
 
 	@Override
 	public void deactivate() {
 		MumbleLink.instance.getApi().unregister((IdentityManipulator) this);
-		MumbleLink.instance.getApi().unregister((ContextManipulator) this);
-	}
-
-	@Override
-	public String manipulateContext(String context, Minecraft game,
-			int maxLength) {
-
-		JSONObject newContext = new JSONObject();
-
-		try {
-			
-			newContext.put(ContextKey.DOMAIN, MumbleLinkConstants.MUMBLE_CONTEXT);
-			
-		} catch (JSONException e) {
-			LOG.log(Level.SEVERE, "could not generate identity", e);
-			return context;
-		}
-
-		if (debug) {
-			ExtendedPASupport.LOG.log(Level.INFO,
-					"contexts: " + context.toString());
-		}
-
-		return newContext.toString();
 	}
 
 	@Override
 	public String manipulateIdentity(String identity, Minecraft game,
 			int maxLength) {
 
-		JSONObject newIdentity = new JSONObject();
-
 		try {
-			newIdentity.put(IdentityKey.NAME, game.thePlayer.getEntityName());
+			// presume the previous identity is a JSON-Object
+			JSONObject newIdentity = new JSONObject(identity);
+			// inject our information
+			appendToIdentity(newIdentity, game);
+			// print the (intermediate) result for debugging
+			printDebug(newIdentity, "identity");
 
-			JSONArray spawnCoordinates = new JSONArray();
-			spawnCoordinates.put(game.theWorld.getWorldInfo().getSpawnX());
-			spawnCoordinates.put(game.theWorld.getWorldInfo().getSpawnY());
-			spawnCoordinates.put(game.theWorld.getWorldInfo().getSpawnZ());
-			newIdentity.put(IdentityKey.WORLD_SPAWN, spawnCoordinates);
-
-			newIdentity.put(IdentityKey.DIMENSION, game.thePlayer.dimension);
-
+			return newIdentity.toString();
 		} catch (JSONException e) {
+			// no JSON... this is not going to work...
 			LOG.log(Level.SEVERE, "could not generate identity", e);
 			return identity;
 		}
-
-		if (debug) {
-			ExtendedPASupport.LOG.log(Level.INFO,
-					"identity: " + newIdentity.toString());
-		}
-
-		return newIdentity.toString();
 	}
+
+	/**
+	 * append our information to the given identity
+	 * 
+	 * @param identity
+	 *            the identity to be supplement
+	 * @param game
+	 *            the game instance from which to retrieve the information
+	 * @throws JSONException
+	 *             see {@link JSONObject#put(String, Object)}
+	 */
+	private void appendToIdentity(JSONObject identity, Minecraft game)
+			throws JSONException {
+		// build spawn location coordinates (sadly this is the only somewhat
+		// identifiable information the client has about the world (and server)
+		// it connects to.
+		JSONArray spawnCoordinates = new JSONArray();
+		spawnCoordinates.put(game.theWorld.getWorldInfo().getSpawnX());
+		spawnCoordinates.put(game.theWorld.getWorldInfo().getSpawnY());
+		spawnCoordinates.put(game.theWorld.getWorldInfo().getSpawnZ());
+		// append coordinates
+		identity.put(IdentityKey.WORLD_SPAWN, spawnCoordinates);
+
+		// append the dimension
+		identity.put(IdentityKey.DIMENSION, game.thePlayer.dimension);
+	}
+
+	/**
+	 * short-hand method to print a JSON object in the log
+	 * 
+	 * @param objectToPrint
+	 *            the object to print to the log
+	 * @param nameOfObject
+	 *            the name to show (which identifies the object in the context
+	 *            of the log)
+	 */
+	private void printDebug(JSONObject objectToPrint, String nameOfObject) {
+		if (debug) {
+			ExtendedPASupport.LOG.log(Level.INFO, nameOfObject + ": "
+					+ objectToPrint.toString());
+		}
+	}
+
 }
