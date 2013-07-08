@@ -36,7 +36,6 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.relauncher.Side;
@@ -53,7 +52,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 		version = MumbleLinkConstants.MOD_VERSION)
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 @SideOnly(Side.CLIENT)
-public class MumbleLink extends MumbleLinkBase implements Activateable, Debuggable {
+public class MumbleLink extends MumbleLinkBase implements Activateable,
+		Debuggable {
 	public static Logger LOG;
 
 	// The instance of the mod that Forge uses.
@@ -105,11 +105,6 @@ public class MumbleLink extends MumbleLinkBase implements Activateable, Debuggab
 		api.setExtendedUpdateData(extendedUpdateData);
 	}
 
-	@SideOnly(Side.CLIENT)
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event) {
-	}
-
 	public MumbleLinkAPI getApi() {
 		return api;
 	}
@@ -125,10 +120,10 @@ public class MumbleLink extends MumbleLinkBase implements Activateable, Debuggab
 	}
 
 	@Override
-	public boolean debugging() {		
+	public boolean debugging() {
 		return debug;
 	}
-	
+
 	public static boolean debug() {
 		return instance.debug;
 	}

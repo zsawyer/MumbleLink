@@ -25,8 +25,8 @@ import java.util.logging.Level;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.ModLoader;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
-import zsawyer.mods.mumblelink.MumbleLinkBase;
 import zsawyer.mods.mumblelink.MumbleLinkConstants;
 import zsawyer.mods.mumblelink.addons.pa.es.ExtendedPASupportConstants.ContextKey;
 import zsawyer.mods.mumblelink.addons.pa.es.ExtendedPASupportConstants.IdentityKey;
@@ -109,24 +109,23 @@ public class UpdateData {
 
 			// initialize multipliers
 			float fAvatarFrontX = 1;
-			float fAvatarFrontY = 0; // cancel out if the user is looking up or
-										// down
+			float fAvatarFrontY = 1; 
 			float fAvatarFrontZ = 1;
 
 			float fCameraFrontX = 1;
-			float fCameraFrontY = 0; // cancel out if the user is looking up or
-										// down
+			float fCameraFrontY = 1; 
 			float fCameraFrontZ = 1;
 
-			float fAvatarTopX = 0;
+			float fAvatarTopX = 1;
 			float fAvatarTopY = 1; // Y points up
-			float fAvatarTopZ = 0;
+			float fAvatarTopZ = 1;
 
-			float fCameraTopX = 0;
+			float fCameraTopX = 1;
 			float fCameraTopY = 1; // Y points up
-			float fCameraTopZ = 0;
+			float fCameraTopZ = 1;
 
 			Vec3 lookDirection = game.thePlayer.getLookVec();
+			Vec3 topDirection = getTopVec(game);
 
 			/*
 			 * TODO: calculate real camera vector from pitch and yaw // camera
@@ -162,7 +161,13 @@ public class UpdateData {
 
 			// Unit vector pointing out of the top of the avatar's head (here
 			// Top looks straight up).
-			fAvatarTop = new float[] { fAvatarTopX, fAvatarTopZ, fAvatarTopY };
+			fAvatarTop = new float[] {
+					Float.parseFloat(Double.toString(topDirection.xCoord
+							* fAvatarTopX)), // note: losing precision here
+					Float.parseFloat(Double.toString(topDirection.zCoord
+							* fAvatarTopZ)), // note: losing precision here
+					Float.parseFloat(Double.toString(topDirection.yCoord
+							* fAvatarTopY)) }; // note: losing precision here
 
 			// TODO: use real camera position, s.a.
 			fCameraPosition = new float[] {
@@ -188,7 +193,13 @@ public class UpdateData {
 					Float.parseFloat(Double.toString(lookDirection.yCoord
 							* fCameraFrontY)) }; // note: losing precision here
 
-			fCameraTop = new float[] { fCameraTopX, fCameraTopZ, fCameraTopY };
+			fCameraTop = new float[] {
+					Float.parseFloat(Double.toString(topDirection.xCoord
+							* fCameraTopX)), // note: losing precision here
+					Float.parseFloat(Double.toString(topDirection.zCoord
+							* fCameraTopZ)), // note: losing precision here
+					Float.parseFloat(Double.toString(topDirection.yCoord
+							* fCameraTopY)) }; // note: losing precision here
 
 			// Identifier which uniquely identifies a certain player in a
 			// context (e.g. the ingame Name).
@@ -234,5 +245,18 @@ public class UpdateData {
 		}
 
 		return MumbleLinkConstants.MUMBLE_CONTEXT_DOMAIN_ALL_TALK;
+	}
+
+	private Vec3 getTopVec(Minecraft game) {
+		float f1 = MathHelper.cos(-game.thePlayer.rotationYaw * 0.017453292F
+				- (float) Math.PI);
+		float f2 = MathHelper.sin(-game.thePlayer.rotationYaw * 0.017453292F
+				- (float) Math.PI);
+		float f3 = -MathHelper
+				.cos((-game.thePlayer.rotationPitch +90) * 0.017453292F);
+		float f4 = MathHelper.sin((-game.thePlayer.rotationPitch +90) * 0.017453292F);
+
+		return game.theWorld.getWorldVec3Pool().getVecFromPool(
+				(double) (f2 * f3), (double) f4, (double) (f1 * f3));
 	}
 }

@@ -22,7 +22,6 @@
 
 package zsawyer.mods.mumblelink.api;
 
-import zsawyer.mods.mumblelink.MumbleLink;
 import zsawyer.mods.mumblelink.mumble.ContextManipulator;
 import zsawyer.mods.mumblelink.mumble.IdentityManipulator;
 
