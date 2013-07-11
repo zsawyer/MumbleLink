@@ -105,15 +105,13 @@ public class UpdateData {
 		try {
 			// 1 unit = 1 meter
 
-			// TODO: use full vectors (all axes)
-
 			// initialize multipliers
 			float fAvatarFrontX = 1;
-			float fAvatarFrontY = 1; 
+			float fAvatarFrontY = 1;
 			float fAvatarFrontZ = 1;
 
 			float fCameraFrontX = 1;
-			float fCameraFrontY = 1; 
+			float fCameraFrontY = 1;
 			float fCameraFrontZ = 1;
 
 			float fAvatarTopX = 1;
@@ -136,70 +134,51 @@ public class UpdateData {
 
 			// Position of the avatar
 			fAvatarPosition = new float[] {
-					Float.parseFloat(Double.toString(game.thePlayer.posX)), // note:
-																			// losing
-																			// precision
-																			// here
-					Float.parseFloat(Double.toString(game.thePlayer.posZ)), // note:
-																			// losing
-																			// precision
-																			// here
-					Float.parseFloat(Double.toString(game.thePlayer.posY)) }; // note:
-																				// losing
-																				// precision
-																				// here
+					Float.parseFloat(Double.toString(game.thePlayer.posX)),
+					Float.parseFloat(Double.toString(game.thePlayer.posZ)),
+					Float.parseFloat(Double.toString(game.thePlayer.posY)) };
 
 			// Unit vector pointing out of the avatar's eyes (here Front looks
 			// into scene).
 			fAvatarFront = new float[] {
 					Float.parseFloat(Double.toString(lookDirection.xCoord
-							* fAvatarFrontX)), // note: losing precision here
+							* fAvatarFrontX)),
 					Float.parseFloat(Double.toString(lookDirection.zCoord
-							* fAvatarFrontZ)), // note: losing precision here
+							* fAvatarFrontZ)),
 					Float.parseFloat(Double.toString(lookDirection.yCoord
-							* fAvatarFrontY)) }; // note: losing precision here
+							* fAvatarFrontY)) };
 
 			// Unit vector pointing out of the top of the avatar's head (here
 			// Top looks straight up).
 			fAvatarTop = new float[] {
 					Float.parseFloat(Double.toString(topDirection.xCoord
-							* fAvatarTopX)), // note: losing precision here
+							* fAvatarTopX)),
 					Float.parseFloat(Double.toString(topDirection.zCoord
-							* fAvatarTopZ)), // note: losing precision here
+							* fAvatarTopZ)),
 					Float.parseFloat(Double.toString(topDirection.yCoord
-							* fAvatarTopY)) }; // note: losing precision here
+							* fAvatarTopY)) };
 
 			// TODO: use real camera position, s.a.
 			fCameraPosition = new float[] {
-					Float.parseFloat(Double.toString(game.thePlayer.posX)), // note:
-																			// losing
-																			// precision
-																			// here
-					Float.parseFloat(Double.toString(game.thePlayer.posZ)), // note:
-																			// losing
-																			// precision
-																			// here
-					Float.parseFloat(Double.toString(game.thePlayer.posY)) }; // note:
-																				// losing
-																				// precision
-																				// here
+					Float.parseFloat(Double.toString(game.thePlayer.posX)),
+					Float.parseFloat(Double.toString(game.thePlayer.posZ)),
+					Float.parseFloat(Double.toString(game.thePlayer.posY)) };
 
-			// TODO: use real look vector, s.a.
 			fCameraFront = new float[] {
 					Float.parseFloat(Double.toString(lookDirection.xCoord
-							* fCameraFrontX)), // note: losing precision here
+							* fCameraFrontX)),
 					Float.parseFloat(Double.toString(lookDirection.zCoord
-							* fCameraFrontZ)), // note: losing precision here
+							* fCameraFrontZ)),
 					Float.parseFloat(Double.toString(lookDirection.yCoord
-							* fCameraFrontY)) }; // note: losing precision here
+							* fCameraFrontY)) };
 
 			fCameraTop = new float[] {
 					Float.parseFloat(Double.toString(topDirection.xCoord
-							* fCameraTopX)), // note: losing precision here
+							* fCameraTopX)),
 					Float.parseFloat(Double.toString(topDirection.zCoord
-							* fCameraTopZ)), // note: losing precision here
+							* fCameraTopZ)),
 					Float.parseFloat(Double.toString(topDirection.yCoord
-							* fCameraTopY)) }; // note: losing precision here
+							* fCameraTopY)) };
 
 			// Identifier which uniquely identifies a certain player in a
 			// context (e.g. the ingame Name).
@@ -207,16 +186,14 @@ public class UpdateData {
 					LinkAPILibrary.MAX_IDENTITY_LENGTH);
 
 			// Context should be equal for players which should be able to hear
-			// each other positional and
-			// differ for those who shouldn't (e.g. it could contain the
-			// server+port and team)
-			// CAUTION: max len: 256
+			// each other positional and differ for those who shouldn't (e.g. it
+			// could contain the server+port and team)
 			context = generateContext(game, LinkAPILibrary.MAX_CONTEXT_LENGTH);
 
 		} catch (Exception ex) {
 			// we'll just ignore errors since they would become too spammy and
 			// we will retry anyways
-			// ModLoader.getLogger().log(Level.SEVERE, null, ex);
+			// ModLoader.getLogger().log(Level.SEVERE, null, ex);		
 		}
 	}
 
@@ -253,8 +230,9 @@ public class UpdateData {
 		float f2 = MathHelper.sin(-game.thePlayer.rotationYaw * 0.017453292F
 				- (float) Math.PI);
 		float f3 = -MathHelper
-				.cos((-game.thePlayer.rotationPitch +90) * 0.017453292F);
-		float f4 = MathHelper.sin((-game.thePlayer.rotationPitch +90) * 0.017453292F);
+				.cos((-game.thePlayer.rotationPitch + 90) * 0.017453292F);
+		float f4 = MathHelper
+				.sin((-game.thePlayer.rotationPitch + 90) * 0.017453292F);
 
 		return game.theWorld.getWorldVec3Pool().getVecFromPool(
 				(double) (f2 * f3), (double) f4, (double) (f1 * f3));

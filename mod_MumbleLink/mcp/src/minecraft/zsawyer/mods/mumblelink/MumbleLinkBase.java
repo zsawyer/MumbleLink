@@ -74,8 +74,10 @@ public class MumbleLinkBase {
 
 	public void tryUpdateMumble(Minecraft game) {
 		if (mumbleInititer.isMumbleInitialized()) {
-			mumbleData.set(game);
-			mumbleData.send();
+			if (game.thePlayer != null && game.theWorld != null) {
+				mumbleData.set(game);
+				mumbleData.send();
+			}
 		} else {
 			try {
 				mumbleInititerThread.start();
