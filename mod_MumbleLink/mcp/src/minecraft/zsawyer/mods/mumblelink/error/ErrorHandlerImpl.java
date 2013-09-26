@@ -24,6 +24,7 @@ package zsawyer.mods.mumblelink.error;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.src.ModLoader;
 import zsawyer.mods.mumblelink.MumbleLinkConstants;
 import zsawyer.mods.mumblelink.notification.BufferedChatNotifier;
@@ -41,7 +42,7 @@ public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler
     private static final Logger logger = ModLoader.getLogger();
 
     public ErrorHandlerImpl() {
-        chat = new BufferedChatNotifier();
+        chat = new BufferedChatNotifier(ModLoader.getMinecraftInstance());
     }
 
     @Override

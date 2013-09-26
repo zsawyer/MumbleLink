@@ -25,31 +25,30 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.src.ModLoader;
 
 /**
- *
+ * 
  * @author zsawyer
  */
 public class ChatNotifier implements UserNotifier {
 
-    protected Minecraft game;
+	protected Minecraft game;
 
-    public ChatNotifier() {
-        game = ModLoader.getMinecraftInstance();
-    }
+	public ChatNotifier(Minecraft game) {
+		this.game = game;
+	}
 
-    @Override
-    public void print(String message) {
-        if (canSendMessage()) {
-            send(message);
-        }
-    }
+	@Override
+	public void print(String message) {
+		if (canSendMessage()) {
+			send(message);
+		}
+	}
 
-    protected boolean canSendMessage() {
-        return game != null && game.ingameGUI != null && 
-                game.inGameHasFocus &&
-                game.ingameGUI.getChatGUI() != null;
-    }
+	protected boolean canSendMessage() {
+		return game != null && game.ingameGUI != null && game.inGameHasFocus
+				&& game.ingameGUI.getChatGUI() != null;
+	}
 
-    protected void send(String message) {
-        game.ingameGUI.getChatGUI().printChatMessage(message);
-    }
+	protected void send(String message) {
+		game.ingameGUI.getChatGUI().printChatMessage(message);
+	}
 }

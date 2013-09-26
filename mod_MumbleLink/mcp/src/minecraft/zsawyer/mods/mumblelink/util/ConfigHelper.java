@@ -157,7 +157,7 @@ public class ConfigHelper {
 	 * @return the compound string result
 	 */
 	public static String configComment(String comment, Object[] availableValues) {
-		return comment + System.lineSeparator() + "available values: "
+		return comment + System.getProperty("line.separator") + "available values: "
 				+ Arrays.toString(availableValues);
 	}
 

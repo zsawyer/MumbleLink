@@ -47,7 +47,6 @@ public class mod_MumbleLink extends BaseMod {
 
 	public static mod_MumbleLink instance;
 
-	private ErrorHandlerImpl errorHandler;
 	private MumbleLinkBase actualMod;
 
 	private Boolean isForge = null;
@@ -61,8 +60,6 @@ public class mod_MumbleLink extends BaseMod {
 		}
 
 		instance = this;
-
-		errorHandler = ErrorHandlerImpl.getInstance();
 	}
 
 	@Override
