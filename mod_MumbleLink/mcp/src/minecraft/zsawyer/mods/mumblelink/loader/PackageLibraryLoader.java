@@ -26,6 +26,7 @@ import zsawyer.mumble.jna.LinkAPILibrary;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
+import com.sun.jna.Platform;
 
 /**
  * 
@@ -47,9 +48,16 @@ public class PackageLibraryLoader implements LibraryLoader {
 			}
 		}
 
+		if (Platform.is64Bit() && Platform.isMac()) {
+			LinkAPILibrary libraryInstance = (LinkAPILibrary) Native
+					.loadLibrary(libraryName + ".64", LinkAPILibrary.class);
+			if (libraryInstance != null) {
+				return libraryInstance;
+			}
+		}
+
 		throw new UnsatisfiedLinkError(
 				"Required library could not be loaded, available libraries are incompatible!");
 
 	}
-
 }
