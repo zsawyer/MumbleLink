@@ -26,4 +26,9 @@ g++ -dynamiclib -Wl,-headerpad_max_install_names,-undefined,dynamic_lookup,-comp
     MumbleJniLinkDll.cpp 
 
 
+    
+# merge 32 and 64 bit to universal dylib (untested)   
+rm -R build_osx_universal
+mkdir build_osx_universal
 
+lipo -create -output build_osx_universal/libLinkAPI.dylib build_osx32/libmod_MumbleLink.dylib build_osx64/libmod_MumbleLink.dylib
