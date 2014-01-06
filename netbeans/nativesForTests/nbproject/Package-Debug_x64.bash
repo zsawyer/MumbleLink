@@ -6,10 +6,11 @@
 
 # Macros
 TOP=`pwd`
-CND_PLATFORM=Cygwin_4.x-Windows
+CND_PLATFORM=Cygwin64_4.x-Windows
 CND_CONF=Debug_x64
 CND_DISTDIR=dist
 CND_BUILDDIR=build
+CND_DLIB_EXT=dll
 NBTMPDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tmp-packaging
 TMPDIRNAME=tmp-packaging
 OUTPUT_PATH=${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.${CND_DLIB_EXT}

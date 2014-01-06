@@ -14,14 +14,14 @@ GREP=grep
 NM=nm
 CCADMIN=CCadmin
 RANLIB=ranlib
-CC=gcc.exe
+CC=gcc
 CCC=x86_64-w64-mingw32-g++
 CXX=x86_64-w64-mingw32-g++
-FC=gfortran.exe
-AS=as.exe
+FC=gfortran
+AS=as
 
 # Macros
-CND_PLATFORM=Cygwin_4.x-Windows
+CND_PLATFORM=Cygwin64_4.x-Windows
 CND_DLIB_EXT=dll
 CND_CONF=Debug_x64
 CND_DISTDIR=dist
@@ -68,8 +68,8 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libnativesForTests.${CND_DLIB_EXT}: $
 
 ${OBJECTDIR}/_ext/1640021005/MumbleJniLinkDll.o: ../../natives/testVersion/MumbleJniLinkDll.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1640021005
-	${RM} $@.d
-	$(COMPILE.cc) -g -I/cygdrive/C/Program\ Files/Java/jdk1.7.0/include -I/cygdrive/C/Program\ Files/Java/jdk1.7.0/include/win32 -mno-cygwin  -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1640021005/MumbleJniLinkDll.o ../../natives/testVersion/MumbleJniLinkDll.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -I/cygdrive/C/Program\ Files/Java/jdk1.7.0/include -I/cygdrive/C/Program\ Files/Java/jdk1.7.0/include/win32  -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1640021005/MumbleJniLinkDll.o ../../natives/testVersion/MumbleJniLinkDll.cpp
 
 # Subprojects
 .build-subprojects:
