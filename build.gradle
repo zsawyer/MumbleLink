@@ -1,3 +1,5 @@
+// TODO use this: https://github.com/matthewprenger/ServerTools/blob/develop/build.gradle
+
 buildscript {
     repositories {
         mavenCentral()
@@ -15,9 +17,11 @@ buildscript {
     }
 }
 
-apply plugin: 'forge'
+subprojects {
+    apply plugin: 'forge'
 
-minecraft {
-    version = "1.7.2-10.12.0.1024"
-    assetDir = "eclipse/assets"
+    minecraft {
+        version = "1.7.2-10.12.0.1024"
+        assetDir = "run/assets"
+    }
 }
