@@ -1,6 +1,6 @@
 version = "4.0.5"
-group= "zsawyer.mods.mumblelink" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "mumblelink"
+group= "zsawyer.mods.mumblelink.addons.pa.es" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "epas"
 
 processResources
 {

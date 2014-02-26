@@ -8,7 +8,7 @@ processResources
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.lang'
         include '**/*.info'
-        // include '**/*.txt' // buggy matching of marker symbols
+        include '**/*.txt' // buggy matching of marker symbols
 
 // replace version and MCVersion
 // forge version is also accessible via project.minecraftforgeVersion
@@ -20,7 +20,7 @@ processResources
     from(sourceSets.main.resources.srcDirs) {
         exclude '**/*.lang'
         exclude '**/*.info'
-        // exclude '**/*.txt' // buggy matching of marker symbols
+        exclude '**/*.txt' // buggy matching of marker symbols
     }
 }
 
