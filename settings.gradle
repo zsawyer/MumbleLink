@@ -1,0 +1,2 @@
+include ':mod_MumbleLink', ':addons:ExtendedPASupport'
+
