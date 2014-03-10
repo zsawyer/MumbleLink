@@ -24,11 +24,10 @@ package zsawyer.mods.mumblelink.loader;
 import zsawyer.mumble.jna.LinkAPILibrary;
 
 /**
- * 
  * @author zsawyer
  */
 public interface LibraryLoader {
 
-	public LinkAPILibrary loadLibrary(String libraryName)
-			throws UnsatisfiedLinkError;
+    public LinkAPILibrary loadLibrary(String libraryName)
+            throws UnsatisfiedLinkError;
 }

@@ -23,7 +23,6 @@ package zsawyer.mods.mumblelink.error;
 
 
 /**
- *
  * @author zsawyer
  */
 public interface ModErrorHandler {
@@ -46,7 +45,6 @@ public interface ModErrorHandler {
         }
     }
 
-   
 
     void handleError(ModError err, Throwable stack);
 

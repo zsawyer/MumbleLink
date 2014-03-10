@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * @author zsawyer
  */
 public interface NativeInitErrorHandler {
@@ -40,7 +39,6 @@ public interface NativeInitErrorHandler {
         ERROR_UNIX_NO_HANDLE(3),
         ERROR_UNIX_NO_STRUCTURE(4);
 
-        
 
         private int code;
         private static final Map<Integer, NativeInitError> lookup = new HashMap<Integer, NativeInitError>();

@@ -1,3 +1,3 @@
-include ':api', ':addons:ExtendedPASupport'
+include ':addons:EPAS'
 rootProject.name = 'MumbleLink'
 

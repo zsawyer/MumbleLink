@@ -22,20 +22,20 @@
 package net.minecraft.src;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError;
 import net.minecraft.src.mumblelink.*;
-import static net.minecraft.src.mumblelink.TestUtilities.*;
+import net.minecraft.src.mumblelink.NativeInitErrorHandler.NativeInitError;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 
+import static net.minecraft.src.mumblelink.TestUtilities.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 /**
- *
  * @author zsawyer
  */
 @RunWith(JMock.class)

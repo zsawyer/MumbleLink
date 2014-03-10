@@ -21,66 +21,45 @@
  */
 package zsawyer.mods.mumblelink;
 
-import java.util.EnumSet;
-
-import zsawyer.mods.Activateable;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import zsawyer.mods.mumblelink.api.Activateable;
 
 /**
- * 
  * @author zsawyer
  */
-public class UpdateTicker implements ITickHandler, Activateable {
+public class UpdateTicker implements Activateable {
 
-	private boolean enabled = false;
+    private boolean enabled = false;
 
-	@Override
-	public void tickStart(EnumSet<TickType> type, Object... tickData) {
+    @SubscribeEvent
+    public void tickEnd(TickEvent.ClientTickEvent event) {
+        if (enabled) {
+            MumbleLink.instance.tryUpdateMumble(FMLClientHandler.instance()
+                    .getClient());
+        }
+    }
 
-	}
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-	@Override
-	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
-		if (enabled) {
-			MumbleLink.instance.tryUpdateMumble(FMLClientHandler.instance()
-					.getClient());
-		}
-	}
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
-	@Override
-	public EnumSet<TickType> ticks() {
-		if (enabled) {
-			return EnumSet.of(TickType.RENDER);
-		}
-		return null;
-	}
+    @Override
+    public void activate() {
+        enabled = true;
+        FMLCommonHandler.instance().bus().register(this);
+    }
 
-	@Override
-	public String getLabel() {
-		return UpdateTicker.class.getName();
-	}
-
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
-
-	@Override
-	public void activate() {
-		TickRegistry.registerTickHandler(this, Side.CLIENT);
-		enabled = true;
-	}
-
-	@Override
-	public void deactivate() {
-		enabled = false;
-	}
+    @Override
+    public void deactivate() {
+        enabled = false;
+        FMLCommonHandler.instance().bus().unregister(this);
+    }
 
 }

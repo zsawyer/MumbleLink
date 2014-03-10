@@ -22,11 +22,10 @@
 package zsawyer.mods.mumblelink.notification;
 
 /**
- *
  * @author zsawyer
  */
 public interface UserNotifier {
     public static final String LINK_SUCCESS_MESSAGE = "Mumble linked.";
-    
+
     public void print(String message);
 }

@@ -4,9 +4,8 @@
 package net.minecraft.src.mumblelink;
 
 
-
-import net.minecraft.src.mumblelink.JSONException;
 import junit.framework.TestCase;
+import net.minecraft.src.mumblelink.JSONException;
 
 /**
  * The Class TestJSONException.

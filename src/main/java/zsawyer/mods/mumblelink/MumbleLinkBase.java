@@ -32,59 +32,60 @@ import zsawyer.mumble.jna.LinkAPILibrary;
 
 /**
  * mod to link with mumble for positional audio
- * 
- * @see http://mumble.sourceforge.net/
- * 
- *      when developing for it I suggest using "mumblePAHelper" to see
- *      coordinates
- * 
+ * <p/>
+ * http://mumble.sourceforge.net/
+ *
  * @author zsawyer, 2013-04-09
+ *         <p/>
+ *         <p/>
+ *         when developing for it I suggest using "mumblePAHelper" to see
+ *         coordinates
  */
 public class MumbleLinkBase {
 
-	protected MumbleInitializer mumbleInititer;
-	protected Thread mumbleInititerThread;
-	protected UpdateData mumbleData;
-	protected LinkAPILibrary library;
-	protected ErrorHandlerImpl errorHandler;
+    protected MumbleInitializer mumbleInititer;
+    protected Thread mumbleInititerThread;
+    protected UpdateData mumbleData;
+    protected LinkAPILibrary library;
+    protected ErrorHandlerImpl errorHandler;
 
-	public MumbleLinkBase() {
-		super();
-	}
+    public MumbleLinkBase() {
+        super();
+    }
 
-	public void load() {
-		initComponents();
-	}
+    public void load() {
+        initComponents();
+    }
 
-	private void initComponents() {
-		errorHandler = ErrorHandlerImpl.getInstance();
+    private void initComponents() {
+        errorHandler = ErrorHandlerImpl.getInstance();
 
-		try {
-			library = new PackageLibraryLoader()
-					.loadLibrary(MumbleLinkConstants.LIBRARY_NAME);
-		} catch (Exception e) {
-			errorHandler.throwError(ModError.LIBRARY_LOAD_FAILED, e);
-		}
+        try {
+            library = new PackageLibraryLoader()
+                    .loadLibrary(MumbleLinkConstants.LIBRARY_NAME);
+        } catch (Exception e) {
+            errorHandler.throwError(ModError.LIBRARY_LOAD_FAILED, e);
+        }
 
-		mumbleData = new UpdateData(library, errorHandler);
+        mumbleData = new UpdateData(library, errorHandler);
 
-		mumbleInititer = new MumbleInitializer(library, errorHandler);
-		mumbleInititerThread = new Thread(mumbleInititer);
-	}
+        mumbleInititer = new MumbleInitializer(library, errorHandler);
+        mumbleInititerThread = new Thread(mumbleInititer);
+    }
 
-	public void tryUpdateMumble(Minecraft game) {
-		if (mumbleInititer.isMumbleInitialized()) {
-			if (game.thePlayer != null && game.theWorld != null) {
-				mumbleData.set(game);
-				mumbleData.send();
-			}
-		} else {
-			try {
-				mumbleInititerThread.start();
-			} catch (IllegalThreadStateException ex) {
-				// thread was already started so we do nothing
-			}
-		}
-	}
+    public void tryUpdateMumble(Minecraft game) {
+        if (mumbleInititer.isMumbleInitialized()) {
+            if (game.thePlayer != null && game.theWorld != null) {
+                mumbleData.set(game);
+                mumbleData.send();
+            }
+        } else {
+            try {
+                mumbleInititerThread.start();
+            } catch (IllegalThreadStateException ex) {
+                // thread was already started so we do nothing
+            }
+        }
+    }
 
 }

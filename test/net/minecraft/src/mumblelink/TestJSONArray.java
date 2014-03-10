@@ -3,10 +3,13 @@
  */
 package net.minecraft.src.mumblelink;
 
-import net.minecraft.src.mumblelink.JSONObject;
+import junit.framework.TestCase;
 import net.minecraft.src.mumblelink.JSONArray;
 import net.minecraft.src.mumblelink.JSONException;
+import net.minecraft.src.mumblelink.JSONObject;
 import net.minecraft.src.mumblelink.JSONString;
+import org.junit.Before;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -14,10 +17,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-
-import org.junit.Before;
-
-import junit.framework.TestCase;
 
 /**
  * The Class TestJSONArray.
@@ -282,8 +281,8 @@ public class TestJSONArray extends TestCase {
     public void testConstructor_StringArray() {
         try {
             jsonarray = new JSONArray(new String[]{
-                        "string1", "string2"
-                    });
+                    "string1", "string2"
+            });
             assertEquals("[\"string1\",\"string2\"]", jsonarray.toString());
 
         } catch (JSONException e) {
@@ -297,8 +296,8 @@ public class TestJSONArray extends TestCase {
     public void testOpt() {
         try {
             jsonarray = new JSONArray(new String[]{
-                        "string1", "string2"
-                    });
+                    "string1", "string2"
+            });
             assertEquals("string1", jsonarray.opt(0));
             assertEquals("string2", jsonarray.opt(1));
 
@@ -321,7 +320,7 @@ public class TestJSONArray extends TestCase {
             @Override
             public String toJSONString() {
                 String[] arString = new String[]{
-                    "abc"
+                        "abc"
                 };
                 return arString[1];
             }
@@ -842,8 +841,8 @@ public class TestJSONArray extends TestCase {
             jsonarray.put(new JSONArray().put("abc"));
             jsonarray.put(new JSONObject().put("abc", "123"));
             JSONArray names = new JSONArray(new String[]{
-                        "bdd", "fdsa", "fds", "ewre", "rer", "gfs"
-                    });
+                    "bdd", "fdsa", "fds", "ewre", "rer", "gfs"
+            });
             assertEquals(
                     "{\"gfs\":{\"abc\":\"123\"},\"fdsa\":\"-12\",\"bdd\":\"123\",\"ewre\":-98,\"rer\":[\"abc\"],\"fds\":45}",
                     jsonarray.toJSONObject(names).toString());

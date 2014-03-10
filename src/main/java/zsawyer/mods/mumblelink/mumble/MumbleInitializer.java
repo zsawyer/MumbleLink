@@ -27,7 +27,6 @@ import zsawyer.mods.mumblelink.mumble.jna.LinkAPIHelper;
 import zsawyer.mumble.jna.LinkAPILibrary;
 
 /**
- *
  * @author zsawyer
  */
 public class MumbleInitializer implements Runnable {
@@ -35,7 +34,7 @@ public class MumbleInitializer implements Runnable {
     private LinkAPIHelper link;
     private NativeInitErrorHandler errorHandler;
     private NativeInitError initilizationReturnCode = NativeInitError.NOT_YET_INITIALIZED;
-    
+
     public static final String PLUGIN_NAME = "Minecraft";
     public static final String PLUGIN_DESCRIPTION = "Link plugin for Minecraft with ModLoader";
     public static final int PLUGIN_UI_VERSION = 2;

@@ -22,98 +22,99 @@
 
 package zsawyer.mods.mumblelink.mumble;
 
-import java.util.ArrayList;
-import java.util.logging.Level;
-
 import net.minecraft.client.Minecraft;
 import zsawyer.mods.mumblelink.MumbleLink;
+import zsawyer.mods.mumblelink.api.ContextManipulator;
+import zsawyer.mods.mumblelink.api.IdentityManipulator;
 import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler;
 import zsawyer.mumble.jna.LinkAPILibrary;
 
+import java.util.ArrayList;
+
 public class ExtendedUpdateData extends UpdateData {
 
-	protected ArrayList<IdentityManipulator> identityManipulators;
+    protected ArrayList<IdentityManipulator> identityManipulators;
 
-	protected ArrayList<ContextManipulator> contextManipulators;
+    protected ArrayList<ContextManipulator> contextManipulators;
 
-	public ExtendedUpdateData(LinkAPILibrary mumbleLink,
-			NativeUpdateErrorHandler errorHandler) {
-		super(mumbleLink, errorHandler);
-		identityManipulators = new ArrayList<IdentityManipulator>();
-		contextManipulators = new ArrayList<ContextManipulator>();
-	}
+    public ExtendedUpdateData(LinkAPILibrary mumbleLink,
+                              NativeUpdateErrorHandler errorHandler) {
+        super(mumbleLink, errorHandler);
+        identityManipulators = new ArrayList<IdentityManipulator>();
+        contextManipulators = new ArrayList<ContextManipulator>();
+    }
 
-	@Override
-	protected String generateContext(Minecraft game, int maxLength) {
-		String context = super.generateContext(game, maxLength);
+    @Override
+    protected String generateContext(Minecraft game, int maxLength) {
+        String context = super.generateContext(game, maxLength);
 
-		for (ContextManipulator contextManipulator : contextManipulators) {
-			String newContext = contextManipulator.manipulateContext(context,
-					game, maxLength);
-			if (verify("context", newContext, maxLength)) {
-				context = newContext;
-			}
-		}
+        for (ContextManipulator contextManipulator : contextManipulators) {
+            String newContext = contextManipulator.manipulateContext(context,
+                    game, maxLength);
+            if (verify("context", newContext, maxLength)) {
+                context = newContext;
+            }
+        }
 
-		if (MumbleLink.debug()) {
-			MumbleLink.LOG.log(Level.INFO, "context: " + context);
-		}
+        if (MumbleLink.debug()) {
+            MumbleLink.LOG.info("context: " + context);
+        }
 
-		return context;
-	}
+        return context;
+    }
 
-	@Override
-	protected String generateIdentity(Minecraft game, int maxLength) {
-		String identity = super.generateIdentity(game, maxLength);
+    @Override
+    protected String generateIdentity(Minecraft game, int maxLength) {
+        String identity = super.generateIdentity(game, maxLength);
 
-		for (IdentityManipulator identityManipulator : identityManipulators) {
-			String newIdentity = identityManipulator.manipulateIdentity(
-					identity, game, maxLength);
-			if (verify("identity", newIdentity, maxLength)) {
-				identity = newIdentity;
-			}
-		}
+        for (IdentityManipulator identityManipulator : identityManipulators) {
+            String newIdentity = identityManipulator.manipulateIdentity(
+                    identity, game, maxLength);
+            if (verify("identity", newIdentity, maxLength)) {
+                identity = newIdentity;
+            }
+        }
 
-		if (MumbleLink.debug()) {
-			MumbleLink.LOG.log(Level.INFO, "identity: " + identity);
-		}
+        if (MumbleLink.debug()) {
+            MumbleLink.LOG.info("identity: " + identity);
+        }
 
-		return identity;
-	}
+        return identity;
+    }
 
-	private boolean verify(String type, String value, int maxLength) {
-		if (value.length() > maxLength) {
-			MumbleLink.LOG
-					.log(Level.SEVERE, type + " (" + value.length()
-							+ ") is too long (max. " + maxLength + "): '"
-							+ value + "'");
-			return false;
-		}
-		return true;
-	}
+    private boolean verify(String type, String value, int maxLength) {
+        if (value.length() > maxLength) {
+            MumbleLink.LOG
+                    .fatal(type + " (" + value.length()
+                            + ") is too long (max. " + maxLength + "): '"
+                            + value + "'");
+            return false;
+        }
+        return true;
+    }
 
-	public void register(IdentityManipulator manipulator) {
-		synchronized (identityManipulators) {
-			identityManipulators.add(manipulator);
-		}
-	}
+    public void register(IdentityManipulator manipulator) {
+        synchronized (identityManipulators) {
+            identityManipulators.add(manipulator);
+        }
+    }
 
-	public void unregister(IdentityManipulator manipulator) {
-		synchronized (identityManipulators) {
-			identityManipulators.remove(manipulator);
-		}
-	}
+    public void unregister(IdentityManipulator manipulator) {
+        synchronized (identityManipulators) {
+            identityManipulators.remove(manipulator);
+        }
+    }
 
-	public void register(ContextManipulator manipulator) {
-		synchronized (contextManipulators) {
-			contextManipulators.add(manipulator);
-		}
-	}
+    public void register(ContextManipulator manipulator) {
+        synchronized (contextManipulators) {
+            contextManipulators.add(manipulator);
+        }
+    }
 
-	public void unregister(ContextManipulator manipulator) {
-		synchronized (contextManipulators) {
-			contextManipulators.remove(manipulator);
-		}
-	}
+    public void unregister(ContextManipulator manipulator) {
+        synchronized (contextManipulators) {
+            contextManipulators.remove(manipulator);
+        }
+    }
 
 }

@@ -22,12 +22,12 @@
 package net.minecraft.src.mumblelink;
 
 import net.minecraft.src.mod_MumbleLink;
-import static net.minecraft.src.mumblelink.TestUtilities.*;
-import static org.junit.Assert.fail;
 import org.junit.*;
 
+import static net.minecraft.src.mumblelink.TestUtilities.*;
+import static org.junit.Assert.fail;
+
 /**
- *
  * @author zsawyer
  */
 public class SettingsBasedLibraryLoaderTest {

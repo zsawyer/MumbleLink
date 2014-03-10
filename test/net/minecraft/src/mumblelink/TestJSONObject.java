@@ -3,15 +3,16 @@
  */
 package net.minecraft.src.mumblelink;
 
-import net.minecraft.src.mumblelink.JSONObject;
+import junit.framework.TestCase;
 import net.minecraft.src.mumblelink.JSONArray;
 import net.minecraft.src.mumblelink.JSONException;
+import net.minecraft.src.mumblelink.JSONObject;
 import net.minecraft.src.mumblelink.JSONString;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.*;
-import junit.framework.TestCase;
 
 /**
  * The Class TestJSONObject.
@@ -63,7 +64,7 @@ public class TestJSONObject extends TestCase {
         @Override
         public String toJSONString() {
             String[] arString = new String[]{
-                "abc"
+                    "abc"
             };
             return arString[1];
         }
@@ -219,6 +220,7 @@ public class TestJSONObject extends TestCase {
     public class ObjectWithPrimativesExtension extends ObjectWithPrimatives {
         // Same Object
     }
+
     /**
      * The jsonobject.
      */
@@ -379,9 +381,9 @@ public class TestJSONObject extends TestCase {
         try {
             jsonobject = new JSONObject(
                     "{foo: [true, false,9876543210,    0.0, 1.00000001,  1.000000000001, 1.00000000000000001,"
-                    + " .00000000000000001, 2.00, 0.1, 2e100, -32,[],{}, \"string\"], "
-                    + "  to   : null, op : 'Good',"
-                    + "ten:10} postfix comment");
+                            + " .00000000000000001, 2.00, 0.1, 2e100, -32,[],{}, \"string\"], "
+                            + "  to   : null, op : 'Good',"
+                            + "ten:10} postfix comment");
             jsonobject.put("String", "98.6");
             jsonobject.put("JSONObject", new JSONObject());
             jsonobject.put("JSONArray", new JSONArray());
@@ -668,8 +670,8 @@ public class TestJSONObject extends TestCase {
     public void testConstructor_ObjectWithStringArray() {
         assertEquals("{\"m\":true,\"i\":3}", new JSONObject(
                 new ObjectWithPrimatives(), new String[]{
-                    "i", "m", "k"
-                }).toString());
+                "i", "m", "k"
+        }).toString());
     }
 
     /**
@@ -1074,9 +1076,9 @@ public class TestJSONObject extends TestCase {
             jsonobject.put(
                     "1239",
                     new JSONObject().put("1fd23", new JSONObject()).put(
-                    "12gfdgfg3",
-                    new JSONObject().put("f123", "123").put("12fgfg3",
-                    "abc")));
+                            "12gfdgfg3",
+                            new JSONObject().put("f123", "123").put("12fgfg3",
+                                    "abc")));
             assertEquals(
                     "{\n    \"1234\": \"abc\",\n    \"1235\": {\"abc\": \"123\"},\n    \"123\": \"123\",\n    \"1239\": {\n        \"1fd23\": {},\n        \"12gfdgfg3\": {\n            \"f123\": \"123\",\n            \"12fgfg3\": \"abc\"\n        }\n    }\n}",
                     jsonobject.toString(4));
@@ -1153,8 +1155,8 @@ public class TestJSONObject extends TestCase {
             stringCol.add("string1");
             assertEquals("[\"string1\"]", JSONObject.wrap(stringCol).toString());
             assertEquals("[\"abc\",\"123\"]", JSONObject.wrap(new String[]{
-                        "abc", "123"
-                    }).toString());
+                    "abc", "123"
+            }).toString());
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("abc", "123");
             assertEquals("{\"abc\":\"123\"}", JSONObject.wrap(map).toString());
@@ -1970,7 +1972,7 @@ public class TestJSONObject extends TestCase {
             jsonobject.put("abcdef", "123456");
             assertEquals("{\"abc\":\"123\",\"abcde\":\"12345\"}",
                     new JSONObject(jsonobject, new String[]{
-                        "abc", "abc", "abcde"
+                            "abc", "abc", "abcde"
                     }).toString());
         } catch (JSONException e) {
             fail(e.getMessage());
@@ -2003,7 +2005,7 @@ public class TestJSONObject extends TestCase {
             jsonobject.put("abcdef", "123456");
             assertEquals("[\"123\",\"123\",\"12345\"]",
                     jsonobject.toJSONArray(new JSONArray(new String[]{
-                        "abc", "abc", "abcde"
+                            "abc", "abc", "abcde"
                     })).toString());
             assertEquals(null, jsonobject.toJSONArray(new JSONArray()));
             assertEquals(null, jsonobject.toJSONArray(null));
@@ -2038,9 +2040,9 @@ public class TestJSONObject extends TestCase {
 
             assertEquals(
                     "{\n    \"de\": {\"abc\": \"123\"},\n    \"abc\": \"123\",\n    \"e\": [\"string1\"],\n    \"zzz\": \""
-                    + q.toString()
-                    + "\",\n    \"abcdef\": {\"123\": \"123456\"},\n    \"abcde\": [\"123\"],\n    \"acd\": jsonstring,\n    \"abcd\": \"1234\""
-                    + "\n}", jsonobject.toString(4));
+                            + q.toString()
+                            + "\",\n    \"abcdef\": {\"123\": \"123456\"},\n    \"abcde\": [\"123\"],\n    \"acd\": jsonstring,\n    \"abcd\": \"1234\""
+                            + "\n}", jsonobject.toString(4));
         } catch (JSONException e) {
             fail(e.getMessage());
         }
@@ -2080,7 +2082,7 @@ public class TestJSONObject extends TestCase {
             assertEquals("null", JSONObject.valueToString(JSONObject.NULL));
             assertEquals("[\"abc\",\"123\"]",
                     JSONObject.valueToString(new String[]{
-                        "abc", "123"
+                            "abc", "123"
                     }));
         } catch (JSONException e) {
             fail(e.getMessage());

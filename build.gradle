@@ -43,17 +43,28 @@ if (System.getenv("BUILD_NUMBER") != null) {
     version = "${minecraft.version}-$version"
 }
 
+sourceSets {
+    api
+    main {
+        java.srcDirs = ['src/main/java', 'src/api/java']
+    }
+}
+
+task apiJar(type: Jar) {
+    from sourceSets.api.output
+}
+
 configurations {
     includeInJar
 }
 dependencies {
     includeInJar 'net.java.dev.jna:jna:4.0.0'
-    compile configurations.includeInJar    
+    compile configurations.includeInJar
 }
 
 jar {
     from zipTree(configurations.includeInJar.singleFile)
-    from zipTree('jars/natives.jar')  
+    from zipTree('jars/natives.jar')
 }
 
 subprojects {
@@ -82,7 +93,7 @@ allprojects {
             include '**/*.info'
             include '**/*.properties'
             include '**/*.lang'
-            include '**/*.txt' // buggy matching of marker symbols
+            //include '**/*.txt' // buggy matching of marker symbols
 
             expand([
                     'version': actualVersion,
@@ -90,11 +101,11 @@ allprojects {
             ])
         }
 
-        from(sourceSets.main.resources.srcDirs) {            
-            exclude '**/*.info'            
+        from(sourceSets.main.resources.srcDirs) {
+            exclude '**/*.info'
             exclude '**/*.properties'
             exclude '**/*.lang'
-            exclude '**/*.txt' // buggy matching of marker symbols
+            //exclude '**/*.txt' // buggy matching of marker symbols
         }
     }
 
@@ -127,7 +138,7 @@ allprojects {
         archives javadocJar
         archives deobfJar
     }
-    
+
 }
 
 project.subprojects.each { p ->

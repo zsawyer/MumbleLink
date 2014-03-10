@@ -22,33 +22,34 @@
 package zsawyer.mods.mumblelink.notification;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.ModLoader;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 
 /**
- * 
  * @author zsawyer
  */
 public class ChatNotifier implements UserNotifier {
 
-	protected Minecraft game;
+    protected Minecraft game;
 
-	public ChatNotifier(Minecraft game) {
-		this.game = game;
-	}
+    public ChatNotifier(Minecraft game) {
+        this.game = game;
+    }
 
-	@Override
-	public void print(String message) {
-		if (canSendMessage()) {
-			send(message);
-		}
-	}
+    @Override
+    public void print(String message) {
+        if (canSendMessage()) {
+            send(message);
+        }
+    }
 
-	protected boolean canSendMessage() {
-		return game != null && game.ingameGUI != null && game.inGameHasFocus
-				&& game.ingameGUI.getChatGUI() != null;
-	}
+    protected boolean canSendMessage() {
+        return game != null && game.ingameGUI != null && game.inGameHasFocus
+                && game.ingameGUI.getChatGUI() != null;
+    }
 
-	protected void send(String message) {
-		game.ingameGUI.getChatGUI().printChatMessage(message);
-	}
+    protected void send(String message) {
+        IChatComponent messageObject = new ChatComponentText(message);
+        game.ingameGUI.getChatGUI().printChatMessage(messageObject);
+    }
 }

@@ -21,23 +21,25 @@
  */
 package net.minecraft.src.mumblelink;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.lang.reflect.Field;
-import java.util.*;
-import javax.print.DocFlavor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.mod_MumbleLink;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.ComparisonFailure;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
 import static org.junit.Assert.*;
 
 /**
- *
  * @author zsawyer
  */
 public class TestUtilities {
@@ -112,7 +114,7 @@ public class TestUtilities {
     }
 
     public static <T> T injectMockObjectIntoField(Mockery mockContext,
-            Object injectionTarget, String fieldName, Class<? extends T> fieldType)
+                                                  Object injectionTarget, String fieldName, Class<? extends T> fieldType)
             throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         final T mockedObject = mockContext.mock(fieldType);
         injectIntoField(injectionTarget, fieldName, mockedObject);
@@ -120,7 +122,7 @@ public class TestUtilities {
     }
 
     public static void injectIntoField(Object objectWithField, String fieldName,
-            Object newValue)
+                                       Object newValue)
             throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Field fieldToInjectTo = objectWithField.getClass().getDeclaredField(fieldName);
         Field.setAccessible(new Field[]{fieldToInjectTo}, true);
@@ -157,12 +159,12 @@ public class TestUtilities {
 
     public static boolean isProcess(String name) throws Exception {
         List<String> processes = getProcessList();
-        for(String process : processes) {
-            if(process.indexOf(name) != -1) {
+        for (String process : processes) {
+            if (process.indexOf(name) != -1) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
