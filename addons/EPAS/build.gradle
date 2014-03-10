@@ -13,3 +13,24 @@ if (System.getenv("BUILD_NUMBER") != null) {
 } else {
     version = "${minecraft.version}-$version"
 }
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        include '**/*.info'
+        include '**/*.properties'
+        include '**/*.lang'
+        //include '**/*.txt' // buggy matching of marker symbols
+
+        expand([
+                'version': actualVersion,
+                'mcversion': rootProject.mcversion
+        ])
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude '**/*.info'
+        exclude '**/*.properties'
+        exclude '**/*.lang'
+        //exclude '**/*.txt' // buggy matching of marker symbols
+    }
+}
