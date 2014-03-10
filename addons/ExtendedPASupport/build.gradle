@@ -1,24 +1,3 @@
-
 version = "4.0.5"
-group= "zsawyer.mods.mumblelink.addons.pa.es" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "epas"
-
-processResources
-{
-// replace stuff in text files, not binary ones.
-    from(sourceSets.main.resources.srcDirs) {
-        include '**/*.lang'
-        include '**/*.info'
-
-// replace version and MCVersion
-// forge version is also accessible via project.minecraftforgeVersion
-// it contains the full minecraft version, including buildNumber
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-
-// copy everything else, thats not text
-    from(sourceSets.main.resources.srcDirs) {
-        exclude '**/*.lang'
-        exclude '**/*.info'
-    }
-}
+group= "zsawyer.mods.mumblelink.addons.pa.es"
+archivesBaseName = "MumbleLink"

@@ -1,2 +1,3 @@
-include ':mod_MumbleLink', ':addons:ExtendedPASupport'
+include ':api', ':addons:ExtendedPASupport'
+rootProject.name = 'MumbleLink'
 
