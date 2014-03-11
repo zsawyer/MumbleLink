@@ -6,6 +6,11 @@ dependencies {
     compile project(":api")
 }
 
+
+jar {
+    inputs.dir sourceSets.main.resources.srcDirs
+}
+
 processResources {
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'

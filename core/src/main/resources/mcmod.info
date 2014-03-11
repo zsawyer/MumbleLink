@@ -12,9 +12,6 @@
         "logoFile": "",
         "screenshots": [ ],
         "parent": "",
-        #"requiredMods": [ "FML" ],
-        "dependencies": [ ] #[ "FML" ],
-        #"dependants": [ "ExtendedPASupport" ],
-        #"useDependencyInformation": "true"
+        "dependencies": [ ],
     }
 ]
