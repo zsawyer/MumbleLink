@@ -130,10 +130,15 @@ import groovy.json.JsonSlurper
 
 task allJar(type: Jar, dependsOn: [subprojects.build, rootProject.reobf]) {
     //def oldArchiveName = archiveName
-    baseName = rootProject.name + "-ALL"
+    baseName = rootProject.name// + "-ALL"
     def libsDir = new File(rootProject.getBuildDir(), 'libs')
 
     inputs.dir libsDir
+
+    manifest {
+        attributes 'Implementation-Title': rootProject.name
+        attributes 'Implementation-Version': rootProject.actualVersion
+    }
 
     doFirst {
 
