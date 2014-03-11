@@ -29,9 +29,6 @@ public interface ModErrorHandler {
 
     public enum ModError {
 
-        CONFIG_FILE_READ("Config not loaded! Check file permissions."),
-        CONFIG_FILE_SYNTAX("Unrecognized key or value in config file."),
-        CONFIG_FILE_INVALID_VALUE("Value in config file is invalid."),
         LIBRARY_LOAD_FAILED("Couldn't load library.");
         private String message;
 

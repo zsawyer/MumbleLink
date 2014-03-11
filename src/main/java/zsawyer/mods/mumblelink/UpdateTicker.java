@@ -37,7 +37,7 @@ public class UpdateTicker implements Activateable {
     @SubscribeEvent
     public void tickEnd(TickEvent.ClientTickEvent event) {
         if (enabled) {
-            MumbleLink.instance.tryUpdateMumble(FMLClientHandler.instance()
+            MumbleLinkImpl.instance.tryUpdateMumble(FMLClientHandler.instance()
                     .getClient());
         }
     }

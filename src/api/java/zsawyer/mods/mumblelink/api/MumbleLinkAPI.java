@@ -24,13 +24,12 @@ package zsawyer.mods.mumblelink.api;
 
 /**
  * The MumbleLinkAPI is an access point for addons to interface with the
- * forge-based MumbleLink mod.<br>
+ * forge-based {@link MumbleLink} mod.<br>
  * <br>
  * Get an instance of the API with: <br>
- * <code>MumbleLink.instance.getApi()</code>
+ * {@link MumbleLink#getApi()}
  * <p/>
- * Use this to (un)subscribe/(un)register your context and identity
- * manipulators.
+ * Use this to (un)subscribe/(un)register your {@link ContextManipulator} and/or {@link IdentityManipulator}.
  *
  * @author zsawyer
  */

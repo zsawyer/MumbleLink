@@ -23,7 +23,7 @@
 package zsawyer.mods.mumblelink.mumble;
 
 import net.minecraft.client.Minecraft;
-import zsawyer.mods.mumblelink.MumbleLink;
+import zsawyer.mods.mumblelink.MumbleLinkImpl;
 import zsawyer.mods.mumblelink.api.ContextManipulator;
 import zsawyer.mods.mumblelink.api.IdentityManipulator;
 import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler;
@@ -56,8 +56,8 @@ public class ExtendedUpdateData extends UpdateData {
             }
         }
 
-        if (MumbleLink.debug()) {
-            MumbleLink.LOG.info("context: " + context);
+        if (MumbleLinkImpl.debug()) {
+            MumbleLinkImpl.LOG.info("context: " + context);
         }
 
         return context;
@@ -75,8 +75,8 @@ public class ExtendedUpdateData extends UpdateData {
             }
         }
 
-        if (MumbleLink.debug()) {
-            MumbleLink.LOG.info("identity: " + identity);
+        if (MumbleLinkImpl.debug()) {
+            MumbleLinkImpl.LOG.info("identity: " + identity);
         }
 
         return identity;
@@ -84,7 +84,7 @@ public class ExtendedUpdateData extends UpdateData {
 
     private boolean verify(String type, String value, int maxLength) {
         if (value.length() > maxLength) {
-            MumbleLink.LOG
+            MumbleLinkImpl.LOG
                     .fatal(type + " (" + value.length()
                             + ") is too long (max. " + maxLength + "): '"
                             + value + "'");

@@ -24,7 +24,7 @@ package zsawyer.mods.mumblelink.error;
 import cpw.mods.fml.client.FMLClientHandler;
 import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.Level;
-import zsawyer.mods.mumblelink.MumbleLink;
+import zsawyer.mods.mumblelink.MumbleLinkImpl;
 import zsawyer.mods.mumblelink.notification.BufferedChatNotifier;
 import zsawyer.mods.mumblelink.notification.UserNotifier;
 import zsawyer.mods.mumblelink.util.SingletonFactory;
@@ -43,13 +43,13 @@ public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler
 
     @Override
     public void throwError(ModError modError, Throwable cause) {
-        modloaderLog(Level.FATAL, cause.getMessage(), cause);
+        log(Level.FATAL, cause.getMessage(), cause);
         haltMinecraftUsingAnException(modError.toString(), cause);
     }
 
     private void haltMinecraftUsingAnException(String message, Throwable err) {
         FMLClientHandler.instance().haltGame("Error in mod "
-                + MumbleLink.getName() + MumbleLink.getVersion()
+                + MumbleLinkImpl.instance.getName() + MumbleLinkImpl.instance.getVersion()
                 + ": " + message,
                 err);
     }
@@ -58,12 +58,12 @@ public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler
     public void handleError(ModError err, Throwable stack) {
         chatMessage("[MumbleLink] Error: " + err.toString());
 
-        modloaderLog(Level.WARN, err.toString(), stack);
+        log(Level.WARN, err.toString(), stack);
     }
 
-    private void modloaderLog(Level severity, String message, Throwable stack) {
-        MumbleLink.LOG.log(severity,
-                "[" + MumbleLink.getName() + MumbleLink.getVersion() + "]"
+    private void log(Level severity, String message, Throwable stack) {
+        MumbleLinkImpl.LOG.log(severity,
+                "[" + MumbleLinkImpl.instance.getName() + MumbleLinkImpl.instance.getVersion() + "]"
                         + "[" + severity.toString() + "] "
                         + message,
                 stack);
@@ -76,7 +76,7 @@ public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler
     @Override
     public void handleError(NativeUpdateError fromCode) {
         if (fromCode != NativeUpdateError.NO_ERROR) {
-            modloaderLog(Level.WARN, "Update failed! Error: " + fromCode.getCode() + " (" + fromCode.toString() + ")", null);
+            log(Level.WARN, "Update failed! Error: " + fromCode.getCode() + " (" + fromCode.toString() + ")", null);
         }
     }
 

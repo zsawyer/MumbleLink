@@ -1,4 +1,4 @@
-package zsawyer.mods.mumblelink.json;
+package zsawyer.mods.mumblelink.util.json;
 
 /**
  * The JSONException is thrown by the JSON.org classes when things are amiss.

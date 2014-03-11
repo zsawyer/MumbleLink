@@ -25,7 +25,7 @@ package zsawyer.mods.mumblelink.api;
 import net.minecraft.client.Minecraft;
 
 /**
- * A class implementing this interface can register at the MumbleLinkAPI to be
+ * A class implementing this interface can register at the {@link MumbleLinkAPI} to be
  * consulted when generating the context to send to Mumble. There is no
  * exclusive privilege, expect other manipulators to run after and before your
  * implementation. Use JSON formatting for compatibility.
@@ -72,12 +72,13 @@ public interface ContextManipulator {
     public String manipulateContext(String context, Minecraft game,
                                     int maxLength);
 
+    /**
+     * class holding a set of common keys to expect to be present within the context
+     */
     public static class ContextKey {
         public static final String DOMAIN = "domain";
 
         private ContextKey() {
         }
-
-        ;
     }
 }

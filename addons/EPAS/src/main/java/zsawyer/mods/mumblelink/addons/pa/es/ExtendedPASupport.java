@@ -44,6 +44,7 @@ package zsawyer.mods.mumblelink.addons.pa.es;
 
  */
 
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -54,13 +55,16 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.Logger;
-import zsawyer.mods.mumblelink.MumbleLink;
 import zsawyer.mods.mumblelink.api.Activateable;
 import zsawyer.mods.mumblelink.api.IdentityManipulator;
-import zsawyer.mods.mumblelink.json.JSONArray;
-import zsawyer.mods.mumblelink.json.JSONException;
-import zsawyer.mods.mumblelink.json.JSONObject;
+import zsawyer.mods.mumblelink.api.MumbleLink;
 import zsawyer.mods.mumblelink.util.ConfigHelper;
+import zsawyer.mods.mumblelink.util.InstanceHelper;
+import zsawyer.mods.mumblelink.util.json.JSONArray;
+import zsawyer.mods.mumblelink.util.json.JSONException;
+import zsawyer.mods.mumblelink.util.json.JSONObject;
+
+import javax.management.InstanceNotFoundException;
 
 /**
  * An addon to the MumbleLink mod (forge version) which injects extended
@@ -68,18 +72,24 @@ import zsawyer.mods.mumblelink.util.ConfigHelper;
  *
  * @author zsawyer, 2013-07-05
  */
-@Mod(modid = ExtendedPASupportConstants.MOD_ID, useMetadata = true)
+@Mod(modid = ExtendedPASupport.MOD_ID, useMetadata = true)
 public class ExtendedPASupport implements Activateable, IdentityManipulator {
     public static Logger LOG;
 
+    public static final String MOD_ID = "ExtendedPASupport";
+
     // The instance of the mod that Forge uses.
-    @Instance(ExtendedPASupportConstants.MOD_ID)
+    @Instance(ExtendedPASupport.MOD_ID)
     public static ExtendedPASupport instance;
 
     // whether this mod is active
     private boolean enabled = true;
     // whether debugging mode is on
     private boolean debug = false;
+
+    private String name = "ExtendedPASupport for MumbleLink";
+    private String version = "unknown";
+    private MumbleLink mumbleLinkInstance;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -88,7 +98,7 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
 
         // save guard because this mod should only run on the client
         if (FMLCommonHandler.instance().getSide().isServer())
-            throw new RuntimeException(ExtendedPASupportConstants.MOD_NAME
+            throw new RuntimeException(getName()
                     + " should not be installed on a server!");
 
         loadConfig(event);
@@ -111,19 +121,27 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
     @SideOnly(Side.CLIENT)
     @EventHandler
     public void load(FMLInitializationEvent event) {
-        if (enabled) {
-            activate();
+        try {
+            mumbleLinkInstance = InstanceHelper.getMumbleLink();
+
+            if (enabled) {
+                activate();
+            }
+        } catch (InstanceNotFoundException e) {
+            FMLClientHandler.instance().haltGame("Error in mod "
+                    + getName() + getVersion()
+                    + ": no instance of " + MumbleLink.MOD_ID + " found!", e);
         }
     }
 
     @Override
     public void activate() {
-        MumbleLink.instance.getApi().register(this);
+        mumbleLinkInstance.getApi().register(this);
     }
 
     @Override
     public void deactivate() {
-        MumbleLink.instance.getApi().unregister(this);
+        mumbleLinkInstance.getApi().unregister(this);
     }
 
     @Override
@@ -179,8 +197,15 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
     private void printDebug(JSONObject objectToPrint, String nameOfObject) {
         if (debug) {
             ExtendedPASupport.LOG.info(nameOfObject + ": "
-                    + objectToPrint.toString());
+                    + objectToPrint.toString(), "");
         }
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getVersion() {
+        return version;
+    }
 }

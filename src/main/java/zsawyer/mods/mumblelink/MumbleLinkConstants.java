@@ -28,16 +28,10 @@ package zsawyer.mods.mumblelink;
  */
 public class MumbleLinkConstants {
 
-    public static final String MOD_ID = "MumbleLink";
-
     //
 
     public static final String LIBRARY_NAME = "LinkAPI";
     public static final String MUMBLE_CONTEXT_DOMAIN_ALL_TALK = "AllTalk";
-
-    //
-
-    public static final String FML_MARKER = "fmlMarker";
 
     private MumbleLinkConstants() {
     }

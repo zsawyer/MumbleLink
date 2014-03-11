@@ -1,4 +1,4 @@
-package zsawyer.mods.mumblelink.json;
+package zsawyer.mods.mumblelink.util.json;
 
 /**
  * The <code>JSONString</code> interface allows a <code>toJSONString()</code>

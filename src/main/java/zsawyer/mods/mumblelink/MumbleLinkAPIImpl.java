@@ -27,7 +27,7 @@ import zsawyer.mods.mumblelink.api.IdentityManipulator;
 import zsawyer.mods.mumblelink.api.MumbleLinkAPI;
 import zsawyer.mods.mumblelink.mumble.ExtendedUpdateData;
 
-public class MumbleLinkAPIInstance implements MumbleLinkAPI {
+public class MumbleLinkAPIImpl implements MumbleLinkAPI {
 
     private ExtendedUpdateData extendedUpdateData;
 

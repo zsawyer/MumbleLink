@@ -1,4 +1,4 @@
-package zsawyer.mods.mumblelink.json;
+package zsawyer.mods.mumblelink.util.json;
 
 /*
 Copyright (c) 2002 JSON.org

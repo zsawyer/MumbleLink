@@ -26,7 +26,7 @@ package zsawyer.mods.mumblelink.api;
 import net.minecraft.client.Minecraft;
 
 /**
- * A class implementing this interface can register at the MumbleLinkAPI to be
+ * A class implementing this interface can register at the {@link MumbleLinkAPI} to be
  * consulted when generating the identity to send to Mumble. There is no
  * exclusive privilege, expect other manipulators to run after and before your
  * implementation. Use JSON formatting for compatibility.
@@ -79,9 +79,15 @@ public interface IdentityManipulator {
     public String manipulateIdentity(String identity, Minecraft game,
                                      int maxLength);
 
+    /**
+     * class holding a set of common keys to expect to be present within the identity
+     */
     public static class IdentityKey {
+        /// player's name
         public static final String NAME = "name";
+        /// dimension that the player is in
         public static final String DIMENSION = "dimension";
+        /// the world's spawn location
         public static final String WORLD_SPAWN = "worldSpawn";
 
         private IdentityKey() {

@@ -20,13 +20,36 @@
 
  */
 
-package zsawyer.mods.mumblelink.addons.pa.es;
+package zsawyer.mods.mumblelink.api;
 
-public class ExtendedPASupportConstants {
-    public static final String MOD_ID = "ExtendedPASupport";
-    public static final String MOD_NAME = "ExtendedPASupport for MumbleLink";
-    public static final String MOD_VERSION = "0.0.3";
+/**
+ * Interface for the MumbleLink mod.
+ * This interface provides implementation independent access to the MumbleLink mod.
+ * <p/>
+ * Use {@link zsawyer.mods.mumblelink.util.InstanceHelper#getMumbleLink()} to retrieve the mod instance.
+ */
+public interface MumbleLink extends Activateable, Debuggable {
+    public final static String MOD_ID = "MumbleLink";
 
-    private ExtendedPASupportConstants() {
-    }
+    /**
+     * the API instance which is used by this mod instance
+     * registering at this api effectively registers your manipulators with the core MumbleLink mod
+     *
+     * @return mod's API instance
+     */
+    public MumbleLinkAPI getApi();
+
+    /**
+     * display name of the mod
+     *
+     * @return mod's name
+     */
+    public String getName();
+
+    /**
+     * version of the mod
+     *
+     * @return mod's version
+     */
+    public String getVersion();
 }

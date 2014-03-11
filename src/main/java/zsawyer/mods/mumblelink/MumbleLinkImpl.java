@@ -31,8 +31,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
-import zsawyer.mods.mumblelink.api.Activateable;
-import zsawyer.mods.mumblelink.api.Debuggable;
+import zsawyer.mods.mumblelink.api.MumbleLink;
 import zsawyer.mods.mumblelink.api.MumbleLinkAPI;
 import zsawyer.mods.mumblelink.mumble.ExtendedUpdateData;
 import zsawyer.mods.mumblelink.util.ConfigHelper;
@@ -45,24 +44,24 @@ import zsawyer.mods.mumblelink.util.ConfigHelper;
  * @author zsawyer, 2013-04-09
  */
 // TODO: use "canBeDeactivated = true" to allow mod deactivation via FML
-@Mod(modid = MumbleLinkConstants.MOD_ID, useMetadata = true)
+@Mod(modid = MumbleLink.MOD_ID, useMetadata = true)
 @SideOnly(Side.CLIENT)
-public class MumbleLink extends MumbleLinkBase implements Activateable,
-        Debuggable {
+public class MumbleLinkImpl extends MumbleLinkBase implements
+        MumbleLink {
     public static Logger LOG;
 
     // The instance of the mod that Forge uses.
-    @Instance(MumbleLinkConstants.MOD_ID)
-    public static MumbleLink instance;
+    @Instance(MumbleLink.MOD_ID)
+    public static MumbleLinkImpl instance;
     //
     private UpdateTicker updateTicker;
-    private MumbleLinkAPIInstance api;
+    private MumbleLinkAPIImpl api;
 
     private boolean enabled = true;
     private boolean debug = false;
 
-    private static String name = "MumbleLink";
-    private static String version = "unknown";
+    private String name = "MumbleLink";
+    private String version = "unknown";
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -98,10 +97,11 @@ public class MumbleLink extends MumbleLinkBase implements Activateable,
                 errorHandler);
         mumbleData = extendedUpdateData;
         updateTicker = new UpdateTicker();
-        api = new MumbleLinkAPIInstance();
+        api = new MumbleLinkAPIImpl();
         api.setExtendedUpdateData(extendedUpdateData);
     }
 
+    @Override
     public MumbleLinkAPI getApi() {
         return api;
     }
@@ -125,11 +125,13 @@ public class MumbleLink extends MumbleLinkBase implements Activateable,
         return instance.debug;
     }
 
-    public static String getName() {
+    @Override
+    public String getName() {
         return name;
     }
 
-    public static String getVersion() {
+    @Override
+    public String getVersion() {
         return version;
     }
 }

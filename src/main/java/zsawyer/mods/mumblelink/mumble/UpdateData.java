@@ -24,15 +24,15 @@ package zsawyer.mods.mumblelink.mumble;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
-import zsawyer.mods.mumblelink.MumbleLink;
 import zsawyer.mods.mumblelink.MumbleLinkConstants;
+import zsawyer.mods.mumblelink.MumbleLinkImpl;
 import zsawyer.mods.mumblelink.api.ContextManipulator;
 import zsawyer.mods.mumblelink.api.IdentityManipulator;
 import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler;
 import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler.NativeUpdateError;
-import zsawyer.mods.mumblelink.json.JSONException;
-import zsawyer.mods.mumblelink.json.JSONObject;
 import zsawyer.mods.mumblelink.mumble.jna.LinkAPIHelper;
+import zsawyer.mods.mumblelink.util.json.JSONException;
+import zsawyer.mods.mumblelink.util.json.JSONObject;
 import zsawyer.mumble.jna.LinkAPILibrary;
 
 /**
@@ -202,7 +202,7 @@ public class UpdateData {
             newIdentity.put(IdentityManipulator.IdentityKey.NAME, displayName);
             return newIdentity.toString();
         } catch (JSONException e) {
-            MumbleLink.LOG.fatal("could not generate identity", e);
+            MumbleLinkImpl.LOG.fatal("could not generate identity", e);
         }
 
         return displayName;
@@ -215,7 +215,7 @@ public class UpdateData {
                     MumbleLinkConstants.MUMBLE_CONTEXT_DOMAIN_ALL_TALK);
             return newContext.toString();
         } catch (JSONException e) {
-            MumbleLink.LOG.fatal("could not generate context", e);
+            MumbleLinkImpl.LOG.fatal("could not generate context", e);
         }
 
         return MumbleLinkConstants.MUMBLE_CONTEXT_DOMAIN_ALL_TALK;
