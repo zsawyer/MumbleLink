@@ -23,7 +23,7 @@ version = "4.0.5"
 apply plugin: 'forge'
 apply plugin: 'grgit'
 
-archivesBaseName = "MumbleLink"
+archivesBaseName = "$name-LIBS"
 
 minecraft {
     version = mcversion + "-" + forgeversion
@@ -51,16 +51,10 @@ dependencies {
     compile configurations.includeInJar
 }
 
-jar {
-    from zipTree(configurations.includeInJar.singleFile)
-    from zipTree('jars/natives.jar')
-    from zipTree('jars/natives.jar')
-}
-
 subprojects {
     apply plugin: 'java'
 
-    archivesBaseName = "MumbleLink-" + name.toUpperCase()
+    archivesBaseName = rootProject.name + "-" + name.toUpperCase()
     //version = rootProject.version
 
     dependencies {
@@ -131,8 +125,41 @@ allprojects {
 
 }
 
+task allJar(type: Jar, dependsOn: [subprojects.build, rootProject.reobf]) {
+    //def oldArchiveName = archiveName
+    baseName = rootProject.name + "-ALL"
+    def libsDir = new File(rootProject.getBuildDir(), 'libs')
+
+    inputs.dir libsDir
+
+    doFirst {
+
+        FileTree tree = fileTree(libsDir)
+        //tree.exclude "**/$oldArchiveName"
+        tree.exclude "**/$archiveName"
+        tree.exclude "**/*javadoc.jar"
+        tree.exclude "**/*sources.jar"
+        tree.exclude "**/*deobf.jar"
+        println "merging: "
+        tree.each {
+            println it
+            from zipTree(it)
+        }
+
+    }
+}
+
+artifacts {
+    archives allJar
+}
+
 project.subprojects.each { p ->
     p.tasks.withType(Jar)*.each { t ->
         t.destinationDir = new File(rootProject.getBuildDir(), 'libs')
     }
+}
+
+jar {
+    from zipTree(configurations.includeInJar.singleFile)
+    from zipTree('jars/natives.jar')
 }
