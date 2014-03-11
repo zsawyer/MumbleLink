@@ -23,14 +23,14 @@ version = "4.0.5"
 apply plugin: 'forge'
 apply plugin: 'grgit'
 
-archivesBaseName = "MumbleLink-CORE"
+archivesBaseName = "MumbleLink"
 
 minecraft {
     version = mcversion + "-" + forgeversion
     assetDir = "run/assets"
 }
 
-def actualVersion = version
+actualVersion = version
 
 if (System.getenv("BUILD_NUMBER") != null) {
     version = "${minecraft.version}-$version." + System.getenv("BUILD_NUMBER")
@@ -43,17 +43,6 @@ if (System.getenv("BUILD_NUMBER") != null) {
     version = "${minecraft.version}-$version"
 }
 
-sourceSets {
-    api
-    main {
-        java.srcDirs = ['src/main/java', 'src/api/java']
-    }
-}
-
-task apiJar(type: Jar) {
-    from sourceSets.api.output
-}
-
 configurations {
     includeInJar
 }
@@ -64,6 +53,7 @@ dependencies {
 
 jar {
     from zipTree(configurations.includeInJar.singleFile)
+    from zipTree('jars/natives.jar')
     from zipTree('jars/natives.jar')
 }
 
