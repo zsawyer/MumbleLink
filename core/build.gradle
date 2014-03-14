@@ -1,11 +1,16 @@
+import java.text.SimpleDateFormat
+
 version = rootProject.version
-actualVersion = rootProject.actualVersion
+ext.actualVersion = rootProject.actualVersion
 group = "zsawyer.mods.mumblelink"
 
 dependencies {
     compile project(":api")
 }
 
+task getConfig(type: Exec) {
+    ext.actualVersion = actualVersion
+}
 
 jar {
     inputs.dir sourceSets.main.resources.srcDirs
@@ -16,11 +21,13 @@ processResources {
         include '**/*.info'
         include '**/*.properties'
         include '**/*.lang'
-        //include '**/*.txt' // buggy matching of marker symbols
+        include '**/*.txt' // buggy matching of marker symbols
 
         expand([
                 'version': actualVersion,
-                'mcversion': rootProject.mcversion
+                'mcversion': rootProject.ext.mcversion,
+                'forgeversion': rootProject.ext.forgeversion,
+                'date': new SimpleDateFormat("yyyy-MM-dd").format(new Date()),
         ])
     }
 
@@ -28,6 +35,6 @@ processResources {
         exclude '**/*.info'
         exclude '**/*.properties'
         exclude '**/*.lang'
-        //exclude '**/*.txt' // buggy matching of marker symbols
+        exclude '**/*.txt' // buggy matching of marker symbols
     }
 }

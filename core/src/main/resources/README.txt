@@ -1,119 +1,116 @@
-ReadMe for mod_MumbleLink v${version}
+ReadMe for MumbleLink ${version}
 at http://www.minecraftforum.net/viewtopic.php?f=1032&t=235800
-by zsawyer, 2014-01-06
+by zsawyer, ${date}
 
 
 
 About:
 
-This is a Minecraft mod based on "Minecraft Forge". It's purpose is to be able to use 
-Minecraft in conjunction with Mumble's positional audio feature. 
+This is a Minecraft mod based on "Minecraft Forge". It's purpose is to be able to use
+Minecraft in conjunction with Mumble's positional audio feature.
 (http://mumble.sourceforge.net/)
-This means: Directional and positionally attenuated VOIP in relation to 
-the game world. 
-It uses the Mumble Link Plugin v1.2.0 and adds native mumble support. 
+This means: Directional and positionally attenuated VOIP in relation to
+the game world.
+It uses the Mumble Link Plugin v1.2.0 and adds native mumble support.
 Tested with Mumble 1.2.2 - 1.2.4 and PR_Mumble1.0 .
-It also uses JNA (https://github.com/twall/jna). 
-There is an interface that other mods can use to inject their custom Mumble 
-context and/or identity. 
+It also uses JNA (https://github.com/twall/jna).
+There is an interface that other mods can use to inject their custom Mumble
+context and/or identity.
 
 
 
 Prerequisites:
 
-- Minecraft 1.7.2+
+- Minecraft ${mcversion}+
 - Minecraft Forge installed (http://www.minecraftforge.net/wiki/)
-- Mumble + advanced option "Link to Game and Transmit Position" activated 
-     (Configure -> Settings -> Tick "Advanced" -> "Plugins" 
+- Mumble + advanced option "Link to Game and Transmit Position" activated
+     (Configure -> Settings -> Tick "Advanced" -> "Plugins"
         -> Tick "Link to Game and Transmit Position")
 
 
-        
+
 Installing the Mod:
 
 1. Close both Mumble and Minecraft.
 2. install Minecraft Forge
 3. Put the MumbleLink.jar into your mods folder (DO NOT EXTRACT THE JAR!)
       examples:
-        Windows: %Appdata%\.minecraft\mods\MumbleLink.jar
+        Windows: %Appdata%\\.minecraft\\mods\\MumbleLink.jar
         Linux: ~/.minecraft/mods/MumbleLink.jar
-4. setup Mumble: activate advanced option "Link to Game and Transmit Position"
-    Configure -> Settings -> Tick "Advanced" -> 
-        "Plugins" -> Tick "Link to Game and Transmit Position"
-      
-                     
-        
+4. setup Mumble:
+    1. On Mumble's main screen select Configure -> Settings
+    2. In Mumble Configuration dialog enable "Advanced" (bottom left)
+    3. In Plugins: (see http://i.imgur.com/8K59Rlw.png)
+        1. Options section: enable "Link to Game and Transmit Position",
+                            if this was disabled, restart after setting this option
+        2. in Plugins section: find and enable "Link v1.2.0"
+    4. In Audio Output: (see http://i.imgur.com/c5uiVxg.png)
+        1. in Positional Audio section: enable Positional Audio´
+    5. optional advanced Mumble settings can be found below
+
+
 Upgrading from earlier Versions:
 
 1. Close both Mumble and Minecraft.
 2. install latest Minecraft Forge
 3. replace the old MumbleLink.jar with the new one
 
-               
+
 
 
 
 Advanced Mumble Configuration
 
-Instead of hearing people from indefinitely far away you can set up mumble to 
-only hear them when they are close. In return you (and they!) will need to bind 
-an extra key to communicate with those far away (imagine it being a 
+Instead of hearing people from indefinitely far away you can set up mumble to
+only hear them when they are close. In return you (and they!) will need to bind
+an extra key to communicate with those far away (imagine it being a
 "walkie-talkie" button).
-To set this up you will need to do some special settings which differ from the 
-defaults, in return it might enhance your audio experience. 
+To set this up you will need to do some special settings which differ from the
+defaults, in return it might enhance your audio experience.
 
-    - In settings dialog check "Advanced" (bottom left)
-    -- "Link to Game and Transmit Position" activated,
-    -- restart after setting this option
-    -- (this mod will not work without it!!!)
+    1. In Audio Output: (see http://i.imgur.com/c6eRKYQ.png)
+        1. Positional Audio section: Maximum Distance: 70m
+            (this value will determine when others are too far away to be heard)
+        2. Positional Audio section: Minimum Volume: 0%
+            (this value makes you not hear people beyond Maximum Distance)
+        3. Audio Output section: disable "Attenuate applications by... " "while other users talk" and "while you talk"
+            (mumble would dampen ArmA's audio if enabled)
 
-    - Maximum Distance: 70m
-    -- (this value will determine when others are too far away to be heard)
+    2. In Shortcuts (see http://i.imgur.com/MxSu237.png)
+        1. bind a key ("Shortcut") to "Shout/Wisper" "Shout to Channel" select "Current" Channel and make sure to check "Ignore positional audio"
+            (this will enable you to speak to everyone no matter how far away they are or what their settings are)
 
-    - Minimum Volume: 0%
-    -- (this value makes you not hear people beyond Maximum Distance)
-    -- for convenience a value of 15% has also proved very useful 
-        (hard to understand but the direction is audible, helps with locating others)
 
-    - untick "Attenuate applications by..." "while other users talk" and "while you talk"
-    -- (mumble would dampen Minecraft's audio if ticked)
 
-    - bind a key ("Shortcut") to "Shout/Wisper" "Shout to Channel" select "Current" 
-        Channel and make sure to check "Ignore positional audio"
-    -- (this will enable you to speak to everyone no matter how far away they 
-        are or what their settings are)    
-    
 
-    
-    
-    
-Notes: 
 
-- suggested Mumble settings (differing from defaults): 
--- advanced option "Link to Game and Transmit Position" activated 
+Notes:
+
+- suggested Mumble settings (differing from defaults):
+-- advanced option "Link to Game and Transmit Position" activated
     (restart after setting this option)
--- Maximum Distance: 70m 
+-- Maximum Distance: 70m
 -- Minimum Volume: 0%
 -- untick "Attenuate applications by..." "while other users talk" and "while you talk"
 
-- link delay: 10 seconds - normal link delay appears to be about 10 seconds after 
-    joining a minecraft server. This may vary depending on the PC. The confirmation 
-    that the plugin linked can however show before the effect kicks in. 
+- link delay: 10 seconds - normal link delay appears to be about 10 seconds after
+    joining a minecraft server. This may vary depending on the PC. The confirmation
+    that the plugin linked can however show before the effect kicks in.
 
-- starting order: does not matter, 
-    Minecraft or Mumble - either can be started first   
+- starting order: does not matter,
+    Minecraft or Mumble - either can be started first
 
 
 
 Troubleshooting:
 
-- Please check the logs in your .minecraft-folder for an error message.      
+- Please check the logs in your .minecraft-folder for an error message.
       for Forge: ForgeModLoader-client-0.log
--- messages from this mod will be indicated by "[MumbleLink]" infront 
+-- messages from this mod will be indicated by "[MumbleLink]" infront
     of the message
 
-- Errors will occur as "Minecraft has crashed!"  or a black window 
--- This either indicates incompatibility to your operating system 
+- Errors will occur as "Minecraft has crashed!"  or a black window
+-- This either indicates incompatibility to your operating system
 -- or you are using an outdated version of the mod
 -- check the error report or log files (s.a.) for details
 
@@ -122,17 +119,17 @@ Troubleshooting:
 FAQ:
 
 - How do I know that I am linked/the mod works?
-    After connecting to a Minecraft-Server (joining a game) Mumble's log will 
-    show a message "Minecraft linked." after a few seconds. Additionally 
-    within Minecraft you will see a chat message "Mumble linked." after you have 
-    joined any world.     
+    After connecting to a Minecraft-Server (joining a game) Mumble's log will
+    show a message "Minecraft linked." after a few seconds. Additionally
+    within Minecraft you will see a chat message "Mumble linked." after you have
+    joined any world.
 
 - Mumble does not Link:
-    - check the logs and check if MumbleLink (Forge)       
+    - check the logs and check if MumbleLink (Forge)
         - you might not have Forge installed
         - note that Risugami's ModLoader is not supported anymore
 
-- Minecraft crashes with:         
+- Minecraft crashes with:
     "Minecraft has crashed!
     ...
     java.lang.NoSuchFieldError: g
@@ -145,86 +142,89 @@ FAQ:
     Stacktrace:
         at UpdateData.set(UpdateData.java:XXX)
     ..."
-        - You are using an incompatible mod version. 
+        - You are using an incompatible mod version.
         - Get the appropriated one from https://sourceforge.net/projects/modmumblelink/files/
-        - there might not be one yet if you just updated Minecraft 
+        - there might not be one yet if you just updated Minecraft
 
-        
+
     "Minecraft has crashed!
     ...
-    Minecraft has stopped running because it encountered a problem; Error in mod 
+    Minecraft has stopped running because it encountered a problem; Error in mod
     MumbleLink: Couldn't load library.
     ...
-    java.lang.UnsatisfiedLinkError: ..."        
+    java.lang.UnsatisfiedLinkError: ..."
         - None of the found libraries can be loaded on your system. Your operating
-            system is not supported by this mod. Sorry. 
-            Please try to compile the required libraries yourself or submit a 
-            request. (If you successfully compiled them yourself please share :D)     
-        
-        
-- the log sais:                                
-    "SEVERE: [MumbleLink][SEVERE] Required library could not be loaded, 
+            system is not supported by this mod. Sorry.
+            Please try to compile the required libraries yourself or submit a
+            request. (If you successfully compiled them yourself please share :D)
+
+
+- the log sais:
+    "SEVERE: [MumbleLink][SEVERE] Required library could not be loaded,
             available libraries are incompatible!"
         - None of the found libraries can be loaded on your system. Your operating
-            system is not supported by this mod. Sorry. 
-            Please try to compile the required libraries yourself or submit a 
-            request. (If you successfully compiled them yourself please share :D)                      
+            system is not supported by this mod. Sorry.
+            Please try to compile the required libraries yourself or submit a
+            request. (If you successfully compiled them yourself please share :D)
 
-                
-- Mumble sais "Minecraft linked." but I still don't hear people positionally. 
-    Multiple possibilities: 
-        1. Mumble is not setup correctly: 
-            Make sure "Link to Game and Transmit Position" is checked 
-                (Configure -> Settings -> Tick "Advanced" -> "Plugins" 
+
+- Mumble sais "Minecraft linked." but I still don't hear people positionally.
+    Multiple possibilities:
+        1. Mumble is not setup correctly:
+            Make sure "Link to Game and Transmit Position" is checked
+                (Configure -> Settings -> Tick "Advanced" -> "Plugins"
                     -> Tick "Link to Game and Transmit Position")
-                    
+
         2. The others are not using this mod. Get them to install it! ;)
-                            
+
 - Minecraft has no sound/it is really low now
-    this is probably due to Mumble itself, it will lower other applications' 
+    this is probably due to Mumble itself, it will lower other applications'
     volumes by default
-    In Mumble advanced settings, within "Audio Output" untick both: 
-        "Attenuate applications by..." "while other users talk" 
+    In Mumble advanced settings, within "Audio Output" untick both:
+        "Attenuate applications by..." "while other users talk"
         and "while you talk"
-        
-   
+
+
 
 Developing Addons for this Mod:
 
-- Please also refer to changelog of v4.0.2 and the source code comments. 
+- Please also refer to changelog of v4.0.2 and the source code comments.
 
-- The interface "MumbleLinkAPI" allows your addon to inject their custom Mumble 
-    context and/or identity. Use this interface to register your callback 
-    function handlers. You will have to implement the callback interfaces. It is 
-    suggested that your addon implements the "Activatable" interface to allow 
-    other (child) addons to disable your handlers and thus overriding/replacing 
-    them. This is neccessary since the context and identity fields have a very 
+- The interface "MumbleLinkAPI" allows your addon to inject their custom Mumble
+    context and/or identity. Use this interface to register your callback
+    function handlers. You will have to implement the callback interfaces. It is
+    suggested that your addon implements the "Activatable" interface to allow
+    other (child) addons to disable your handlers and thus overriding/replacing
+    them. This is neccessary since the context and identity fields have a very
     limited length.
-    The ExtendedPASupport mod should serve as a sample implementation. 
-    Please note the javadoc of these files.  
-    
-    For more information about context and identity consult mumble's doc: 
-        http://mumble.sourceforge.net/Link#Context    
-        
+    The ExtendedPASupport mod should serve as a sample implementation.
+    Please note the javadoc of these files.
 
-   
-        
+    For more information about context and identity consult mumble's doc:
+        http://mumble.sourceforge.net/Link#Context
+
+
+
+
 Tested Platforms:
 
-- Windows 7 Home Premium 64-bit with Forge 
-    - Forge ${minecraft.version} (MC ${mcversion})
+- Windows 7 Home Premium 64-bit with Forge
+    - Forge ${forgeversion} (MC ${mcversion})
 
 
 
 Known Issues:
 
-- Does not work with PRMumble(0.5Beta) even after copying the link.dll (1.2.0) 
-    into PRMumble's plugin folder - it will say "linked" but the audio 
+- Does not work with PRMumble(0.5Beta) even after copying the link.dll (1.2.0)
+    into PRMumble's plugin folder - it will say "linked" but the audio
     will not be positional (Deprecated since PR_Mumble1.0 is supported now :))
-    
-    
-    
+
+
+
 Change Log:
+
+v4.1.0
+- code structure rework to conform to new forge gradle build system
 
 v4.0.5
 - beta build
@@ -244,13 +244,13 @@ v4.0.2
 - updated for Minecraft 1.6.2 (+ MCP 8.02 + Forge 9.10.0.777)
 - IMPORTANT: dropped direct support for Risugami's ModLoader (will now only work with Forge)
 - utilizing srg-reobfuscation; new builds are now (fairly) universal, this means that updates are now needed less frequently
-- added API interface (MumbleLinkAPI) for addons to inject their own context and identity 
-    (this means that for example a faction-based mod can now tell mumble which faction 
-    the player is on, a custom MUMO can then do its job accordingly) 
+- added API interface (MumbleLinkAPI) for addons to inject their own context and identity
+    (this means that for example a faction-based mod can now tell mumble which faction
+    the player is on, a custom MUMO can then do its job accordingly)
     - ExtendedPASupport.java is a sample implementation
 - added an addon which injects identity and context as json data for extended positional audio support for vanilla minecraft
 - context and identity now use JSON formatting
-- fixed 3D positional audio bugs when looking straight up or down 
+- fixed 3D positional audio bugs when looking straight up or down
 - added config options to enable the Forge-based mod(s) and set their debugging mode
 
 v3.0.4
@@ -296,30 +296,30 @@ v2.5.1
 v2.5
 - complete reworking of the code (unreleased)
 - using json to transport the mumble context
-- extended use of settings file, 
+- extended use of settings file,
     - mod_MumbleLink.conf
     - a simple text file that you can put into your minecraft execution directory
-    - syntax follows a key value pair seperated by colon (:) per line 
-- introduced new settings:    
+    - syntax follows a key value pair seperated by colon (:) per line
+- introduced new settings:
     - mumbleContext:[MinecraftAllTalk|world]
         - default: MinecraftAllTalk
-        - specifies which group of players you belong to (which context you will 
+        - specifies which group of players you belong to (which context you will
             use)
-        - if the contexts of two players match then mumble will calculate 
+        - if the contexts of two players match then mumble will calculate
             positional audio
-        - MinecraftAllTalk: a general, non-specific context saying "i am playing 
+        - MinecraftAllTalk: a general, non-specific context saying "i am playing
             minecraft"
-        - world: a world specific context, only players in the same world will 
+        - world: a world specific context, only players in the same world will
             hear each other positionally
     - libraryName:someFileName
         - default: mod_MumbleLink
-        - you can specifiy to use a certain native library useful if there is a 
+        - you can specifiy to use a certain native library useful if there is a
             naming conflict
-        - the mod will also try OSX, Windows and Unix as well as x64 specific 
+        - the mod will also try OSX, Windows and Unix as well as x64 specific
             filename variations if the file could not be found right away
     - libraryFolderPath:/some/folder/path/natives/
         - default: none
-        - you can specify which directory should be searched for the required 
+        - you can specify which directory should be searched for the required
             native library files
         - useful when running minecraft from a custom directory
 
@@ -357,17 +357,17 @@ v2.3
 v2.2.2
 - updated for Minecraft beta 1.5_01 (+ MCP2.12_test1 + ModLoader)
 
-v2.2.1 
+v2.2.1
 - updated for Minecraft beta 1.4_01 (+ MCP2.11 + ModLoader)
 
-v2.2 
+v2.2
 - updated for Minecraft beta 1.4 (+ MCP2.10 + ModLoader)
 - fixed: starting order of Mumble vs Minecraft now does not matter
-- added: optional feature: world dependent linking (for future use) 
+- added: optional feature: world dependent linking (for future use)
 
 v2.1
 - fixed some remnants of data corruption
-- Hotfix for WinXP32 EXCEPTION_ACCESS_VIOLATION (and possibly on other 
+- Hotfix for WinXP32 EXCEPTION_ACCESS_VIOLATION (and possibly on other
     systems as well)
 
 v2.0
@@ -377,41 +377,41 @@ v2.0
 v1.1
 - added 64-Bit Java support (new x64-bit DLL)
 - optimized DLLs
-    - now there is no need for the msvcr100.dll -> removed    
+    - now there is no need for the msvcr100.dll -> removed
 - sources ready for release
 
-v1.0 
+v1.0
 - initial release (no sources)
 
-    
 
-    
+
+
 Additional:
 
-TheSkorm has forked this Project (v2.3.3, r72). 
+TheSkorm has forked this Project (v2.3.3, r72).
 https://github.com/TheSkorm/mod_mumblelink
 
-    
 
-    
+
+
 Acknowledgements:
 
 Mumble Team     : Thanks for Mumble!
 Mojang          : Thanks for Minecraft!
 The MCP Team    : Thanks for Minecraft Coder Pack!
-Risugami        : Thanks for ModLoader!
 Forge Team      : Thanks for Forge!
+AbrarSyed       : Thanks for ForgeGradle!
 
 SilentWalker    : Thanks for testing on XP64, Ubuntu32 and other invaluable support.
 talkingBEERmug  : Thanks for testing and decompiling the 128-bit encryption
 Steeve          : Thanks for providing the Mumble-Server we tested on
-xDownSetx, Zebra: Thanks for helping with testing           
-dalawrence      : Thanks for providing the source code of a similar project 
-                    (http://www.minecraftforum.net/viewtopic.php?f=1&t=41506) 
-                    which helped in optimizing the DLLs and compiling for 
+xDownSetx, Zebra: Thanks for helping with testing
+dalawrence      : Thanks for providing the source code of a similar project
+                    (http://www.minecraftforum.net/viewtopic.php?f=1&t=41506)
+                    which helped in optimizing the DLLs and compiling for
                     multiple platforms
-theskorm        : Thanks for helping with compiling libraries for linux 64 bit 
-                    and providing libs for MACOSX (and testing) and helping with 
+theskorm        : Thanks for helping with compiling libraries for linux 64 bit
+                    and providing libs for MACOSX (and testing) and helping with
                     recompiling/reobfuscating
 davr            : Thanks for jumping in and helping with recompiling/reobfuscating
 twall           : Thanks for JNA!
