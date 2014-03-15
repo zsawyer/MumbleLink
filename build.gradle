@@ -18,7 +18,7 @@ buildscript {
 
 ext.mcversion = "1.7.2"
 ext.forgeversion = "10.12.0.1046"
-version = "4.1.0"
+version = "4.1.1"
 
 apply plugin: 'forge'
 apply plugin: 'grgit'
@@ -32,16 +32,11 @@ minecraft {
 
 ext.actualVersion = version
 
-
-task getConfig {
-    ext.actualVersion = actualVersion
-}
-
 if (System.getenv("BUILD_NUMBER") != null) {
     version = "${minecraft.version}-$version." + System.getenv("BUILD_NUMBER")
     actualVersion += "." + System.getenv("BUILD_NUMBER")
-} else if (new File(projectDir, '.git').exists()) {
-    def repo = grgit.repo('.')
+} else if (new File(rootProject.projectDir, '.git').exists()) {
+    def repo = grgit.repo(rootProject.projectDir)
     version = "${minecraft.version}-$version-${repo.history.log().find().abbreviatedId}"
     actualVersion += "-${repo.history.log().find().abbreviatedId}"
 } else {
@@ -59,7 +54,7 @@ dependencies {
 subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
-    apply plugin: 'eclipse'    
+    apply plugin: 'eclipse'
 
     archivesBaseName = rootProject.name + "-" + name.toUpperCase()
     //version = rootProject.version
@@ -76,6 +71,8 @@ subprojects {
 }
 
 processResources {
+    inputs.files("build.gradle")
+
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
         include '**/*.properties'
@@ -103,6 +100,8 @@ allprojects {
     targetCompatibility = '1.7'
 
     jar {
+        inputs.files(rootProject.file("build.gradle"))
+
         manifest {
             attributes 'Implementation-Title': project.name
             attributes 'Implementation-Version': actualVersion
@@ -110,21 +109,29 @@ allprojects {
     }
 
     task sourceJar(type: Jar) {
+        outputs.dir libsDir
+
         from sourceSets.main.allSource
         classifier = 'sources'
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
+        outputs.dir libsDir
+
         from 'build/docs/javadoc'
         classifier = 'javadoc'
     }
 
     task deobfJar(type: Jar) {
+        outputs.dir libsDir
+
         from sourceSets.main.output
         classifier = 'deobf'
     }
 
-    build.dependsOn sourceJar, javadocJar, deobfJar
+    if(sourceSets.main != null) {
+        build.dependsOn sourceJar, javadocJar, deobfJar
+    }
 
     artifacts {
         archives sourceJar
@@ -139,12 +146,20 @@ import groovy.json.JsonSlurper
 
 import java.text.SimpleDateFormat
 
-task allJar(type: Jar, dependsOn: [subprojects.build, rootProject.reobf]) {
+task clearJars {
+    FileTree tree = fileTree(libsDir)
+    tree.each {
+        it.delete()
+    }
+}
+
+task allJar(type: Jar, dependsOn: [clearJars, subprojects.build, rootProject.reobf]) {
+    inputs.dir libsDir
+    inputs.files("build.gradle")
+
     //def oldArchiveName = archiveName
     baseName = rootProject.name// + "-ALL"
     def libsDir = new File(rootProject.getBuildDir(), 'libs')
-
-    inputs.dir libsDir
 
     manifest {
         attributes 'Implementation-Title': rootProject.name
@@ -152,7 +167,6 @@ task allJar(type: Jar, dependsOn: [subprojects.build, rootProject.reobf]) {
     }
 
     doFirst {
-
         FileTree tree = fileTree(libsDir)
         //tree.exclude "**/$oldArchiveName"
         tree.exclude "**/$archiveName"

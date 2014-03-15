@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 version = "1.0.0"
 group = "zsawyer.mods.mumblelink.api"
 
@@ -6,8 +8,8 @@ def actualVersion = version
 if (System.getenv("BUILD_NUMBER") != null) {
     version = "${minecraft.version}-$version." + System.getenv("BUILD_NUMBER")
     actualVersion += "." + System.getenv("BUILD_NUMBER")
-} else if (new File(projectDir, '.git').exists()) {
-    def repo = grgit.repo('.')
+} else if (new File(rootProject.projectDir, '.git').exists()) {
+    def repo = grgit.repo(rootProject.projectDir)
     version = "${minecraft.version}-$version-${repo.history.log().find().abbreviatedId}"
     actualVersion += "-${repo.history.log().find().abbreviatedId}"
 } else {
@@ -15,15 +17,19 @@ if (System.getenv("BUILD_NUMBER") != null) {
 }
 
 processResources {
+    inputs.files(rootProject.file("build.gradle"), "build.gradle")
+
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
         include '**/*.properties'
         include '**/*.lang'
-        //include '**/*.txt' // buggy matching of marker symbols
+        include '**/*.txt' // buggy matching of marker symbols
 
         expand([
                 'version': actualVersion,
-                'mcversion': rootProject.mcversion
+                'mcversion': rootProject.mcversion,
+                'forgeversion': rootProject.forgeversion,
+                'date': new SimpleDateFormat("yyyy-MM-dd").format(new Date()),
         ])
     }
 
@@ -31,6 +37,6 @@ processResources {
         exclude '**/*.info'
         exclude '**/*.properties'
         exclude '**/*.lang'
-        //exclude '**/*.txt' // buggy matching of marker symbols
+        exclude '**/*.txt' // buggy matching of marker symbols
     }
 }

@@ -8,8 +8,8 @@ ext.actualVersion = version
 if (System.getenv("BUILD_NUMBER") != null) {
     version = "${minecraft.version}-$version." + System.getenv("BUILD_NUMBER")
     actualVersion += "." + System.getenv("BUILD_NUMBER")
-} else if (new File(projectDir, '.git').exists()) {
-    def repo = grgit.repo('.')
+} else if (new File(rootProject.projectDir, '.git').exists()) {
+    def repo = grgit.repo(rootProject.projectDir)
     version = "${minecraft.version}-$version-${repo.history.log().find().abbreviatedId}"
     actualVersion += "-${repo.history.log().find().abbreviatedId}"
 } else {
@@ -25,6 +25,8 @@ jar {
 }
 
 processResources {
+    inputs.files(rootProject.file("build.gradle"), "build.gradle")
+
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
         include '**/*.properties'

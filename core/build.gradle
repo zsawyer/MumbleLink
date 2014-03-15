@@ -8,15 +8,13 @@ dependencies {
     compile project(":api")
 }
 
-task getConfig(type: Exec) {
-    ext.actualVersion = actualVersion
-}
-
 jar {
     inputs.dir sourceSets.main.resources.srcDirs
 }
 
 processResources {
+    inputs.files(rootProject.file("build.gradle"), "build.gradle")
+
     from(sourceSets.main.resources.srcDirs) {
         include '**/*.info'
         include '**/*.properties'
@@ -25,8 +23,8 @@ processResources {
 
         expand([
                 'version': actualVersion,
-                'mcversion': rootProject.ext.mcversion,
-                'forgeversion': rootProject.ext.forgeversion,
+                'mcversion': rootProject.mcversion,
+                'forgeversion': rootProject.forgeversion,
                 'date': new SimpleDateFormat("yyyy-MM-dd").format(new Date()),
         ])
     }
