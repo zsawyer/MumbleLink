@@ -1,8 +1,6 @@
 ## gradle
-/.gradle
-/*/.gradle
-/build
-/*/build
+.gradle
+build
 
 ## ForgeGradle
 /run
@@ -16,3 +14,4 @@
 /*/*.iml
 *.ipr
 *.iws
+*.iml
