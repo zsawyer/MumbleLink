@@ -6,6 +6,7 @@ install: ./gradlew setupCIWorkspace --refresh-dependencies
 
 script: ./gradlew build
 
+
 cache:
   directories:
   - .gradle
