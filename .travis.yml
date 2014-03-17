@@ -1,1 +1,11 @@
 language: java
+
+before_install: chmod +x gradlew
+
+install: ./gradlew setupCIWorkspace --refresh-dependencies
+
+script: ./gradlew build
+
+cache:
+  directories:
+  - .gradle
