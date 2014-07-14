@@ -231,7 +231,6 @@ public class UpdateData {
         float f4 = MathHelper
                 .sin((-game.thePlayer.rotationPitch + 90) * 0.017453292F);
 
-        return game.theWorld.getWorldVec3Pool().getVecFromPool(
-                (double) (f2 * f3), (double) f4, (double) (f1 * f3));
+        return Vec3.createVectorHelper((double) (f2 * f3), (double) f4, (double) (f1 * f3));
     }
 }

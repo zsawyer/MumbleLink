@@ -215,13 +215,18 @@ Tested Platforms:
 
 Known Issues:
 
+- Does not work with MicDoodleCore. Libraries will not be loading properly. 
+    A workaround is described in the forum thread. 
 - Does not work with PRMumble(0.5Beta) even after copying the link.dll (1.2.0)
     into PRMumble's plugin folder - it will say "linked" but the audio
     will not be positional (Deprecated since PR_Mumble1.0 is supported now :))
-
+    
 
 
 Change Log:
+
+v4.1.1
+- updated for Minecraft 1.7.10 (Forge 10.13.0.1180)
 
 v4.1.0
 - code structure rework to conform to new forge gradle build system
@@ -388,8 +393,10 @@ v1.0
 
 Additional:
 
+This project is present at both SourceForge and GitHub. The main development 
+    will be done using GitHub but the distribution is done through SourceForge.
 TheSkorm has forked this Project (v2.3.3, r72).
-https://github.com/TheSkorm/mod_mumblelink
+    https://github.com/TheSkorm/mod_mumblelink
 
 
 
