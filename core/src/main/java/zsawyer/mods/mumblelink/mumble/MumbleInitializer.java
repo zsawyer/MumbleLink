@@ -31,6 +31,7 @@ import zsawyer.mumble.jna.LinkAPILibrary;
  */
 public class MumbleInitializer implements Runnable {
 
+    public static final int ONE_SECOND = 1000;
     private LinkAPIHelper link;
     private NativeInitErrorHandler errorHandler;
     private NativeInitError initilizationReturnCode = NativeInitError.NOT_YET_INITIALIZED;
@@ -55,6 +56,12 @@ public class MumbleInitializer implements Runnable {
                 initilizationReturnCode = link.initialize(PLUGIN_NAME, PLUGIN_DESCRIPTION, PLUGIN_UI_VERSION);
 
                 errorHandler.handleError(initilizationReturnCode);
+
+                try {
+                    Thread.sleep(ONE_SECOND);
+                } catch (InterruptedException e) {
+                    return;
+                }
             }
         }
     }
