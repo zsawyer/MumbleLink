@@ -21,7 +21,7 @@
  */
 package zsawyer.mods.mumblelink.error;
 
-import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.Level;
 import zsawyer.mods.mumblelink.MumbleLinkImpl;

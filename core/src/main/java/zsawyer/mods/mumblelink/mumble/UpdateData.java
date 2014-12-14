@@ -195,7 +195,7 @@ public class UpdateData {
     }
 
     protected String generateIdentity(Minecraft game, int maxLength) {
-        String displayName = game.thePlayer.getDisplayName();
+        String displayName = game.thePlayer.getDisplayNameString();
 
         try {
             JSONObject newIdentity = new JSONObject();
@@ -231,6 +231,6 @@ public class UpdateData {
         float f4 = MathHelper
                 .sin((-game.thePlayer.rotationPitch + 90) * 0.017453292F);
 
-        return Vec3.createVectorHelper((double) (f2 * f3), (double) f4, (double) (f1 * f3));
+        return new Vec3((double) (f2 * f3), (double) f4, (double) (f1 * f3));
     }
 }

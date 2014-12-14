@@ -35,28 +35,29 @@ import net.minecraft.client.Minecraft;
  */
 public interface IdentityManipulator {
     /**
+     * <p>
      * This method is expected to return a string for use as the Mumble
      * positional audio (PA) identity. The result is required to adhere to the
      * maxLength requirement which is dictated by the Link Plugin's internal
      * data structure and specifies the number of characters that can be sent.
-     * <p/>
+     * </p><p>
      * The possibly previously manipulated identity is handed over and expected
      * to be respected by each implementation. Respecting herein means that the
      * previous identity should be - if possible - appended to, or at least be
      * reparsed (e.g. if length is likely to be over stepped).
-     * <p/>
+     * </p><p>
      * For compatibility with other addons the suggested format is JSON.
-     * <p/>
-     * <p/>
+     * </p><br>
+     * <p>
      * Excerpt from Mumble Wiki (http://mumble.sourceforge.net/Link 2013-07-08):
-     * <p/>
+     * </p><p>
      * Identity should contain a string which uniquely identifies the player in
      * the given context. This is usually satisfied by the in-game player name
      * or the players ID (player-/connection-ID on the server or a global ID).
-     * <p/>
+     * </p><p>
      * Additionally the identity can contain any additional information about
      * the player that might be interesting for the mumble server.
-     * <p/>
+     * </p><p>
      * For example by including team information in the identity a script on the
      * mumble server can move players into team channels automatically.
      * Additional information like squad number, squad leader status and so on
@@ -65,6 +66,7 @@ public interface IdentityManipulator {
      * state. E.g. someone is elected squad leader and now can whisper to all
      * other squad leaders and the team leader. For an example of such a
      * server-side script see the Battlefield 2 MuMo plugin.
+     * </p>
      *
      * @param identity  the identity with all previous manipulations applied expect it
      *                  to be a string representation of a JSON-Object which you can

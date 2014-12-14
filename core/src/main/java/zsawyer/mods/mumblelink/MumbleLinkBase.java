@@ -31,15 +31,15 @@ import zsawyer.mods.mumblelink.mumble.UpdateData;
 import zsawyer.mumble.jna.LinkAPILibrary;
 
 /**
+ * <p>
  * mod to link with mumble for positional audio
- * <p/>
+ * </p><p>
  * http://mumble.sourceforge.net/
- *
+ * </p><p>
+ * when developing for it I suggest using "mumblePAHelper" to see
+ * coordinates
+ * </p>
  * @author zsawyer, 2013-04-09
- *         <p/>
- *         <p/>
- *         when developing for it I suggest using "mumblePAHelper" to see
- *         coordinates
  */
 public class MumbleLinkBase {
 

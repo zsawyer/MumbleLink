@@ -16,9 +16,9 @@ buildscript {
     }
 }
 
-ext.mcversion = "1.7.10"
-ext.forgeversion = "10.13.0.1180"
-version = "4.1.1"
+ext.mcversion = "1.8"
+ext.forgeversion = "11.14.0.1268"
+version = "4.1.2"
 
 apply plugin: 'forge'
 
@@ -26,7 +26,7 @@ apply plugin: 'forge'
 archivesBaseName = "$name-LIBS"
 
 minecraft {
-    version = mcversion + "-" + forgeversion
+    version = mcversion + "-" + forgeversion + "-" + mcversion 
     assetDir = "run/assets"
 }
 

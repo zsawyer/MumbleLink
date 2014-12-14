@@ -25,7 +25,7 @@ package zsawyer.mods.mumblelink.api;
 /**
  * Interface for the MumbleLink mod.
  * This interface provides implementation independent access to the MumbleLink mod.
- * <p/>
+ * <p>
  * Use {@link zsawyer.mods.mumblelink.util.InstanceHelper#getMumbleLink()} to retrieve the mod instance.
  */
 public interface MumbleLink extends Activateable, Debuggable {

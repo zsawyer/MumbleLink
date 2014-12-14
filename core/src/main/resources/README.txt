@@ -33,10 +33,10 @@ Installing the Mod:
 
 1. Close both Mumble and Minecraft.
 2. install Minecraft Forge
-3. Put the MumbleLink.jar into your mods folder (DO NOT EXTRACT THE JAR!)
+3. Put the MumbleLink-${version}.jar into your mods folder (DO NOT EXTRACT THE JAR!)
       examples:
-        Windows: %Appdata%\\.minecraft\\mods\\MumbleLink.jar
-        Linux: ~/.minecraft/mods/MumbleLink.jar
+        Windows: %Appdata%\\.minecraft\\mods\\MumbleLink-${version}.jar
+        Linux: ~/.minecraft/mods/MumbleLink-${version}.jar
 4. setup Mumble:
     1. On Mumble's main screen select Configure -> Settings
     2. In Mumble Configuration dialog enable "Advanced" (bottom left)
@@ -224,6 +224,9 @@ Known Issues:
 
 
 Change Log:
+
+v4.1.2
+- updated for Minecraft 1.8 (Forge 11.14.0.1268)
 
 v4.1.1
 - updated for Minecraft 1.7.10 (Forge 10.13.0.1180)

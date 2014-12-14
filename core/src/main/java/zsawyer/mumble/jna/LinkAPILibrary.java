@@ -62,7 +62,7 @@ public interface LinkAPILibrary extends Library {
     /**
      * initialize the linked memory
      * and set the name and description
-     * <p/>
+     * <p>
      * it corresponds to initMumble() defined here:
      * http://mumble.sourceforge.net/Link
      * but also sets the name and description as this should only needed to be
@@ -80,7 +80,7 @@ public interface LinkAPILibrary extends Library {
      * 3: unix specific: shm_open returned a negative integer<br>
      * 4: unix specific: mmap failed to return a structure<br>
      * 5: shared memory was not initialized<br>
-     * <p/>
+     * <p>
      * <br>
      * Original signature :
      * <code>int initialize(wchar_t[256], wchar_t[2048], UINT32)</code>
@@ -89,18 +89,18 @@ public interface LinkAPILibrary extends Library {
 
     /**
      * update the identity only
-     * <p/>
+     * <p>
      * Notice: The identity does not need to be updated every single frame. It
      * shouldn't change more than a few times per second if at all during a
      * game.
-     * <p/>
+     * <p>
      * Identity should contain a string which uniquely identifies the player in
      * the given context. This is usually satisfied by the in-game player name
      * or the players ID (player-/connection-ID on the server or a global ID).
-     * <p/>
+     * <p>
      * Additionally the identity can contain any additional information about
      * the player that might be interesting for the mumble server.
-     * <p/>
+     * <p>
      * We recommend using an easily parseable format like JSON or CSV for
      * encoding the information but this is up to the game. Remember that the
      * link structures only allow for limited characters of identity data.
@@ -108,7 +108,7 @@ public interface LinkAPILibrary extends Library {
      * @param identity unique id of the user
      * @return true if success else false (this would usually mean that the
      * memory structure was not initialized properly)
-     * <p/>
+     * <p>
      * <br>
      * Original signature : <code>bool updateIdentity(wchar_t[256])</code>
      */
@@ -116,16 +116,16 @@ public interface LinkAPILibrary extends Library {
 
     /**
      * update the context only
-     * <p/>
+     * <p>
      * Notice: The context does not need to be updated every single frame. It
      * shouldn't change more than a few times per second if at all during a
      * game.
-     * <p/>
+     * <p>
      * The context string is used to determine which users on a Mumble server
      * should hear each other positionally. If context between two mumble user
      * does not match the positional audio data is stripped server-side and
      * voice will be received as non-positional.
-     * <p/>
+     * <p>
      * Accordingly the context should only match for players on the same server
      * in the same game on the same map. Whether to include things like team in
      * this string depends on the game itself. When in doubt err on the side of
@@ -135,7 +135,7 @@ public interface LinkAPILibrary extends Library {
      * @param context_len the length of the context (number of array elements)
      * @return true if success else false (this would usually mean that the
      * memory structure was not initialized properly)
-     * <p/>
+     * <p>
      * <br>
      * Original signature :
      * <code>bool updateContext(unsigned char[256], UINT32)</code>
@@ -144,11 +144,11 @@ public interface LinkAPILibrary extends Library {
 
     /**
      * update the identity and context
-     * <p/>
+     * <p>
      * Notice: The identity and/or context does not need to be updated every
      * single frame. It shouldn't change more than a few times per second if at
      * all during a game.
-     * <p/>
+     * <p>
      * see updateIdentity(..) and updateContext(..) for detailed information
      *
      * @param identity    unique id of the user
@@ -157,7 +157,7 @@ public interface LinkAPILibrary extends Library {
      *                    elements)
      * @return true if success else false (this would usually mean that the
      * memory structure was not initialized properly)
-     * <p/>
+     * <p>
      * <br>
      * Original signature :
      * <code>bool updateIdentityAndContext(wchar_t[256], unsigned char[256], UINT32)</code>
@@ -166,10 +166,10 @@ public interface LinkAPILibrary extends Library {
 
     /**
      * update the name only
-     * <p/>
+     * <p>
      * Notice: This does not need to be updated every single frame. It shouldn't
      * change at all during a game.
-     * <p/>
+     * <p>
      * this name is shown in the mumble interface to indicate which plugin's
      * positional audio is being used (i.e. used for the "XXX linked." message
      * in the mumble log)
@@ -178,7 +178,7 @@ public interface LinkAPILibrary extends Library {
      *             (i.e. L"TestLink")
      * @return true if success else false (this would usually mean that the
      * memory structure was not initialized properly)
-     * <p/>
+     * <p>
      * <br>
      * Original signature : <code>bool updateName(wchar_t[256])</code>
      */
@@ -186,16 +186,16 @@ public interface LinkAPILibrary extends Library {
 
     /**
      * update the description only
-     * <p/>
+     * <p>
      * Notice: This does not need to be updated every single frame. It shouldn't
      * change at all during a game.
-     * <p/>
+     * <p>
      * this is the text to explain the plugin and its purpose
      *
      * @param description a text stating the purpose of this link
      * @return true if success else false (this would usually mean that the
      * memory structure was not initialized properly)
-     * <p/>
+     * <p>
      * <br>
      * Original signature :
      * <code>bool updateDescription(wchar_t[2048])</code>
@@ -204,7 +204,7 @@ public interface LinkAPILibrary extends Library {
 
     /**
      * updates avatar and camera vectors
-     * <p/>
+     * <p>
      * Notice: Mumble fetches these values 50 times a second, so please update
      * them every frame.
      *
@@ -217,7 +217,7 @@ public interface LinkAPILibrary extends Library {
      * @param fCameraTop      Unit vector pointing out of the camera's top.
      * @return true if success else false (this would usually mean that the
      * memory structure was not initialized properly)
-     * <p/>
+     * <p>
      * <br>
      * Original signature :
      * <code>bool updateVectors(float[3], float[3], float[3], float[3], float[3], float[3])</code>
@@ -228,12 +228,12 @@ public interface LinkAPILibrary extends Library {
 
     /**
      * updates avatar AND camera vectors
-     * <p/>
+     * <p>
      * this simply reuses the given vectors for the camera
-     * <p/>
+     * <p>
      * short cut function to use when the camera of the game/program is not
      * independent of the avatar
-     * <p/>
+     * <p>
      * Notice: Mumble fetches these values 50 times a second, so please update
      * them every frame.
      *
@@ -244,7 +244,7 @@ public interface LinkAPILibrary extends Library {
      *                        avatar's head/camera's top.
      * @return true if success else false (this would usually mean that the
      * memory structure was not initialized properly)
-     * <p/>
+     * <p>
      * <br>
      * Original signature :
      * <code>bool updateVectorsByAvatar(float[3], float[3], float[3])</code>
@@ -255,14 +255,14 @@ public interface LinkAPILibrary extends Library {
     /**
      * a convenience function to directly manipulate the entire linked memory at
      * once
-     * <p/>
+     * <p>
      * Notice: Parts of this does not need to be updated every single frame.
      * Please use the more directly appropriate update functions instead.
      *
      * @param source data structure which is to be copied
      * @return true if success else false (this would usually mean that the
      * memory structure was not initialized properly)
-     * <p/>
+     * <p>
      * <br>
      * Original signature : <code>bool updateData(LinkedMem*)</code>
      */

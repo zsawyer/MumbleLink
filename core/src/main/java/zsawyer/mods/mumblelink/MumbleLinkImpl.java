@@ -22,14 +22,14 @@
 
 package zsawyer.mods.mumblelink;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 import zsawyer.mods.mumblelink.api.MumbleLink;
 import zsawyer.mods.mumblelink.api.MumbleLinkAPI;
@@ -38,7 +38,7 @@ import zsawyer.mods.mumblelink.util.ConfigHelper;
 
 /**
  * mod to link with mumble for positional audio
- * <p/>
+ * <p>
  * this is a forge based implementation
  *
  * @author zsawyer, 2013-04-09

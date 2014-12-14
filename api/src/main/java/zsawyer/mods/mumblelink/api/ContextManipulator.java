@@ -34,30 +34,32 @@ import net.minecraft.client.Minecraft;
  */
 public interface ContextManipulator {
     /**
+     * <p>
      * This method is expected to return a string for use as the Mumble
      * positional audio (PA) context. The result is required to adhere to the
      * maxLength requirement which is dictated by the Link Plugin's internal
      * data structure and specifies the number of characters that can be sent.
-     * <p/>
+     * </p><p>
      * The possibly previously manipulated context is handed over and expected
      * to be respected by each implementation. Respecting herein means that the
      * previous context should be - if possible - appended to, or at least be
      * reparsed (e.g. if length is likely to be over stepped).
-     * <p/>
+     * </p><p>
      * For compatibility with other addons the suggested format is JSON.
-     * <p/>
-     * <p/>
+     * </p><br>
+     * <p>
      * Excerpt from Mumble Wiki (http://mumble.sourceforge.net/Link 2013-07-08):
-     * <p/>
+     * </p><p>
      * The context string is used to determine which users on a Mumble server
      * should hear each other positionally. If context between two mumble user
      * does not match the positional audio data is stripped server-side and
      * voice will be received as non-positional.
-     * <p/>
+     * </p><p>
      * Accordingly the context should only match for players on the same server
      * in the same game on the same map. Whether to include things like team in
      * this string depends on the game itself. When in doubt err on the side of
      * including less. This gives more flexibility later on.
+     * </p>
      *
      * @param context   the context with all previous manipulations applied expect it
      *                  to be a string representation of a JSON-Object which you can

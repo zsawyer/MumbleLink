@@ -28,7 +28,7 @@ package zsawyer.mods.mumblelink.api;
  * <br>
  * Get an instance of the API with: <br>
  * {@link MumbleLink#getApi()}
- * <p/>
+ * <p>
  * Use this to (un)subscribe/(un)register your {@link ContextManipulator} and/or {@link IdentityManipulator}.
  *
  * @author zsawyer
