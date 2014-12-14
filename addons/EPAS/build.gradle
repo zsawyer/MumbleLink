@@ -6,7 +6,9 @@ group = "zsawyer.mods.mumblelink.addons.pa.es"
 
 ext.actualVersion = version
 
-if (System.getenv("BUILD_NUMBER") != null) {
+if (System.getenv("RELEASE") != null) {
+    version = "${minecraft.version}-$version"
+} else if (System.getenv("BUILD_NUMBER") != null) {
     version = "${minecraft.version}-$version." + System.getenv("BUILD_NUMBER")
     actualVersion += "." + System.getenv("BUILD_NUMBER")
 } else if (new File(rootProject.projectDir, '.git').exists()) {

@@ -53,7 +53,7 @@ Upgrading from earlier Versions:
 
 1. Close both Mumble and Minecraft.
 2. install latest Minecraft Forge
-3. replace the old MumbleLink.jar with the new one
+3. replace the old MumbleLink-jar with the new one!
 
 
 
@@ -105,7 +105,7 @@ Notes:
 Troubleshooting:
 
 - Please check the logs in your .minecraft-folder for an error message.
-      for Forge: ForgeModLoader-client-0.log
+      for Forge: fml-client-latest.log
 -- messages from this mod will be indicated by "[MumbleLink]" infront
     of the message
 
@@ -205,6 +205,18 @@ Developing Addons for this Mod:
 
 
 
+Mod-Packs:
+
+- Generally you are free to distribute it with your private (or public, or
+    commercial) mod-packs as specified by LGPLv3.
+    That being said, it virtually means no restrictions apply except that
+    you should inform users that your mod-pack contains this mod and that
+    it is licensed under LGPLv3.
+- Feel free to drop a note on the forum that your pack contains this mod.
+    It might give you some more users and I simply am curious to see
+    where it is used (totally optional!).
+
+
 
 Tested Platforms:
 
@@ -227,6 +239,9 @@ Change Log:
 
 v4.1.2
 - updated for Minecraft 1.8 (Forge 11.14.0.1268)
+- compiled with Java 6 (this should help the apple users with old JREs)
+- fixed bug: initializer thread tries continuously without a wait (inserted 1 second delay before retrying to find mumble)
+- added missing LICENSE.txt to the jar
 
 v4.1.1
 - updated for Minecraft 1.7.10 (Forge 10.13.0.1180)
