@@ -11,7 +11,7 @@
         "credits": "zsawyer, 2011-2014",
         "logoFile": "",
         "screenshots": [ ],
-        "parent": "MumbleLink",
-        "dependencies": [ "MumbleLink" ],
+        "parent": "",
+        "dependencies": [ ],
     }
 ]
