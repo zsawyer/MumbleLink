@@ -1,0 +1,27 @@
+@startuml
+    !include sprites/minecraft.sprite.plantuml
+    !include sprites/mumble.sprite.plantuml
+    !include sprites/murmur.sprite.plantuml
+    !include sprites/mumblelink.sprite.plantuml
+
+    node "Client" {
+        [<$minecraft> Minecraft] as MineCl
+        [<$mumblelink> MumbleLink] <<Mod>> as MumLink
+        [<$mumble> Mumble Client] as Mumble
+    }
+    
+    node "Server" as srv1 {
+        [<$minecraft> Minecraft Server] as MineSv
+    }
+
+    node "Server" as srv2 {
+        [<$murmur> Mumble Server] as Murmur  
+    }
+
+    MineCl --> MumLink
+    MumLink --> Mumble    
+    
+    MineCl -- MineSv
+    Mumble -- Murmur
+
+@enduml

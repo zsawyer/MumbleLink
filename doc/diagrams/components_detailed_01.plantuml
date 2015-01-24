@@ -1,0 +1,37 @@
+@startuml
+
+    node "Client" {
+        [Minecraft] as MineCl
+
+        [FML] <<Mod-API>> as FML
+        [Forge] <<Mod-API>> as Forge
+        [MumbleLink] <<Mod>> as MumLink 
+        [LinkAPI] <<Natives>> as LinkApi
+
+        package Mumble {
+            [Mumble Client] as Mumble
+            interface "Link Plugin v1.2" as LinkPlugin
+        }
+    }
+    
+    node "Server" as srv1 {
+        [Minecraft Server] as MineSv
+    }
+
+    node "Server" as srv2 {
+        [Mumble Server] as Murmur  
+    }
+
+    MineCl --> FML 
+    FML --> MumLink : loads
+    FML --> Forge : loads
+    Forge <-- MumLink : uses
+    MumLink --> LinkApi : sends positional data 
+    LinkApi --> LinkPlugin : sends positional data 
+    LinkPlugin -- Mumble 
+    
+    MineCl --> MineSv : connects
+    Mumble --> Murmur : sends own positional data
+    Mumble <-- Murmur : receives other's positional data
+
+@enduml

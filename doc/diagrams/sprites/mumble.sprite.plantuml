@@ -1,0 +1,8 @@
+@startuml
+
+sprite $mumble [16x16/16z] {
+RS_T2i0W20NWazMcjVBzttRzOh1v8NmY70M-vLY0cscxiFPMtQGlwAOKbv_bo-ofkctEy281aYOrpxde6AXPMwG_tHBeTEZNcCT5qJm3gMr5Th07McWA0N_r
+0W00
+}
+
+@enduml
