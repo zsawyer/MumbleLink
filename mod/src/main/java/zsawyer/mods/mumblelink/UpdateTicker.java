@@ -21,6 +21,7 @@
  */
 package zsawyer.mods.mumblelink;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -53,13 +54,13 @@ public class UpdateTicker implements Activateable {
     @Override
     public void activate() {
         enabled = true;
-        FMLCommonHandler.instance().bus().register(this);
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
     public void deactivate() {
         enabled = false;
-        FMLCommonHandler.instance().bus().unregister(this);
+        MinecraftForge.EVENT_BUS.unregister(this);
     }
 
 }
