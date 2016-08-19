@@ -1,16 +1,16 @@
 [
-{
-  "modid": "examplemod",
-  "name": "Example Mod",
-  "description": "Example placeholder mod.",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "",
-  "updateUrl": "",
-  "authorList": ["ExampleDude"],
-  "credits": "The Forge and FML guys, for making this example",
-  "logoFile": "",
-  "screenshots": [],
-  "dependencies": []
-}
+    {
+        "modid": "MumbleLink",
+        "name": "MumbleLink for Forge",
+        "description": "A client-side Mod so that Minecraft now natively supports Mumble's positional audio feature. This means: Directional and positionally attenuated VOIP in relation to the game world. This is the forge based version. Uses JNA (https://github.com/twall/jna).",
+        "version": "${version}",
+        "mcversion": "${mcversion}",
+        "url": "http://www.minecraftforum.net/topic/217587-151-mod-mumblelink-ml-smp-lan-mumble-realism-directional-voip/",
+        "updateUrl": "",
+        "authorList": [ "zsawyer" ],
+        "credits": "zsawyer, 2011-2014",
+        "logoFile": "",
+        "screenshots": [],
+        "dependencies": []
+    }
 ]
