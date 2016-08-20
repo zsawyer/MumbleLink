@@ -48,9 +48,11 @@ import javax.management.InstanceNotFoundException;
  * An addon to the MumbleLink mod (forge version) which injects extended
  * positional audio support (i.e. identity) based on vanilla Minecraft.
  *
+ * @version 1.0.0
  * @author zsawyer, 2013-07-05
  */
-@Mod(modid = ExtendedPASupport.MOD_ID, useMetadata = true)
+// FIX for #10 - setting the dependencies fixes NPE since MC 1.8.9
+@Mod(modid = ExtendedPASupport.MOD_ID, dependencies = "required-after:" + MumbleLink.MOD_ID, useMetadata = true)
 public class ExtendedPASupport implements Activateable, IdentityManipulator {
     public static Logger LOG;
 
