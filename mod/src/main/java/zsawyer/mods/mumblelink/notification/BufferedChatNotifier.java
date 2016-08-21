@@ -22,6 +22,9 @@
 package zsawyer.mods.mumblelink.notification;
 
 import net.minecraft.client.Minecraft;
+import org.apache.logging.log4j.Level;
+import zsawyer.mods.mumblelink.MumbleLinkImpl;
+import zsawyer.mods.mumblelink.api.MumbleLink;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,25 +53,23 @@ public class BufferedChatNotifier extends ChatNotifier implements Runnable {
 
     @Override
     public void run() {
-        waitUntilSendingPossible();
-        sendAllMessages();
+        while (!messages.isEmpty()) {
+            waitUntilSendingPossible();
+            sendAllMessages();
+        }
     }
 
     private void startTryingToSend() {
-        if (canSendMessage()) {
-            sendAllMessages();
-        } else {
-            try {
-                keepTrying.start();
-            } catch (IllegalThreadStateException alreadyStartedException) {
-                // safely ignore this because we are working on it
-            }
+        try {
+            keepTrying.start();
+        } catch (IllegalThreadStateException alreadyStartedException) {
+            // safely ignore this because we are working on it
         }
     }
 
     private void sendAllMessages() {
         Iterator<String> messageCrawler = messages.iterator();
-        while (messageCrawler.hasNext()) {
+        while (messageCrawler.hasNext() && canSendMessage()) {
             String message = messageCrawler.next();
             send(message);
             messageCrawler.remove();

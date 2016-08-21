@@ -2,6 +2,7 @@
 // For those who want the bleeding edge
 buildscript {
     repositories {
+        mavenCentral()
         jcenter()
         maven {
             name = "forge"
@@ -20,8 +21,8 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.8.9-4.1.4-a1"
-group= "zsawyer.mods.mumblelink.MumbleLink" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+version = "1.8.9-5.0.0-a1"
+group = "zsawyer.mods.mumblelink" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "MumbleLink"
 
 minecraft {
@@ -37,8 +38,14 @@ minecraft {
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
+configurations {
+    includeInJar
+}
+
 dependencies {
-//    shade 'net.java.dev.jna:jna:4.0.0'
+    // https://mvnrepository.com/artifact/com.nativelibs4java/bridj
+    includeInJar group: 'com.nativelibs4java', name: 'bridj', version: '0.7.0'
+    compile configurations.includeInJar
 
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
@@ -80,5 +87,13 @@ processResources
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+
+jar {
+    from zipTree(configurations.includeInJar[0])
+    manifest {
+        attributes 'Implementation-Title': archivesBaseName
+        attributes 'Implementation-Version': version
     }
 }

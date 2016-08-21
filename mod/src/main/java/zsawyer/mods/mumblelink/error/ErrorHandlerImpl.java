@@ -21,70 +21,27 @@
  */
 package zsawyer.mods.mumblelink.error;
 
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import org.apache.logging.log4j.Level;
+import org.bridj.ValuedEnum;
 import zsawyer.mods.mumblelink.MumbleLinkImpl;
+import zsawyer.mods.mumblelink.api.MumbleLink;
 import zsawyer.mods.mumblelink.notification.BufferedChatNotifier;
 import zsawyer.mods.mumblelink.notification.UserNotifier;
 import zsawyer.mods.mumblelink.util.SingletonFactory;
+import zsawyer.mumble.bridj.LinkAPILibrary;
 
 
 /**
  * @author zsawyer
  */
-public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler, NativeUpdateErrorHandler {
+public class ErrorHandlerImpl implements ModErrorHandler, NativeErrorHandler {
 
     private UserNotifier chat;
 
     public ErrorHandlerImpl() {
         chat = new BufferedChatNotifier(Minecraft.getMinecraft());
-    }
-
-    @Override
-    public void throwError(ModError modError, Throwable cause) {
-        log(Level.FATAL, cause.getMessage(), cause);
-        haltMinecraftUsingAnException(modError.toString(), cause);
-    }
-
-    private void haltMinecraftUsingAnException(String message, Throwable err) {
-        FMLClientHandler.instance().haltGame("Error in mod "
-                + MumbleLinkImpl.instance.getName() + MumbleLinkImpl.instance.getVersion()
-                + ": " + message,
-                err);
-    }
-
-    @Override
-    public void handleError(ModError err, Throwable stack) {
-        chatMessage("[MumbleLink] Error: " + err.toString());
-
-        log(Level.WARN, err.toString(), stack);
-    }
-
-    private void log(Level severity, String message, Throwable stack) {
-        MumbleLinkImpl.LOG.log(severity,
-                "[" + MumbleLinkImpl.instance.getName() + MumbleLinkImpl.instance.getVersion() + "]"
-                        + "[" + severity.toString() + "] "
-                        + message,
-                stack);
-    }
-
-    private void chatMessage(String message) {
-        chat.print(message);
-    }
-
-    @Override
-    public void handleError(NativeUpdateError fromCode) {
-        if (fromCode != NativeUpdateError.NO_ERROR) {
-            log(Level.WARN, "Update failed! Error: " + fromCode.getCode() + " (" + fromCode.toString() + ")", null);
-        }
-    }
-
-    @Override
-    public void handleError(NativeInitError fromCode) {
-        if (fromCode == NativeInitError.NO_ERROR) {
-            chat.print(UserNotifier.LINK_SUCCESS_MESSAGE);
-        }
     }
 
     public static ErrorHandlerImpl getInstance() {
@@ -96,4 +53,58 @@ public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler
         }
     }
 
+    @Override
+    public void throwError(ModError modError, Throwable cause) {
+        log(Level.FATAL, cause.getMessage(), cause);
+        haltMinecraftUsingAnException(modError.toString(), cause);
+    }
+
+    private void haltMinecraftUsingAnException(String message, Throwable err) {
+        FMLClientHandler.instance().haltGame("Error in mod "
+                        + MumbleLink.MOD_ID + "-" + MumbleLinkImpl.instance.getVersion()
+                        + ": " + message,
+                err);
+    }
+
+    @Override
+    public void handleError(ModError err, Throwable stack) {
+        chatMessage("[" + MumbleLink.MOD_ID + "] Error: " + err.toString());
+
+        log(Level.WARN, err.toString(), stack);
+    }
+
+    private void log(Level severity, String message, Throwable stack) {
+        MumbleLinkImpl.LOG.log(severity,
+                "[" + MumbleLink.MOD_ID + "-" + MumbleLinkImpl.instance.getVersion() + "]"
+                        + "[" + severity.toString() + "] "
+                        + message,
+                stack);
+    }
+
+    private void chatMessage(String message) {
+        chat.print(message);
+    }
+
+    @Override
+    public void handleUpdateError(ValuedEnum<LinkAPILibrary.LINKAPI_ERROR_CODE> fromCode) {
+        if (fromCode.value() != LinkAPILibrary.LINKAPI_ERROR_CODE.LINKAPI_ERROR_CODE_NO_ERROR.value()) {
+            log(Level.WARN, "Update failed! Error: " + fromCode.value() + " (" + fromCode.toString() + ")", null);
+        }
+    }
+
+    @Override
+    public void handleInitError(ValuedEnum<LinkAPILibrary.LINKAPI_ERROR_CODE> fromCode) {
+        if (fromCode.value() == LinkAPILibrary.LINKAPI_ERROR_CODE.LINKAPI_ERROR_CODE_NO_ERROR.value()) {
+            log(Level.INFO, "Initialization done! Success: " + fromCode.value() + " (" + fromCode.toString() + ")", null);
+            chat.print("[" + MumbleLink.MOD_ID + "] " + UserNotifier.LINK_SUCCESS_MESSAGE);
+        } else {
+            log(Level.DEBUG, "Initialization failed! Error: " + fromCode.value() + " (" + fromCode.toString() + ")", null);
+            //chat.print("[" + MumbleLink.MOD_ID + "] " + UserNotifier.LINK_FAILED_MESSAGE);
+        }
+    }
+
+    @Override
+    public void handleLinkageError(Error error) {
+        this.throwError(ModError.LIBRARY_LOAD_FAILED, error);
+    }
 }

@@ -19,15 +19,19 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package zsawyer.mods.mumblelink.loader;
+package zsawyer.mods.mumblelink.error;
 
-import zsawyer.mumble.jna.LinkAPILibrary;
+import org.bridj.ValuedEnum;
+import zsawyer.mumble.bridj.LinkAPILibrary;
 
 /**
  * @author zsawyer
  */
-public interface LibraryLoader {
+public interface NativeErrorHandler {
 
-    public LinkAPILibrary loadLibrary(String libraryName)
-            throws UnsatisfiedLinkError;
+    void handleInitError(ValuedEnum<LinkAPILibrary.LINKAPI_ERROR_CODE> fromCode);
+
+    void handleUpdateError(ValuedEnum<LinkAPILibrary.LINKAPI_ERROR_CODE> fromCode);
+
+    void handleLinkageError(Error error);
 }

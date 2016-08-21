@@ -24,11 +24,8 @@ package zsawyer.mods.mumblelink;
 
 import net.minecraft.client.Minecraft;
 import zsawyer.mods.mumblelink.error.ErrorHandlerImpl;
-import zsawyer.mods.mumblelink.error.ModErrorHandler.ModError;
-import zsawyer.mods.mumblelink.loader.PackageLibraryLoader;
-import zsawyer.mods.mumblelink.mumble.MumbleInitializer;
-import zsawyer.mods.mumblelink.mumble.UpdateData;
-import zsawyer.mumble.jna.LinkAPILibrary;
+import zsawyer.mods.mumblelink.mumble.bridj.MumbleInitializer;
+import zsawyer.mods.mumblelink.mumble.bridj.UpdateData;
 
 /**
  * <p>
@@ -39,6 +36,7 @@ import zsawyer.mumble.jna.LinkAPILibrary;
  * when developing for it I suggest using "mumblePAHelper" to see
  * coordinates
  * </p>
+ *
  * @author zsawyer, 2013-04-09
  */
 public class MumbleLinkBase {
@@ -46,7 +44,6 @@ public class MumbleLinkBase {
     protected MumbleInitializer mumbleInititer;
     protected Thread mumbleInititerThread;
     protected UpdateData mumbleData;
-    protected LinkAPILibrary library;
     protected ErrorHandlerImpl errorHandler;
 
     public MumbleLinkBase() {
@@ -60,16 +57,9 @@ public class MumbleLinkBase {
     private void initComponents() {
         errorHandler = ErrorHandlerImpl.getInstance();
 
-        try {
-            library = new PackageLibraryLoader()
-                    .loadLibrary(MumbleLinkConstants.LIBRARY_NAME);
-        } catch (Exception e) {
-            errorHandler.throwError(ModError.LIBRARY_LOAD_FAILED, e);
-        }
+        mumbleData = new UpdateData(errorHandler);
 
-        mumbleData = new UpdateData(library, errorHandler);
-
-        mumbleInititer = new MumbleInitializer(library, errorHandler);
+        mumbleInititer = new MumbleInitializer(errorHandler);
         mumbleInititerThread = new Thread(mumbleInititer);
     }
 

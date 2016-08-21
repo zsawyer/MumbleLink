@@ -26,6 +26,7 @@ package zsawyer.mods.mumblelink.notification;
  */
 public interface UserNotifier {
     public static final String LINK_SUCCESS_MESSAGE = "Mumble linked.";
+    public static final String LINK_FAILED_MESSAGE = "Mumble linking failed. Retrying...";
 
     public void print(String message);
 }

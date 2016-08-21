@@ -63,6 +63,10 @@ public class MumbleLinkImpl extends MumbleLinkBase implements
     private String name = "MumbleLink";
     private String version = "unknown";
 
+    public static boolean debug() {
+        return instance.debug;
+    }
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         LOG = event.getModLog();
@@ -93,8 +97,7 @@ public class MumbleLinkImpl extends MumbleLinkBase implements
     }
 
     private void initComponents() {
-        ExtendedUpdateData extendedUpdateData = new ExtendedUpdateData(library,
-                errorHandler);
+        ExtendedUpdateData extendedUpdateData = new ExtendedUpdateData(errorHandler);
         mumbleData = extendedUpdateData;
         updateTicker = new UpdateTicker();
         api = new MumbleLinkAPIImpl();
@@ -119,10 +122,6 @@ public class MumbleLinkImpl extends MumbleLinkBase implements
     @Override
     public boolean debugging() {
         return debug;
-    }
-
-    public static boolean debug() {
-        return instance.debug;
     }
 
     @Override

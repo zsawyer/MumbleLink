@@ -19,21 +19,21 @@
  along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
 
  */
-package zsawyer.mods.mumblelink.mumble;
+package zsawyer.mods.mumblelink.mumble.bridj;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import org.bridj.Pointer;
+import org.bridj.ValuedEnum;
 import zsawyer.mods.mumblelink.MumbleLinkConstants;
 import zsawyer.mods.mumblelink.MumbleLinkImpl;
 import zsawyer.mods.mumblelink.api.ContextManipulator;
 import zsawyer.mods.mumblelink.api.IdentityManipulator;
-import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler;
-import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler.NativeUpdateError;
-import zsawyer.mods.mumblelink.mumble.jna.LinkAPIHelper;
+import zsawyer.mods.mumblelink.error.NativeErrorHandler;
 import zsawyer.mods.mumblelink.util.json.JSONException;
 import zsawyer.mods.mumblelink.util.json.JSONObject;
-import zsawyer.mumble.jna.LinkAPILibrary;
+import zsawyer.mumble.bridj.LinkAPILibrary;
 
 /**
  * @author zsawyer
@@ -50,13 +50,10 @@ public class UpdateData {
     float[] fCameraTop = {0, 0, 0}; // [3]
     String identity = ""; // [256]
     String context = ""; // [256]
-    LinkAPILibrary mumbleLink;
-    NativeUpdateErrorHandler errorHandler;
+    NativeErrorHandler errorHandler;
     private int uiTick = 0;
 
-    public UpdateData(LinkAPILibrary mumbleLink,
-                      NativeUpdateErrorHandler errorHandler) {
-        this.mumbleLink = mumbleLink;
+    public UpdateData(NativeErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
 
         name = MumbleInitializer.PLUGIN_NAME;
@@ -64,38 +61,38 @@ public class UpdateData {
     }
 
     public void send() {
-        LinkAPILibrary.LinkedMem lm = new LinkAPILibrary.LinkedMem();
+        final LinkAPILibrary.LINKAPI_LINKED_MEMORY lm = new LinkAPILibrary.LINKAPI_LINKED_MEMORY();
 
-        lm.identity = LinkAPIHelper.parseToCharBuffer(
-                LinkAPILibrary.MAX_IDENTITY_LENGTH, identity).array();
-        lm.context = LinkAPIHelper.parseToByteBuffer(
-                LinkAPILibrary.MAX_CONTEXT_LENGTH, context).array();
-        lm.context_len = context.length();
+        lm.identity().setWideCString(identity);
+        lm.context().setCString(context);
+        lm.contextLength(context.length());
 
-        lm.name = LinkAPIHelper.parseToCharBuffer(
-                LinkAPILibrary.MAX_NAME_LENGTH, name).array();
-        lm.description = LinkAPIHelper.parseToCharBuffer(
-                LinkAPILibrary.MAX_DESCRIPTION_LENGTH, description).array();
+        lm.name().setWideCString(name);
+        lm.description().setWideCString(description);
 
-        lm.uiTick = ++uiTick;
-        lm.uiVersion = MumbleInitializer.PLUGIN_UI_VERSION;
+        lm.tick(++uiTick);
+        lm.version(MumbleInitializer.PLUGIN_UI_VERSION);
 
-        lm.fAvatarPosition = fAvatarPosition;
-        lm.fAvatarFront = fAvatarFront;
-        lm.fAvatarTop = fAvatarTop;
+        lm.avatarPosition().setFloats(fAvatarPosition);
+        lm.avatarFront().setFloats(fAvatarFront);
+        lm.avatarTop().setFloats(fAvatarTop);
 
-        lm.fCameraPosition = fCameraPosition;
-        lm.fCameraFront = fCameraFront;
-        lm.fCameraTop = fCameraTop;
+        lm.cameraPosition().setFloats(fCameraPosition);
+        lm.cameraFront().setFloats(fCameraFront);
+        lm.cameraTop().setFloats(fCameraTop);
 
-        byte successMessage = mumbleLink.updateData(lm);
-        boolean success = (successMessage != 0);
+
+        final Pointer<LinkAPILibrary.LINKAPI_LINKED_MEMORY> ptrToLM = Pointer.allocate(LinkAPILibrary.LINKAPI_LINKED_MEMORY.class);
+        ptrToLM.set(lm);
+        final ValuedEnum<LinkAPILibrary.LINKAPI_ERROR_CODE> returnCode = LinkAPILibrary.setData(ptrToLM);
+
+        boolean success = returnCode.value() == LinkAPILibrary.LINKAPI_ERROR_CODE.LINKAPI_ERROR_CODE_NO_ERROR.value();
 
         if (!success) {
-            errorHandler
-                    .handleError(NativeUpdateError.ERROR_NOT_YET_INITIALIZED);
+            errorHandler.handleUpdateError(returnCode);
+        } else {
+            LinkAPILibrary.commit();
         }
-
     }
 
     public void set(Minecraft game) {
@@ -180,12 +177,12 @@ public class UpdateData {
             // Identifier which uniquely identifies a certain player in a
             // context (e.g. the ingame Name).
             identity = generateIdentity(game,
-                    LinkAPILibrary.MAX_IDENTITY_LENGTH);
+                    LinkAPILibrary.LINKAPI_MAX_IDENTITY_LENGTH);
 
             // Context should be equal for players which should be able to hear
             // each other positional and differ for those who shouldn't (e.g. it
             // could contain the server+port and team)
-            context = generateContext(game, LinkAPILibrary.MAX_CONTEXT_LENGTH);
+            context = generateContext(game, LinkAPILibrary.LINKAPI_MAX_CONTEXT_LENGTH);
 
         } catch (Exception ex) {
             // we'll just ignore errors since they would become too spammy and

@@ -26,8 +26,8 @@ import net.minecraft.client.Minecraft;
 import zsawyer.mods.mumblelink.MumbleLinkImpl;
 import zsawyer.mods.mumblelink.api.ContextManipulator;
 import zsawyer.mods.mumblelink.api.IdentityManipulator;
-import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler;
-import zsawyer.mumble.jna.LinkAPILibrary;
+import zsawyer.mods.mumblelink.error.NativeErrorHandler;
+import zsawyer.mods.mumblelink.mumble.bridj.UpdateData;
 
 import java.util.ArrayList;
 
@@ -37,9 +37,8 @@ public class ExtendedUpdateData extends UpdateData {
 
     protected ArrayList<ContextManipulator> contextManipulators;
 
-    public ExtendedUpdateData(LinkAPILibrary mumbleLink,
-                              NativeUpdateErrorHandler errorHandler) {
-        super(mumbleLink, errorHandler);
+    public ExtendedUpdateData(NativeErrorHandler errorHandler) {
+        super(errorHandler);
         identityManipulators = new ArrayList<IdentityManipulator>();
         contextManipulators = new ArrayList<ContextManipulator>();
     }
