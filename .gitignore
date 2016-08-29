@@ -15,3 +15,5 @@ build
 *.ipr
 *.iws
 *.iml
+/mod/classes
+/mod/run

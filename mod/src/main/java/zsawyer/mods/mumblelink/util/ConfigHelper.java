@@ -22,8 +22,8 @@
 
 package zsawyer.mods.mumblelink.util;
 
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.rmi.activation.Activatable;
 import java.util.Arrays;
