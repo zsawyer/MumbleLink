@@ -22,8 +22,8 @@
 package zsawyer.mods.mumblelink.mumble;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import zsawyer.mods.mumblelink.MumbleLinkConstants;
 import zsawyer.mods.mumblelink.MumbleLinkImpl;
 import zsawyer.mods.mumblelink.api.ContextManipulator;
@@ -119,8 +119,8 @@ public class UpdateData {
             float fCameraTopY = 1; // Y points up
             float fCameraTopZ = 1;
 
-            Vec3 lookDirection = game.thePlayer.getLookVec();
-            Vec3 topDirection = getTopVec(game);
+            Vec3d lookDirection = game.thePlayer.getLookVec();
+            Vec3d topDirection = getTopVec(game);
 
 			/*
              * TODO: calculate real camera vector from pitch and yaw // camera
@@ -221,7 +221,7 @@ public class UpdateData {
         return MumbleLinkConstants.MUMBLE_CONTEXT_DOMAIN_ALL_TALK;
     }
 
-    private Vec3 getTopVec(Minecraft game) {
+    private Vec3d getTopVec(Minecraft game) {
         float f1 = MathHelper.cos(-game.thePlayer.rotationYaw * 0.017453292F
                 - (float) Math.PI);
         float f2 = MathHelper.sin(-game.thePlayer.rotationYaw * 0.017453292F
@@ -231,6 +231,6 @@ public class UpdateData {
         float f4 = MathHelper
                 .sin((-game.thePlayer.rotationPitch + 90) * 0.017453292F);
 
-        return new Vec3((double) (f2 * f3), (double) f4, (double) (f1 * f3));
+        return new Vec3d((double) (f2 * f3), (double) f4, (double) (f1 * f3));
     }
 }
