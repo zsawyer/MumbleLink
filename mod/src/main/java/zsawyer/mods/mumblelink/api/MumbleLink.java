@@ -29,7 +29,7 @@ package zsawyer.mods.mumblelink.api;
  * Use {@link zsawyer.mods.mumblelink.util.InstanceHelper#getMumbleLink()} to retrieve the mod instance.
  */
 public interface MumbleLink extends Activateable, Debuggable {
-    public final static String MOD_ID = "MumbleLink";
+    public final static String MOD_ID = "mumblelink";
 
     /**
      * the API instance which is used by this mod instance

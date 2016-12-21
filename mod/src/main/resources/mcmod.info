@@ -1,6 +1,6 @@
 [
     {
-        "modid": "MumbleLink",
+        "modid": "mumblelink",
         "name": "MumbleLink for Forge",
         "description": "A client-side Mod so that Minecraft now natively supports Mumble's positional audio feature. This means: Directional and positionally attenuated VOIP in relation to the game world. This is the forge based version. Uses JNA (https://github.com/twall/jna).",
         "version": "${version}",
@@ -14,7 +14,7 @@
         "dependencies": []
     },
     {
-        "modid": "ExtendedPASupport",
+        "modid": "extendedpasupport",
         "name": "ExtendedPASupport for MumbleLink",
         "description": "An addon to the MumbleLink mod (forge version) which injects extended positional audio support (i.e. context and identity) based on vanilla minecraft.",
         "version": "1.0.0",
@@ -25,8 +25,8 @@
         "credits": "zsawyer, 2011-2014",
         "logoFile": "",
         "screenshots": [ ],
-        "requiredMods": [ "MumbleLink" ],
-        "parent": "MumbleLink",
-        "dependencies": [ "MumbleLink" ]
+        "requiredMods": [ "mumblelink" ],
+        "parent": "mumblelink",
+        "dependencies": [ "mumblelink" ]
     }
 ]

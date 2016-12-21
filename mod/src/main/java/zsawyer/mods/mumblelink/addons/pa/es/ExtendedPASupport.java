@@ -56,7 +56,7 @@ import javax.management.InstanceNotFoundException;
 public class ExtendedPASupport implements Activateable, IdentityManipulator {
     public static Logger LOG;
 
-    public static final String MOD_ID = "ExtendedPASupport";
+    public static final String MOD_ID = "extendedpasupport";
 
     // The instance of the mod that Forge uses.
     @Instance(ExtendedPASupport.MOD_ID)
