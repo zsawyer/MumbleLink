@@ -15,9 +15,9 @@ version = "1.12-4.2.4"
 group = "zsawyer.mods.mumblelink.MumbleLink" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "mumblelink"
 
-sourceCompatibility = targetCompatibility = "1.6" // Need this here so eclipse task generates correctly.
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8 // Need this here so eclipse task generates correctly.
 compileJava {
-    sourceCompatibility = targetCompatibility = "1.6"
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 minecraft {
@@ -57,8 +57,7 @@ dependencies {
 
 }
 
-processResources
-{
+processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
@@ -68,7 +67,7 @@ processResources
         include 'mcmod.info'
 
         // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
 
     // copy everything else, thats not the mcmod.info
