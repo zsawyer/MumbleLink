@@ -2,7 +2,7 @@ language: java
 
 before_install: chmod +x mod/gradlew
 
-install: ./mod/gradlew setupCIWorkspace --refresh-dependencies
+install: ./mod/gradlew setupCiWorkspace --refresh-dependencies
 
 script: ./mod/gradlew build
 
