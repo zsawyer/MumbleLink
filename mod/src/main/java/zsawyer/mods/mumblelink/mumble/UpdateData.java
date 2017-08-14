@@ -119,7 +119,7 @@ public class UpdateData {
             float fCameraTopY = 1; // Y points up
             float fCameraTopZ = 1;
 
-            Vec3d lookDirection = game.thePlayer.getLookVec();
+            Vec3d lookDirection = game.player.getLookVec();
             Vec3d topDirection = getTopVec(game);
 
 			/*
@@ -131,50 +131,50 @@ public class UpdateData {
 
             // Position of the avatar
             fAvatarPosition = new float[]{
-                    Float.parseFloat(Double.toString(game.thePlayer.posX)),
-                    Float.parseFloat(Double.toString(game.thePlayer.posZ)),
-                    Float.parseFloat(Double.toString(game.thePlayer.posY))};
+                    Float.parseFloat(Double.toString(game.player.posX)),
+                    Float.parseFloat(Double.toString(game.player.posZ)),
+                    Float.parseFloat(Double.toString(game.player.posY))};
 
             // Unit vector pointing out of the avatar's eyes (here Front looks
             // into scene).
             fAvatarFront = new float[]{
-                    Float.parseFloat(Double.toString(lookDirection.xCoord
+                    Float.parseFloat(Double.toString(lookDirection.x
                             * fAvatarFrontX)),
-                    Float.parseFloat(Double.toString(lookDirection.zCoord
+                    Float.parseFloat(Double.toString(lookDirection.z
                             * fAvatarFrontZ)),
-                    Float.parseFloat(Double.toString(lookDirection.yCoord
+                    Float.parseFloat(Double.toString(lookDirection.y
                             * fAvatarFrontY))};
 
             // Unit vector pointing out of the top of the avatar's head (here
             // Top looks straight up).
             fAvatarTop = new float[]{
-                    Float.parseFloat(Double.toString(topDirection.xCoord
+                    Float.parseFloat(Double.toString(topDirection.x
                             * fAvatarTopX)),
-                    Float.parseFloat(Double.toString(topDirection.zCoord
+                    Float.parseFloat(Double.toString(topDirection.z
                             * fAvatarTopZ)),
-                    Float.parseFloat(Double.toString(topDirection.yCoord
+                    Float.parseFloat(Double.toString(topDirection.y
                             * fAvatarTopY))};
 
             // TODO: use real camera position, s.a.
             fCameraPosition = new float[]{
-                    Float.parseFloat(Double.toString(game.thePlayer.posX)),
-                    Float.parseFloat(Double.toString(game.thePlayer.posZ)),
-                    Float.parseFloat(Double.toString(game.thePlayer.posY))};
+                    Float.parseFloat(Double.toString(game.player.posX)),
+                    Float.parseFloat(Double.toString(game.player.posZ)),
+                    Float.parseFloat(Double.toString(game.player.posY))};
 
             fCameraFront = new float[]{
-                    Float.parseFloat(Double.toString(lookDirection.xCoord
+                    Float.parseFloat(Double.toString(lookDirection.x
                             * fCameraFrontX)),
-                    Float.parseFloat(Double.toString(lookDirection.zCoord
+                    Float.parseFloat(Double.toString(lookDirection.z
                             * fCameraFrontZ)),
-                    Float.parseFloat(Double.toString(lookDirection.yCoord
+                    Float.parseFloat(Double.toString(lookDirection.y
                             * fCameraFrontY))};
 
             fCameraTop = new float[]{
-                    Float.parseFloat(Double.toString(topDirection.xCoord
+                    Float.parseFloat(Double.toString(topDirection.x
                             * fCameraTopX)),
-                    Float.parseFloat(Double.toString(topDirection.zCoord
+                    Float.parseFloat(Double.toString(topDirection.z
                             * fCameraTopZ)),
-                    Float.parseFloat(Double.toString(topDirection.yCoord
+                    Float.parseFloat(Double.toString(topDirection.y
                             * fCameraTopY))};
 
             // Identifier which uniquely identifies a certain player in a
@@ -195,7 +195,7 @@ public class UpdateData {
     }
 
     protected String generateIdentity(Minecraft game, int maxLength) {
-        String displayName = game.thePlayer.getDisplayNameString();
+        String displayName = game.player.getDisplayNameString();
 
         try {
             JSONObject newIdentity = new JSONObject();
@@ -222,14 +222,14 @@ public class UpdateData {
     }
 
     private Vec3d getTopVec(Minecraft game) {
-        float f1 = MathHelper.cos(-game.thePlayer.rotationYaw * 0.017453292F
+        float f1 = MathHelper.cos(-game.player.rotationYaw * 0.017453292F
                 - (float) Math.PI);
-        float f2 = MathHelper.sin(-game.thePlayer.rotationYaw * 0.017453292F
+        float f2 = MathHelper.sin(-game.player.rotationYaw * 0.017453292F
                 - (float) Math.PI);
         float f3 = -MathHelper
-                .cos((-game.thePlayer.rotationPitch + 90) * 0.017453292F);
+                .cos((-game.player.rotationPitch + 90) * 0.017453292F);
         float f4 = MathHelper
-                .sin((-game.thePlayer.rotationPitch + 90) * 0.017453292F);
+                .sin((-game.player.rotationPitch + 90) * 0.017453292F);
 
         return new Vec3d((double) (f2 * f3), (double) f4, (double) (f1 * f3));
     }
