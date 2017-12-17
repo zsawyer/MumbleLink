@@ -157,14 +157,14 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
         // identifiable information the client has about the world (and server)
         // it connects to.
         JSONArray spawnCoordinates = new JSONArray();
-        spawnCoordinates.put(game.theWorld.getWorldInfo().getSpawnX());
-        spawnCoordinates.put(game.theWorld.getWorldInfo().getSpawnY());
-        spawnCoordinates.put(game.theWorld.getWorldInfo().getSpawnZ());
+        spawnCoordinates.put(game.world.getWorldInfo().getSpawnX());
+        spawnCoordinates.put(game.world.getWorldInfo().getSpawnY());
+        spawnCoordinates.put(game.world.getWorldInfo().getSpawnZ());
         // append coordinates
         identity.put(IdentityKey.WORLD_SPAWN, spawnCoordinates);
 
         // append the dimension
-        identity.put(IdentityKey.DIMENSION, game.thePlayer.dimension);
+        identity.put(IdentityKey.DIMENSION, game.player.dimension);
     }
 
     /**

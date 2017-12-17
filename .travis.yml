@@ -1,12 +1,20 @@
 language: java
 
-before_install: chmod +x mod/gradlew
+jdk:
+  - oraclejdk8
 
-install: ./mod/gradlew setupCIWorkspace --refresh-dependencies
+before_install:
+  - chmod +x mod/gradlew
 
-script: ./mod/gradlew build
+script:
+  - cd mod/
+  - ./gradlew setupCiWorkspace --refresh-dependencies
+  - ./gradlew build
 
-
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-  - mod/.gradle
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
