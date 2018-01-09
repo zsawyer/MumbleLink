@@ -8,10 +8,10 @@
         "url": "http://www.minecraftforum.net/topic/217587",
         "updateUrl": "",
         "authorList": [ "zsawyer" ],
-        "credits": "zsawyer, 2011-2014",
+        "credits": "zsawyer, 2011-2017",
         "logoFile": "",
         "screenshots": [],
-        "dependencies": []
+        "dependencies": ["Minecraft Forge"]
     },
     {
         "modid": "extendedpasupport",
@@ -22,7 +22,7 @@
         "url": "http://www.minecraftforum.net/topic/217587",
         "updateUrl": "",
         "authors": [ "zsawyer" ],
-        "credits": "zsawyer, 2011-2014",
+        "credits": "zsawyer, 2011-2017",
         "logoFile": "",
         "screenshots": [ ],
         "requiredMods": [ "mumblelink" ],

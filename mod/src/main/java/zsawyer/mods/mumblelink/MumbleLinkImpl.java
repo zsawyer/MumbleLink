@@ -44,7 +44,7 @@ import zsawyer.mods.mumblelink.util.ConfigHelper;
  * @author zsawyer, 2013-04-09
  */
 // TODO: use "canBeDeactivated = true" to allow mod deactivation via FML
-@Mod(modid = MumbleLink.MOD_ID, useMetadata = true)
+@Mod(modid = MumbleLink.MOD_ID, name = MumbleLink.MOD_NAME, version = MumbleLink.VERSION, dependencies = MumbleLink.MOD_DEPENDENCIES, useMetadata = true)
 @SideOnly(Side.CLIENT)
 public class MumbleLinkImpl extends MumbleLinkBase implements
         MumbleLink {

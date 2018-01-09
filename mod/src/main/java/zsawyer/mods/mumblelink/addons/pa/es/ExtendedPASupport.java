@@ -22,6 +22,7 @@
 
 package zsawyer.mods.mumblelink.addons.pa.es;
 
+import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -52,11 +53,14 @@ import javax.management.InstanceNotFoundException;
  * @version 1.0.0
  */
 // FIX for #10 - setting the dependencies fixes NPE since MC 1.8.9
-@Mod(modid = ExtendedPASupport.MOD_ID, dependencies = "required-after:" + MumbleLink.MOD_ID, useMetadata = true)
+@Mod(modid = ExtendedPASupport.MOD_ID, name = ExtendedPASupport.MOD_NAME, version = ExtendedPASupport.VERSION, dependencies = ExtendedPASupport.MOD_DEPENDENCIES, useMetadata = true)
 public class ExtendedPASupport implements Activateable, IdentityManipulator {
     public static Logger LOG;
 
-    public static final String MOD_ID = "extendedpasupport";
+    public static final @Nonnull String MOD_ID = "extendedpasupport";
+    public final static @Nonnull String MOD_NAME = "ExtendedPASupport for MumbleLink";
+    public final static @Nonnull String VERSION = "1.0.0";
+    public final static @Nonnull String MOD_DEPENDENCIES = "required-after:" + MumbleLink.MOD_ID;
 
     // The instance of the mod that Forge uses.
     @Instance(ExtendedPASupport.MOD_ID)
