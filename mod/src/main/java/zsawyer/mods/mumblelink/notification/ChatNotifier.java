@@ -44,7 +44,7 @@ public class ChatNotifier implements UserNotifier {
     }
 
     protected boolean canSendMessage() {
-        return game != null && game.ingameGUI != null && game.inGameHasFocus
+        return game != null && game.ingameGUI != null && game.isGameFocused()
                 && game.ingameGUI.getChatGUI() != null;
     }
 

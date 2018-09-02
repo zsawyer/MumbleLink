@@ -1,22 +1,25 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url 'https://www.dimdev.org/maven/' }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.dimdev:ForgeGradle:2.3-SNAPSHOT'
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
+
+apply plugin: 'net.minecraftforge.gradle.tweaker-client'
+apply plugin: 'java'
+
 //Only edit below this line, the above code adds and enables the nessasary things for Forge to be setup.
 
 ext.modversion = "4.2.5"
-ext.mcversion = "1.12.2"
+ext.mcversion = "1.13"
 ext.forgeversion = "14.23.1.2586"
 
 version = mcversion + "-" + modversion
 group = "zsawyer.mods.mumblelink.MumbleLink" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "mumblelink"
+archivesBaseName = "Mumblelink"
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8 // Need this here so eclipse task generates correctly.
 compileJava {
@@ -24,41 +27,19 @@ compileJava {
 }
 
 minecraft {
-    version = mcversion + "-" + forgeversion
+    version = mcversion
     runDir = "run"
+    mappings = "snapshot_20180826"
+    tweakClass = "org.dimdev.riftloader.launch.RiftLoaderClientTweaker"
+}
 
-    // the mappings can be changed at any time, and must be in the following format.
-    // snapshot_YYYYMMDD   snapshot are built nightly.
-    // stable_#            stables are built at the discretion of the MCP team.
-    // Use non-default mappings at your own risk. they may not allways work.
-    // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20180108"
-    
-    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+repositories {
+    mavenCentral()
+    maven { url 'https://www.dimdev.org/maven/' }
 }
 
 dependencies {
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
-
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
-    // the 'provided' configuration is for optional dependencies that exist at compile-time but might not at runtime.
-    //provided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // the deobf configurations:  'deobfCompile' and 'deobfProvided' are the same as the normal compile and provided,
-    // except that these dependencies get remapped to your current MCP mappings
-    //deobfCompile 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-    //deobfProvided 'com.mod-buildcraft:buildcraft:6.0.8:dev'
-
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+    implementation 'org.dimdev:rift:1.0.4-66:dev'
 }
 
 processResources {
