@@ -21,7 +21,6 @@
  */
 package zsawyer.mods.mumblelink.error;
 
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.Level;
 import zsawyer.mods.mumblelink.MumbleLinkImpl;
@@ -48,10 +47,10 @@ public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler
     }
 
     private void haltMinecraftUsingAnException(String message, Throwable err) {
-        FMLClientHandler.instance().haltGame("Error in mod "
+        /*FMLClientHandler.instance().haltGame("Error in mod "
                 + MumbleLinkImpl.instance.getName() + MumbleLinkImpl.instance.getVersion()
                 + ": " + message,
-                err);
+                err);*/
     }
 
     @Override
@@ -62,11 +61,11 @@ public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler
     }
 
     private void log(Level severity, String message, Throwable stack) {
-        MumbleLinkImpl.LOG.log(severity,
+        /*MumbleLinkImpl.LOG.log(severity,
                 "[" + MumbleLinkImpl.instance.getName() + MumbleLinkImpl.instance.getVersion() + "]"
                         + "[" + severity.toString() + "] "
                         + message,
-                stack);
+                stack);*/
     }
 
     private void chatMessage(String message) {

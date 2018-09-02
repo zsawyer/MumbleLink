@@ -22,8 +22,7 @@
 
 package zsawyer.mods.mumblelink.util;
 
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
+import zsawyer.mods.mumblelink.MumbleLinkImpl;
 import zsawyer.mods.mumblelink.api.MumbleLink;
 
 import javax.management.InstanceNotFoundException;
@@ -33,7 +32,7 @@ import javax.management.InstanceNotFoundException;
  */
 public class InstanceHelper {
 
-    private static MumbleLink mumbleLinkInstance;
+    private static MumbleLinkImpl mumbleLinkInstance;
 
     /**
      * Get an instance for the MumbleLink mod.
@@ -43,23 +42,12 @@ public class InstanceHelper {
      * @return the mod instance
      * @throws InstanceNotFoundException thrown when MumbleLink mod was not loaded first
      */
-    public static MumbleLink getMumbleLink() throws InstanceNotFoundException {
-        if (mumbleLinkInstance != null) {
-            return mumbleLinkInstance;
+
+    public static MumbleLinkImpl getMumbleLink() {
+        if (mumbleLinkInstance == null) {
+            mumbleLinkInstance = new MumbleLinkImpl().getInstance();
         }
-
-        ModContainer modContainer = Loader.instance().getIndexedModList().get(MumbleLink.MOD_ID);
-
-        if (modContainer != null) {
-            Object mod = modContainer.getMod();
-
-            if (mod instanceof MumbleLink) {
-                mumbleLinkInstance = (MumbleLink) mod;
-                return mumbleLinkInstance;
-            }
-        }
-
-        throw new InstanceNotFoundException(MumbleLink.MOD_ID);
+        return mumbleLinkInstance;
     }
 
     private InstanceHelper() {

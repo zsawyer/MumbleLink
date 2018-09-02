@@ -21,26 +21,16 @@
  */
 package zsawyer.mods.mumblelink;
 
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraft.client.Minecraft;
+import org.dimdev.rift.listener.client.ClientTickable;
 import zsawyer.mods.mumblelink.api.Activateable;
 
 /**
  * @author zsawyer
  */
-public class UpdateTicker implements Activateable {
+public class UpdateTicker implements Activateable, ClientTickable {
 
     private boolean enabled = false;
-
-    @SubscribeEvent
-    public void tickEnd(TickEvent.ClientTickEvent event) {
-        if (enabled) {
-            MumbleLinkImpl.instance.tryUpdateMumble(FMLClientHandler.instance()
-                    .getClient());
-        }
-    }
 
     public boolean isEnabled() {
         return enabled;
@@ -53,13 +43,17 @@ public class UpdateTicker implements Activateable {
     @Override
     public void activate() {
         enabled = true;
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
     public void deactivate() {
         enabled = false;
-        MinecraftForge.EVENT_BUS.unregister(this);
     }
 
+    @Override
+    public void clientTick() {
+        if (enabled) {
+            MumbleLinkImpl.instance.tryUpdateMumble(Minecraft.getMinecraft());
+        }
+    }
 }

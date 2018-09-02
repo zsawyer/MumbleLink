@@ -18,7 +18,7 @@ ext.mcversion = "1.13"
 ext.forgeversion = "14.23.1.2586"
 
 version = mcversion + "-" + modversion
-group = "zsawyer.mods.mumblelink.MumbleLink" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = "zsawyer.mods.mumblelink" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Mumblelink"
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8 // Need this here so eclipse task generates correctly.

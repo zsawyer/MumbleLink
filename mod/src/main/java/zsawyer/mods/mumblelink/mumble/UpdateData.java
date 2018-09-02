@@ -202,7 +202,7 @@ public class UpdateData {
             newIdentity.put(IdentityManipulator.IdentityKey.NAME, displayName);
             return newIdentity.toString();
         } catch (JSONException e) {
-            MumbleLinkImpl.LOG.fatal("could not generate identity", e);
+            //MumbleLinkImpl.LOG.fatal("could not generate identity", e);
         }
 
         return displayName;
@@ -215,7 +215,7 @@ public class UpdateData {
                     MumbleLinkConstants.MUMBLE_CONTEXT_DOMAIN_ALL_TALK);
             return newContext.toString();
         } catch (JSONException e) {
-            MumbleLinkImpl.LOG.fatal("could not generate context", e);
+            //MumbleLinkImpl.LOG.fatal("could not generate context", e);
         }
 
         return MumbleLinkConstants.MUMBLE_CONTEXT_DOMAIN_ALL_TALK;

@@ -70,7 +70,7 @@ public class PackageLibraryLoader implements LibraryLoader {
         File unpackedLibDir = unpackLibrary();
         NativeLibrary loadedLibrary;
         if (unpackedLibDir != null && unpackedLibDir.exists()) {
-            MumbleLinkImpl.LOG.info("Loading library '" + this.libraryName + "' from: " + unpackedLibDir.getAbsolutePath());
+            //MumbleLinkImpl.LOG.info("Loading library '" + this.libraryName + "' from: " + unpackedLibDir.getAbsolutePath());
             NativeLibrary.addSearchPath(this.libraryName, unpackedLibDir.getAbsolutePath());
         }
         loadedLibrary = NativeLibrary.getInstance(this.libraryName);
@@ -97,7 +97,7 @@ public class PackageLibraryLoader implements LibraryLoader {
             final File libFile = extractToTmpDir(resourcePath, fileName);
             return libFile;
         } catch (IOException e) {
-            MumbleLinkImpl.LOG.warn("Problem extracting resource.", e);
+            //MumbleLinkImpl.LOG.warn("Problem extracting resource.", e);
             return null;
         }
     }

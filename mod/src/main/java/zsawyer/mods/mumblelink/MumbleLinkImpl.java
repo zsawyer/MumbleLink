@@ -22,19 +22,11 @@
 
 package zsawyer.mods.mumblelink;
 
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
+import org.dimdev.rift.listener.MinecraftStartListener;
 import zsawyer.mods.mumblelink.api.MumbleLink;
 import zsawyer.mods.mumblelink.api.MumbleLinkAPI;
 import zsawyer.mods.mumblelink.mumble.ExtendedUpdateData;
-import zsawyer.mods.mumblelink.util.ConfigHelper;
 
 /**
  * mod to link with mumble for positional audio
@@ -44,14 +36,11 @@ import zsawyer.mods.mumblelink.util.ConfigHelper;
  * @author zsawyer, 2013-04-09
  */
 // TODO: use "canBeDeactivated = true" to allow mod deactivation via FML
-@Mod(modid = MumbleLink.MOD_ID, name = MumbleLink.MOD_NAME, version = MumbleLink.VERSION, dependencies = MumbleLink.MOD_DEPENDENCIES, useMetadata = true)
-@SideOnly(Side.CLIENT)
 public class MumbleLinkImpl extends MumbleLinkBase implements
         MumbleLink {
-    public static Logger LOG;
+    //public static Logger LOG;
 
     // The instance of the mod that Forge uses.
-    @Instance(MumbleLink.MOD_ID)
     public static MumbleLinkImpl instance;
     //
     private UpdateTicker updateTicker;
@@ -63,10 +52,9 @@ public class MumbleLinkImpl extends MumbleLinkBase implements
     private String name = "MumbleLink";
     private String version = "unknown";
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        LOG = event.getModLog();
-
+    //@Override
+    public void onMinecraftStart() {
+        /*LOG = FMLPreInitializationEvent.getModLog();
         name = event.getModMetadata().name;
         version = event.getModMetadata().version;
 
@@ -75,22 +63,20 @@ public class MumbleLinkImpl extends MumbleLinkBase implements
                     + " should not be installed on a server!");
 
         loadConfig(event);
+        */
+        load();
+        initComponents();
+        activate();
     }
 
+    /*
     private void loadConfig(FMLPreInitializationEvent event) {
         ConfigHelper configHelper = new ConfigHelper(event);
 
         debug = configHelper.loadDebug(debug);
         enabled = configHelper.loadEnabled(enabled);
     }
-
-    @SideOnly(Side.CLIENT)
-    @EventHandler
-    public void load(FMLInitializationEvent event) {
-        load();
-        initComponents();
-        activate();
-    }
+    */
 
     private void initComponents() {
         ExtendedUpdateData extendedUpdateData = new ExtendedUpdateData(library,
@@ -99,6 +85,14 @@ public class MumbleLinkImpl extends MumbleLinkBase implements
         updateTicker = new UpdateTicker();
         api = new MumbleLinkAPIImpl();
         api.setExtendedUpdateData(extendedUpdateData);
+    }
+
+    @Override
+    public MumbleLinkImpl getInstance() {
+        if (instance == null) {
+            instance = new MumbleLinkImpl();
+        }
+        return instance;
     }
 
     @Override
@@ -122,7 +116,7 @@ public class MumbleLinkImpl extends MumbleLinkBase implements
     }
 
     public static boolean debug() {
-        return instance.debug;
+        return instance != null ? instance.debug: false;
     }
 
     @Override

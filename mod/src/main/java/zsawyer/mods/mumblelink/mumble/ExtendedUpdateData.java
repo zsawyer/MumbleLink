@@ -33,9 +33,9 @@ import java.util.ArrayList;
 
 public class ExtendedUpdateData extends UpdateData {
 
-    protected ArrayList<IdentityManipulator> identityManipulators;
+    protected final ArrayList<IdentityManipulator> identityManipulators;
 
-    protected ArrayList<ContextManipulator> contextManipulators;
+    protected final ArrayList<ContextManipulator> contextManipulators;
 
     public ExtendedUpdateData(LinkAPILibrary mumbleLink,
                               NativeUpdateErrorHandler errorHandler) {
@@ -57,7 +57,7 @@ public class ExtendedUpdateData extends UpdateData {
         }
 
         if (MumbleLinkImpl.debug()) {
-            MumbleLinkImpl.LOG.info("context: " + context);
+            //MumbleLinkImpl.LOG.info("context: " + context);
         }
 
         return context;
@@ -76,7 +76,7 @@ public class ExtendedUpdateData extends UpdateData {
         }
 
         if (MumbleLinkImpl.debug()) {
-            MumbleLinkImpl.LOG.info("identity: " + identity);
+            //MumbleLinkImpl.LOG.info("identity: " + identity);
         }
 
         return identity;
@@ -84,10 +84,10 @@ public class ExtendedUpdateData extends UpdateData {
 
     private boolean verify(String type, String value, int maxLength) {
         if (value.length() > maxLength) {
-            MumbleLinkImpl.LOG
+            /*MumbleLinkImpl.LOG
                     .fatal(type + " (" + value.length()
                             + ") is too long (max. " + maxLength + "): '"
-                            + value + "'");
+                            + value + "'");*/
             return false;
         }
         return true;

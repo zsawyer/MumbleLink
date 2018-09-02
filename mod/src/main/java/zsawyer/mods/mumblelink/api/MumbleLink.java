@@ -32,9 +32,11 @@ import javax.annotation.Nonnull;
  */
 public interface MumbleLink extends Activateable, Debuggable {
     public final static @Nonnull String MOD_ID = "mumblelink";
-    public final static @Nonnull String MOD_NAME = "MumbleLink for Forge";
-    public final static @Nonnull String VERSION = "1.12.2-4.2.5";
+    public final static @Nonnull String MOD_NAME = "MumbleLink for Rift";
+    public final static @Nonnull String VERSION = "1.13-4.2.5-Rift";
     public final static @Nonnull String MOD_DEPENDENCIES = "";
+
+    public MumbleLink getInstance();
 
     /**
      * the API instance which is used by this mod instance

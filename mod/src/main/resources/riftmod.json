@@ -1,0 +1,12 @@
+{
+  "id": "mumblelink	",
+  "name": "MumbleLink for Rift",
+  "authors": [
+    "zsawyer",
+    "Robijnvogel"
+  ],
+  "listeners": [
+	"zsawyer.mods.mumblelink.addons.pa.es.ExtendedPASupport",
+    "zsawyer.mods.mumblelink.UpdateTicker"
+  ]
+}

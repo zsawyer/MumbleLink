@@ -23,21 +23,14 @@
 package zsawyer.mods.mumblelink.addons.pa.es;
 
 import javax.annotation.Nonnull;
+
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
+import org.dimdev.rift.listener.MinecraftStartListener;
+import zsawyer.mods.mumblelink.MumbleLinkImpl;
 import zsawyer.mods.mumblelink.api.Activateable;
 import zsawyer.mods.mumblelink.api.IdentityManipulator;
 import zsawyer.mods.mumblelink.api.MumbleLink;
-import zsawyer.mods.mumblelink.util.ConfigHelper;
 import zsawyer.mods.mumblelink.util.InstanceHelper;
 import zsawyer.mods.mumblelink.util.json.JSONArray;
 import zsawyer.mods.mumblelink.util.json.JSONException;
@@ -53,18 +46,20 @@ import javax.management.InstanceNotFoundException;
  * @version 1.0.0
  */
 // FIX for #10 - setting the dependencies fixes NPE since MC 1.8.9
-@Mod(modid = ExtendedPASupport.MOD_ID, name = ExtendedPASupport.MOD_NAME, version = ExtendedPASupport.VERSION, dependencies = ExtendedPASupport.MOD_DEPENDENCIES, useMetadata = true)
-public class ExtendedPASupport implements Activateable, IdentityManipulator {
-    public static Logger LOG;
+public class ExtendedPASupport implements Activateable, IdentityManipulator, MinecraftStartListener {
+    //public static Logger LOG;
 
-    public static final @Nonnull String MOD_ID = "extendedpasupport";
-    public final static @Nonnull String MOD_NAME = "ExtendedPASupport for MumbleLink";
-    public final static @Nonnull String VERSION = "1.0.0";
-    public final static @Nonnull String MOD_DEPENDENCIES = "required-after:" + MumbleLink.MOD_ID;
+    public static final @Nonnull
+    String MOD_ID = "extendedpasupport";
+    public final static @Nonnull
+    String MOD_NAME = "ExtendedPASupport for MumbleLink";
+    public final static @Nonnull
+    String VERSION = "1.0.0";
+    public final static @Nonnull
+    String MOD_DEPENDENCIES = "required-after:" + MumbleLink.MOD_ID;
 
     // The instance of the mod that Forge uses.
-    @Instance(ExtendedPASupport.MOD_ID)
-    public static ExtendedPASupport instance;
+    //public static ExtendedPASupport instance;
 
     // whether this mod is active
     private boolean enabled = true;
@@ -73,26 +68,34 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
 
     private String name = "ExtendedPASupport for MumbleLink";
     private String version = "unknown";
-    private MumbleLink mumbleLinkInstance;
+    private MumbleLinkImpl mumbleLinkInstance;
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
+    @Override
+    public void onMinecraftStart() {
         // initialize logger
-        LOG = event.getModLog();
+        //LOG = event.getModLog();
 
         // save guard because this mod should only run on the client
-        if (FMLCommonHandler.instance().getSide().isServer())
+        /*if (FMLCommonHandler.instance().getSide().isServer())
             throw new RuntimeException(getName()
                     + " should not be installed on a server!");
 
-        loadConfig(event);
+        loadConfig(event);*/
+
+        mumbleLinkInstance = InstanceHelper.getMumbleLink();
+
+        if (enabled) {
+            activate();
+        }
     }
+
 
     /**
      * load the configuration from the config file
      *
      * @param event the event from which to get the configuration from
      */
+    /*
     private void loadConfig(FMLPreInitializationEvent event) {
         ConfigHelper configHelper = new ConfigHelper(event);
 
@@ -100,26 +103,10 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
         debug = configHelper.loadDebug(debug);
         // load the enabled variable from config file
         enabled = configHelper.loadEnabled(enabled);
-    }
-
-    @SideOnly(Side.CLIENT)
-    @EventHandler
-    public void load(FMLInitializationEvent event) {
-        try {
-            mumbleLinkInstance = InstanceHelper.getMumbleLink();
-
-            if (enabled) {
-                activate();
-            }
-        } catch (InstanceNotFoundException e) {
-            FMLClientHandler.instance().haltGame("Error in mod "
-                    + getName() + getVersion()
-                    + ": no instance of " + MumbleLink.MOD_ID + " found!", e);
-        }
-    }
-
+    }*/
     @Override
     public void activate() {
+        mumbleLinkInstance.onMinecraftStart();
         mumbleLinkInstance.getApi().register(this);
     }
 
@@ -143,7 +130,7 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
             return newIdentity.toString();
         } catch (JSONException e) {
             // no JSON... this is not going to work...
-            LOG.fatal("could not generate identity", e);
+            //LOG.fatal("could not generate identity", e);
             return identity;
         }
     }
@@ -180,8 +167,8 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
      */
     private void printDebug(JSONObject objectToPrint, String nameOfObject) {
         if (debug) {
-            ExtendedPASupport.LOG.info(nameOfObject + ": "
-                    + objectToPrint.toString(), "");
+            /*ExtendedPASupport.LOG.info(nameOfObject + ": "
+                    + objectToPrint.toString(), "");*/
         }
     }
 
