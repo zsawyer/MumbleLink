@@ -10,9 +10,9 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the nessasary things for Forge to be setup.
 
-ext.modversion = "4.2.5"
+ext.modversion = "4.2.6"
 ext.mcversion = "1.12.2"
-ext.forgeversion = "14.23.1.2586"
+ext.forgeversion = "14.23.5.2846"
 
 version = mcversion + "-" + modversion
 group = "zsawyer.mods.mumblelink.MumbleLink" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -32,7 +32,7 @@ minecraft {
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not allways work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "snapshot_20180108"
+    mappings = "snapshot_20180814"
     
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
