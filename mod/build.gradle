@@ -12,7 +12,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 ext.modversion = "4.2.6"
 ext.mcversion = "1.12.2"
-ext.forgeversion = "14.23.5.2846"
+ext.forgeversion = "14.23.5.2847"
 
 version = mcversion + "-" + modversion
 group = "zsawyer.mods.mumblelink.MumbleLink" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
