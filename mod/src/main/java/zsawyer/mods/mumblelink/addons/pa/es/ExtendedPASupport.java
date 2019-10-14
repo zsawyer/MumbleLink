@@ -22,27 +22,30 @@
 
 package zsawyer.mods.mumblelink.addons.pa.es;
 
-import javax.annotation.Nonnull;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.ModLoadingException;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.forgespi.language.IModInfo;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zsawyer.mods.mumblelink.api.Activateable;
 import zsawyer.mods.mumblelink.api.IdentityManipulator;
 import zsawyer.mods.mumblelink.api.MumbleLink;
-import zsawyer.mods.mumblelink.util.ConfigHelper;
 import zsawyer.mods.mumblelink.util.InstanceHelper;
 import zsawyer.mods.mumblelink.util.json.JSONArray;
 import zsawyer.mods.mumblelink.util.json.JSONException;
 import zsawyer.mods.mumblelink.util.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import javax.management.InstanceNotFoundException;
 
 /**
@@ -50,21 +53,22 @@ import javax.management.InstanceNotFoundException;
  * positional audio support (i.e. identity) based on vanilla Minecraft.
  *
  * @author zsawyer, 2013-07-05
- * @version 1.0.0
+ * @version 1.0.1
  */
-// FIX for #10 - setting the dependencies fixes NPE since MC 1.8.9
-@Mod(modid = ExtendedPASupport.MOD_ID, name = ExtendedPASupport.MOD_NAME, version = ExtendedPASupport.VERSION, dependencies = ExtendedPASupport.MOD_DEPENDENCIES, useMetadata = true)
+@Mod(ExtendedPASupport.MOD_ID)
+@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@OnlyIn(Dist.CLIENT)
 public class ExtendedPASupport implements Activateable, IdentityManipulator {
-    public static Logger LOG;
+    public static Logger LOG = LogManager.getLogger();
 
-    public static final @Nonnull String MOD_ID = "extendedpasupport";
-    public final static @Nonnull String MOD_NAME = "ExtendedPASupport for MumbleLink";
-    public final static @Nonnull String VERSION = "1.0.0";
-    public final static @Nonnull String MOD_DEPENDENCIES = "required-after:" + MumbleLink.MOD_ID;
-
-    // The instance of the mod that Forge uses.
-    @Instance(ExtendedPASupport.MOD_ID)
-    public static ExtendedPASupport instance;
+    public static final @Nonnull
+    String MOD_ID = "extendedpasupport";
+    public final static @Nonnull
+    String MOD_NAME = "ExtendedPASupport for MumbleLink";
+    public final static @Nonnull
+    String VERSION = "1.0.0";
+    public final static @Nonnull
+    String MOD_DEPENDENCIES = "required-after:" + MumbleLink.MOD_ID;
 
     // whether this mod is active
     private boolean enabled = true;
@@ -75,46 +79,39 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
     private String version = "unknown";
     private MumbleLink mumbleLinkInstance;
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        // initialize logger
-        LOG = event.getModLog();
-
-        // save guard because this mod should only run on the client
-        if (FMLCommonHandler.instance().getSide().isServer())
-            throw new RuntimeException(getName()
-                    + " should not be installed on a server!");
-
-        loadConfig(event);
-    }
-
-    /**
-     * load the configuration from the config file
-     *
-     * @param event the event from which to get the configuration from
-     */
-    private void loadConfig(FMLPreInitializationEvent event) {
-        ConfigHelper configHelper = new ConfigHelper(event);
-
-        // load the debug variable from config file
-        debug = configHelper.loadDebug(debug);
-        // load the enabled variable from config file
-        enabled = configHelper.loadEnabled(enabled);
-    }
-
-    @SideOnly(Side.CLIENT)
-    @EventHandler
-    public void load(FMLInitializationEvent event) {
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent(priority = EventPriority.NORMAL)
+    public void setup(FMLClientSetupEvent event) throws Throwable {
         try {
-            mumbleLinkInstance = InstanceHelper.getMumbleLink();
-
+            preInit();
             if (enabled) {
-                activate();
+                load();
             }
-        } catch (InstanceNotFoundException e) {
-            FMLClientHandler.instance().haltGame("Error in mod "
-                    + getName() + getVersion()
-                    + ": no instance of " + MumbleLink.MOD_ID + " found!", e);
+        } catch (Throwable t) {
+            ModContainer modContainer = ModList.get().getModContainerById(MOD_ID).orElseThrow(() -> t);
+            String s = "Error in mod during setup " + getName() + getVersion();
+            throw new ModLoadingException(modContainer.getModInfo(), modContainer.getCurrentState(), s, t);
+        }
+    }
+
+    public void preInit() {
+        IModInfo modInfo = ModLoadingContext.get().getActiveContainer().getModInfo();
+        name = modInfo.getDisplayName();
+        version = modInfo.getVersion().getQualifier();
+        loadConfig();
+    }
+
+    private void loadConfig() {
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
+        debug = Config.CONFIG.debug.get();
+        enabled = Config.CONFIG.enabled.get();
+    }
+
+    public void load() throws InstanceNotFoundException {
+        mumbleLinkInstance = InstanceHelper.getMumbleLink();
+
+        if (enabled) {
+            activate();
         }
     }
 

@@ -22,36 +22,34 @@
 
 package zsawyer.mods.mumblelink;
 
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.forgespi.language.IModInfo;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zsawyer.mods.mumblelink.api.MumbleLink;
 import zsawyer.mods.mumblelink.api.MumbleLinkAPI;
 import zsawyer.mods.mumblelink.mumble.ExtendedUpdateData;
-import zsawyer.mods.mumblelink.util.ConfigHelper;
 
 /**
  * mod to link with mumble for positional audio
  * <p>
- * this is a forge based implementation
+ * this is a forge based implementation (Forge 1.13+)
  *
  * @author zsawyer, 2013-04-09
  */
-// TODO: use "canBeDeactivated = true" to allow mod deactivation via FML
-@Mod(modid = MumbleLink.MOD_ID, name = MumbleLink.MOD_NAME, version = MumbleLink.VERSION, dependencies = MumbleLink.MOD_DEPENDENCIES, useMetadata = true)
-@SideOnly(Side.CLIENT)
-public class MumbleLinkImpl extends MumbleLinkBase implements
-        MumbleLink {
-    public static Logger LOG;
+@Mod(value = MumbleLink.MOD_ID)
+@Mod.EventBusSubscriber
+@OnlyIn(Dist.CLIENT)
+public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
+    public static Logger LOG = LogManager.getLogger();
 
-    // The instance of the mod that Forge uses.
-    @Instance(MumbleLink.MOD_ID)
     public static MumbleLinkImpl instance;
     //
     private UpdateTicker updateTicker;
@@ -63,38 +61,36 @@ public class MumbleLinkImpl extends MumbleLinkBase implements
     private String name = "MumbleLink";
     private String version = "unknown";
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        LOG = event.getModLog();
-
-        name = event.getModMetadata().name;
-        version = event.getModMetadata().version;
-
-        if (FMLCommonHandler.instance().getSide().isServer())
-            throw new RuntimeException(name
-                    + " should not be installed on a server!");
-
-        loadConfig(event);
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent(priority = EventPriority.NORMAL)
+    public void setup(FMLClientSetupEvent event) {
+        preInit();
+        if (enabled) {
+            load();
+        }
     }
 
-    private void loadConfig(FMLPreInitializationEvent event) {
-        ConfigHelper configHelper = new ConfigHelper(event);
-
-        debug = configHelper.loadDebug(debug);
-        enabled = configHelper.loadEnabled(enabled);
+    public void preInit() {
+        IModInfo modInfo = ModLoadingContext.get().getActiveContainer().getModInfo();
+        name = modInfo.getDisplayName();
+        version = modInfo.getVersion().getQualifier();
+        loadConfig();
     }
 
-    @SideOnly(Side.CLIENT)
-    @EventHandler
-    public void load(FMLInitializationEvent event) {
-        load();
+    private void loadConfig() {
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
+        debug = Config.CONFIG.debug.get();
+        enabled = Config.CONFIG.enabled.get();
+    }
+
+    public void load() {
+        super.load();
         initComponents();
         activate();
     }
 
     private void initComponents() {
-        ExtendedUpdateData extendedUpdateData = new ExtendedUpdateData(library,
-                errorHandler);
+        ExtendedUpdateData extendedUpdateData = new ExtendedUpdateData(library, errorHandler);
         mumbleData = extendedUpdateData;
         updateTicker = new UpdateTicker();
         api = new MumbleLinkAPIImpl();

@@ -195,7 +195,7 @@ public class UpdateData {
     }
 
     protected String generateIdentity(Minecraft game, int maxLength) {
-        String displayName = game.player.getDisplayNameString();
+        String displayName = game.player.getDisplayName().getString();
 
         try {
             JSONObject newIdentity = new JSONObject();

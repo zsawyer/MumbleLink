@@ -22,11 +22,13 @@
 
 package zsawyer.mods.mumblelink.util;
 
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.ModList;
 import zsawyer.mods.mumblelink.api.MumbleLink;
 
+import javax.annotation.Nonnull;
 import javax.management.InstanceNotFoundException;
+import java.util.Optional;
 
 /**
  * Helper utility class which provides easy access to instances relevant to the MumbleLink mod.
@@ -38,7 +40,7 @@ public class InstanceHelper {
     /**
      * Get an instance for the MumbleLink mod.
      * The instance will conform to the MumbleLink interface. If you need access implementation specific features file
-     * a feature request at GitHub (https://github.com/zsawyer/MumbleLink) or SF (https://sourceforge.net/projects/modmumblelink/).
+     * a feature request at GitHub (http://sourceforge.net/projects/modmumblelink/) or SF (https://sourceforge.net/projects/modmumblelink/).
      *
      * @return the mod instance
      * @throws InstanceNotFoundException thrown when MumbleLink mod was not loaded first
@@ -48,18 +50,31 @@ public class InstanceHelper {
             return mumbleLinkInstance;
         }
 
-        ModContainer modContainer = Loader.instance().getIndexedModList().get(MumbleLink.MOD_ID);
+        mumbleLinkInstance = getModInstance(MumbleLink.class, MumbleLink.MOD_ID);
+        return mumbleLinkInstance;
+    }
 
-        if (modContainer != null) {
-            Object mod = modContainer.getMod();
+    /**
+     * get the mod instance by id and make sure it is actually the right class
+     *
+     * @param modClass expected class or super class
+     * @param modId    the lookup id the mod was registered with
+     * @param <T>      this should be the mod's class that you expect
+     * @return the mod instance
+     * @throws InstanceNotFoundException thrown when the mod is not (yet) loaded
+     */
+    public static <T> T getModInstance(@Nonnull Class<T> modClass, String modId) throws InstanceNotFoundException {
+        Optional<? extends ModContainer> modContainerById = ModList.get().getModContainerById(modId);
 
-            if (mod instanceof MumbleLink) {
-                mumbleLinkInstance = (MumbleLink) mod;
-                return mumbleLinkInstance;
+        if (modContainerById.isPresent()) {
+            Object mod = modContainerById.get().getMod();
+
+            if (modClass.isInstance(mod)) {
+                return (T) mod;
             }
         }
 
-        throw new InstanceNotFoundException(MumbleLink.MOD_ID);
+        throw new InstanceNotFoundException(modId);
     }
 
     private InstanceHelper() {

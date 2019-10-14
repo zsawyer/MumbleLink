@@ -21,8 +21,8 @@
  */
 package zsawyer.mods.mumblelink.error;
 
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.fml.ModLoadingException;
 import org.apache.logging.log4j.Level;
 import zsawyer.mods.mumblelink.MumbleLinkImpl;
 import zsawyer.mods.mumblelink.notification.BufferedChatNotifier;
@@ -38,7 +38,7 @@ public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler
     private UserNotifier chat;
 
     public ErrorHandlerImpl() {
-        chat = new BufferedChatNotifier(Minecraft.getMinecraft());
+        chat = new BufferedChatNotifier(Minecraft.getInstance());
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler
     }
 
     private void haltMinecraftUsingAnException(String message, Throwable err) {
-        FMLClientHandler.instance().haltGame("Error in mod "
+        throw new GenericError("Error in mod "
                 + MumbleLinkImpl.instance.getName() + MumbleLinkImpl.instance.getVersion()
                 + ": " + message,
                 err);
@@ -57,7 +57,6 @@ public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler
     @Override
     public void handleError(ModError err, Throwable stack) {
         chatMessage("[MumbleLink] Error: " + err.toString());
-
         log(Level.WARN, err.toString(), stack);
     }
 
