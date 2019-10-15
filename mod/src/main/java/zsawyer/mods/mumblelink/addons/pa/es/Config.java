@@ -44,7 +44,7 @@ public class Config {
     public static final String ENABLED_COMMENT = "whether this addon should do stuff";
     public static final String ENABLED_TRANSLATION = ExtendedPASupport.MOD_ID + ".configgui.enabled";
     public static final String ENABLED_PATH = "enabled";
-    public static final boolean ENABLED_DEFAULT_VALUE = false;
+    public static final boolean ENABLED_DEFAULT_VALUE = true;
 
     public final ForgeConfigSpec.BooleanValue debug;
     public final ForgeConfigSpec.BooleanValue enabled;

@@ -33,7 +33,7 @@ import javax.annotation.Nonnull;
 public interface MumbleLink extends Activateable, Debuggable {
     public final static @Nonnull String MOD_ID = "mumblelink";
     public final static @Nonnull String MOD_NAME = "MumbleLink for Forge";
-    public final static @Nonnull String VERSION = "1.12.2-4.2.7";
+    public final static @Nonnull String VERSION = "1.13.2-4.3.0";
     public final static @Nonnull String MOD_DEPENDENCIES = "";
 
     /**

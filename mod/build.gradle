@@ -100,10 +100,6 @@ dependencies {
 
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
-    fileTree("jars").each {
-        from zipTree(it)
-    }
-
     manifest {
         attributes([
             "Specification-Title": project.name,

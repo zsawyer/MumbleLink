@@ -24,12 +24,14 @@ package zsawyer.mods.mumblelink;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,6 +57,11 @@ public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
     private UpdateTicker updateTicker;
     private MumbleLinkAPIImpl api;
 
+    public MumbleLinkImpl() {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        instance = this;
+    }
+
     private boolean enabled = true;
     private boolean debug = false;
 
@@ -64,10 +71,13 @@ public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public void setup(FMLClientSetupEvent event) {
+        LOG.debug("setup started");
         preInit();
         if (enabled) {
             load();
+            LOG.info("loaded and active");
         }
+        LOG.trace("setup finished");
     }
 
     public void preInit() {
@@ -79,8 +89,9 @@ public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
 
     private void loadConfig() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
-        debug = Config.CONFIG.debug.get();
-        enabled = Config.CONFIG.enabled.get();
+        // TODO: make this actually read from config
+        debug = false;//Config.CONFIG.debug.get();
+        enabled = true;//Config.CONFIG.enabled.get();
     }
 
     public void load() {

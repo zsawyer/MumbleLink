@@ -8,8 +8,7 @@ before_install:
 
 script:
   - cd mod/
-  - ./gradlew setupCiWorkspace --refresh-dependencies
-  - ./gradlew build
+  - ./gradlew jar
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

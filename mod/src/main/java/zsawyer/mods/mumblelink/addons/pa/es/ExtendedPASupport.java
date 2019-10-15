@@ -33,7 +33,8 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.ModLoadingException;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,7 +67,7 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
     public final static @Nonnull
     String MOD_NAME = "ExtendedPASupport for MumbleLink";
     public final static @Nonnull
-    String VERSION = "1.0.0";
+    String VERSION = "1.1.0";
     public final static @Nonnull
     String MOD_DEPENDENCIES = "required-after:" + MumbleLink.MOD_ID;
 
@@ -79,19 +80,26 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
     private String version = "unknown";
     private MumbleLink mumbleLinkInstance;
 
+    public ExtendedPASupport() {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.LOWEST, this::setup);
+    }
+
     @OnlyIn(Dist.CLIENT)
-    @SubscribeEvent(priority = EventPriority.NORMAL)
-    public void setup(FMLClientSetupEvent event) throws Throwable {
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void setup(InterModEnqueueEvent event) {
+        LOG.debug("setup started");
         try {
             preInit();
             if (enabled) {
                 load();
+                LOG.info("loaded and active");
             }
         } catch (Throwable t) {
-            ModContainer modContainer = ModList.get().getModContainerById(MOD_ID).orElseThrow(() -> t);
-            String s = "Error in mod during setup " + getName() + getVersion();
+            String s = "Error in mod during setup " + getName();
+            ModContainer modContainer = ModList.get().getModContainerById(MOD_ID).orElseThrow(() -> new RuntimeException(s, t));
             throw new ModLoadingException(modContainer.getModInfo(), modContainer.getCurrentState(), s, t);
         }
+        LOG.debug("setup finished");
     }
 
     public void preInit() {
@@ -103,14 +111,15 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
 
     private void loadConfig() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
-        debug = Config.CONFIG.debug.get();
-        enabled = Config.CONFIG.enabled.get();
+        // TODO: make this actually read from config
+        debug = false;//Config.CONFIG.debug.get();
+        enabled = true;//Config.CONFIG.enabled.get();
     }
 
     public void load() throws InstanceNotFoundException {
         mumbleLinkInstance = InstanceHelper.getMumbleLink();
 
-        if (enabled) {
+        if (enabled && mumbleLinkInstance != null) {
             activate();
         }
     }

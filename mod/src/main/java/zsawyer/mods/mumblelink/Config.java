@@ -36,7 +36,7 @@ public class Config {
     /**
      * the target Config to work with
      */
-    public static Config CONFIG;
+    public static final Config CONFIG;
 
     public static final String DEBUG_COMMENT = "whether this addon should do stuff";
     public static final String DEBUG_TRANSLATION = MumbleLink.MOD_ID + ".configgui.debug";
@@ -45,7 +45,7 @@ public class Config {
     public static final String ENABLED_COMMENT = "whether this addon should do stuff";
     public static final String ENABLED_TRANSLATION = MumbleLink.MOD_ID + ".configgui.enabled";
     public static final String ENABLED_PATH = "enabled";
-    public static final boolean ENABLED_DEFAULT_VALUE = false;
+    public static final boolean ENABLED_DEFAULT_VALUE = true;
 
     public final ForgeConfigSpec.BooleanValue debug;
     public final ForgeConfigSpec.BooleanValue enabled;
