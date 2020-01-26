@@ -16,7 +16,7 @@ modId="aldostramumblelink" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
 version="1.0.0" #mandatory
  # A display name for the mod
-displayName="MumbleLink for Forge" #mandatory
+displayName="Aldostra MumbleLink for Forge" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 #updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
@@ -47,6 +47,7 @@ twall           : Thanks for JNA!
 iSuchtel        : Thanks for helping with compiling the universal dylib for OSX
 Robijnvogel     : Thanks for keeping this mod alive while I was away.
 magneticflux    : Thanks for keeping this mod alive while I was away.
+Aldostra Team (malallai/leximus) : Update to 1.15.2
 """ #optional
 # A text field displayed in the mod UI
 authors="zsawyer, Robijnvogel, magneticflux-" #optional
