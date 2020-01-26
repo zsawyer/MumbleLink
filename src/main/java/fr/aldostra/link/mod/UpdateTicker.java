@@ -1,0 +1,66 @@
+/*
+ mod_MumbleLink - Positional Audio Communication for Minecraft with Mumble
+ Adapted by Aldostra Team (http://www.aldostra.fr/)
+ Copyright 2011-2013 zsawyer (http://sourceforge.net/users/zsawyer)
+
+ This file is part of mod_MumbleLink
+ (http://sourceforge.net/projects/modmumblelink/)
+ Adapted on this fork : https://github.com/alexandrelefourner/MumbleLink.
+
+ mod_MumbleLink is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ mod_MumbleLink is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with mod_MumbleLink.  If not, see <http://www.gnu.org/licenses/>.
+
+ */
+package fr.aldostra.link.mod;
+
+import fr.aldostra.link.mod.api.Activateable;
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+/**
+ * @author zsawyer
+ */
+public class UpdateTicker implements Activateable {
+
+    private boolean enabled = false;
+
+    @SubscribeEvent
+    public void tickEnd(TickEvent.ClientTickEvent event) {
+        if (enabled) {
+            AldostraMumbleMumbleMumbleLinkImpl.instance.tryUpdateMumble(Minecraft.getInstance());
+        }
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    @Override
+    public void activate() {
+        enabled = true;
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @Override
+    public void deactivate() {
+        enabled = false;
+        MinecraftForge.EVENT_BUS.unregister(this);
+    }
+
+}
