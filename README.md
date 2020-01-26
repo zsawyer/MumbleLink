@@ -30,5 +30,7 @@ This code is protected with a GNU license.
 ## About us
 
 Our youtube channel (French) : https://www.youtube.com/channel/UCTQj3jEDwyvq1VuBZ3aXzdA
+
 Our discord (no support on it) : https://discord.aldostra.fr/
+
 Our website (still work in progress) : https://www.aldostra.fr/
