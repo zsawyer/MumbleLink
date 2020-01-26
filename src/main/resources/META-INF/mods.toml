@@ -12,9 +12,9 @@ issueTrackerURL="http://sourceforge.net/projects/modmumblelink//issues" #optiona
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #  mandatory - mumblelink
 # The modid of the mod
-modId="mumblelink" #mandatory
+modId="aldostramumblelink" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="4.3.0" #mandatory
+version="1.0.0" #mandatory
  # A display name for the mod
 displayName="MumbleLink for Forge" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
@@ -109,7 +109,7 @@ This is the forge based version.
 Uses JNA (https://github.com/twall/jna).
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.aldostralink]] #optional
+[[dependencies.aldostramumblelink]] #optional
     # the modid of the dependency
     modId="forge" #mandatory
     # Does this dependency have to exist - if not, ordering below must be specified
@@ -121,7 +121,7 @@ Uses JNA (https://github.com/twall/jna).
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="CLIENT"
 # Here's another dependency
-[[dependencies.aldostralink]]
+[[dependencies.aldostramumblelink]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.15.2]"
@@ -147,7 +147,7 @@ Uses JNA (https://github.com/twall/jna).
     ordering="NONE"
     side="CLIENT"
 [[dependencies.extendedpasupport]]
-    modId="aldostralink"
+    modId="aldostramumblelink"
     mandatory=true
     versionRange="[1.0.0,)"
     ordering="NONE"
