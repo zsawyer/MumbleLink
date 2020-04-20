@@ -35,6 +35,7 @@ public class MumbleLinkAPIImpl implements MumbleLinkAPI {
         this.extendedUpdateData = extendedUpdateData;
     }
 
+
     @Override
     public void register(IdentityManipulator manipulator) {
         extendedUpdateData.register(manipulator);
