@@ -23,8 +23,8 @@ package zsawyer.mods.mumblelink;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import zsawyer.mods.mumblelink.api.Activateable;
 
 /**

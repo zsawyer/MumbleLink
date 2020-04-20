@@ -22,8 +22,8 @@
 package zsawyer.mods.mumblelink.notification;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentUtils;
 
 /**
  * @author zsawyer
@@ -49,7 +49,7 @@ public class ChatNotifier implements UserNotifier {
     }
 
     protected void send(String message) {
-        ITextComponent messageObject = new TextComponentString(message);
+        ITextComponent messageObject = TextComponentUtils.toTextComponent(() -> message);
         game.ingameGUI.getChatGUI().printChatMessage(messageObject);
     }
 }
