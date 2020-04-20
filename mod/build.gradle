@@ -21,7 +21,7 @@ apply plugin: 'maven-publish'
 
 ext.modversion = "4.4.0"
 ext.mcversion = "1.15.2"
-ext.forgeversion = "31.1.16"
+ext.forgeversion = "31.1.0"
 
 version = mcversion + "-" + modversion
 group = "zsawyer.mods.mumblelink.MumbleLink"

@@ -124,7 +124,7 @@ Uses JNA (https://github.com/twall/jna).
 [[dependencies.mumblelink]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.13.2]"
+    versionRange="[1.15.2]"
     ordering="NONE"
     side="CLIENT"
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
@@ -143,7 +143,7 @@ Uses JNA (https://github.com/twall/jna).
 [[dependencies.extendedpasupport]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.13.2]"
+    versionRange="[1.15.2]"
     ordering="NONE"
     side="CLIENT"
 [[dependencies.extendedpasupport]]
