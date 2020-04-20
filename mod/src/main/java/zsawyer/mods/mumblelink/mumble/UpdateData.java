@@ -132,8 +132,8 @@ public class UpdateData {
             // Position of the avatar
             fAvatarPosition = new float[]{
                     Float.parseFloat(Double.toString(game.player.getPosition().getX())),
-                    Float.parseFloat(Double.toString(game.player.getPosition().getY())),
-                    Float.parseFloat(Double.toString(game.player.getPosition().getZ()))};
+                    Float.parseFloat(Double.toString(game.player.getPosition().getZ())),
+                    Float.parseFloat(Double.toString(game.player.getPosition().getY()))};
 
             // Unit vector pointing out of the avatar's eyes (here Front looks
             // into scene).
@@ -158,8 +158,8 @@ public class UpdateData {
             // TODO: use real camera position, s.a.
             fCameraPosition = new float[]{
                     Float.parseFloat(Double.toString(game.player.getPosition().getX())),
-                    Float.parseFloat(Double.toString(game.player.getPosition().getY())),
-                    Float.parseFloat(Double.toString(game.player.getPosition().getZ()))};
+                    Float.parseFloat(Double.toString(game.player.getPosition().getZ())),
+                    Float.parseFloat(Double.toString(game.player.getPosition().getY()))};
 
             fCameraFront = new float[]{
                     Float.parseFloat(Double.toString(lookDirection.x
