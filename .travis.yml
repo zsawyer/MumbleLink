@@ -23,10 +23,10 @@ deploy:
   api_key:
     secure: do+IrNYVOQbjQpxCauizU2k75pXyFRBk9WD/4XcHVh66Lf6UHQPRmhOvSb2XoMQrXRoXZtGiETbuVuoQYV5XmbVb/d2ndA/fxckfxIpXaDEwSB6r2T7PPVknItJpyR02vJgrIRC1PXCrFT4cHbnZubZkNAfWh64QIeuGw2UnZEE=
   file_glob: true
-  file:
-    - "build/libs/*.jar"
+  file: build/libs/*.jar
   on:
     repo: zsawyer/MumbleLink
     branch: QnD-MC_JNA
     tags: true
+  skip_cleanup: trues
   draft: true
