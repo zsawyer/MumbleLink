@@ -166,6 +166,7 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
         // build spawn location coordinates (sadly this is the only somewhat
         // identifiable information the client has about the world (and server)
         // it connects to.
+        // TODO: test if we can use game.world.getSeed()
         JSONArray spawnCoordinates = new JSONArray();
         spawnCoordinates.put(game.world.getWorldInfo().getSpawnX());
         spawnCoordinates.put(game.world.getWorldInfo().getSpawnY());
