@@ -1,4 +1,6 @@
-![MumbleLink Logo](mod/src/main/resources/logo.png)
+<p style="text-align: center;">
+  <img alt="MumbleLink Logo" src="doc/images/2011-03-23_07.19.05.png" width="80%">
+</p>
 
 # About:
 
@@ -30,7 +32,7 @@ There is also a corresponding [Minecraft Forum thread](http://www.minecraftforum
     * Windows: %Appdata%\.minecraft\mods\MumbleLink-x.y.jar  
     * Linux: ~/.minecraft/mods/MumbleLink-x.y.jar  
 4. setup Mumble:  
-    ![screenshot of settings with indicators for steps 1 to 3](docs/screenshots/mumble_settings_required_1-3.png)  
+    ![screenshot of settings with indicators for steps 1 to 3](doc/screenshots/mumble_settings_required_1-3.png)  
     1. On Mumble's main screen select Configure -> Settings
     2. In Mumble Configuration dialog enable "Advanced" (bottom left)
     3. In Plugins: 
@@ -38,9 +40,9 @@ There is also a corresponding [Minecraft Forum thread](http://www.minecraftforum
                             if this was disabled, restart after setting this option
         2. in Plugins section: find and enable "Link v1.2.0"
     4. In Audio Output:  
-	    ![screenshot of settings with indicators for step 4](docs/screenshots/mumble_settings_required_4.png)  
+	    ![screenshot of settings with indicators for step 4](doc/screenshots/mumble_settings_required_4.png)  
         1. in Positional Audio section: enable Positional Audio´
-    5. optional advanced Mumble settings can be found further below
+    5. optional advanced Mumble settings can be found further [below](#advanced-mumble-configuration)
 
 
 # Upgrading from earlier Versions:
@@ -60,7 +62,7 @@ To set this up you will need to do some special settings which differ from the
 defaults, in return it might enhance your audio experience.  
 
 1. In Audio Output:  
-	![screenshot of optional settings with indicators for step 1](mumble_settings_optional_1.png)    
+	![screenshot of optional settings with indicators for step 1](doc/screenshots/mumble_settings_optional_1.png)    
 	1. Positional Audio section: Maximum Distance: 70m   
 		(this value will determine when others are too far away to be heard)  
 	2. Positional Audio section: Minimum Volume: 0%  
@@ -68,7 +70,7 @@ defaults, in return it might enhance your audio experience.
 	3. Audio Output section: disable "Attenuate applications by... " "while other users talk" and "while you talk"   
 		(mumble would dampen ArmA's audio if enabled)
 2. In Shortcuts   
-	![screenshot of optional settings with indicators for step 2](mumble_settings_optional_2_short.png)  
+	![screenshot of optional settings with indicators for step 2](doc/screenshots/mumble_settings_optional_2_short.png)  
 	1. bind a key ("Shortcut") to "Shout/Wisper" "Shout to Channel" select "Current" Channel and make sure to check "Ignore positional audio"   
 		(this will enable you to speak to everyone no matter how far away they are or what their settings are)  
 
