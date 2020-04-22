@@ -21,6 +21,7 @@
  */
 package zsawyer.mods.mumblelink.notification;
 
+import com.mojang.brigadier.Message;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentUtils;
@@ -32,7 +33,11 @@ public class ChatNotifier implements UserNotifier {
 
     protected Minecraft game;
 
-    public ChatNotifier(Minecraft game) {
+    public ChatNotifier() {
+        super();
+    }
+
+    public void init(Minecraft game) {
         this.game = game;
     }
 

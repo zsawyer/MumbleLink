@@ -36,8 +36,7 @@ public class BufferedChatNotifier extends ChatNotifier implements Runnable {
     List<String> messages;
     Thread keepTrying;
 
-    public BufferedChatNotifier(Minecraft game) {
-        super(game);
+    public BufferedChatNotifier() {
         messages = Collections.synchronizedList(new ArrayList<String>());
         keepTrying = new Thread(this);
     }

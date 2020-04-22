@@ -22,10 +22,10 @@
 package zsawyer.mods.mumblelink.error;
 
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.ModLoadingException;
 import org.apache.logging.log4j.Level;
 import zsawyer.mods.mumblelink.MumbleLinkImpl;
 import zsawyer.mods.mumblelink.notification.BufferedChatNotifier;
+import zsawyer.mods.mumblelink.notification.ChatNotifier;
 import zsawyer.mods.mumblelink.notification.UserNotifier;
 import zsawyer.mods.mumblelink.util.SingletonFactory;
 
@@ -35,10 +35,14 @@ import zsawyer.mods.mumblelink.util.SingletonFactory;
  */
 public class ErrorHandlerImpl implements ModErrorHandler, NativeInitErrorHandler, NativeUpdateErrorHandler {
 
-    private UserNotifier chat;
+    private ChatNotifier chat;
 
     public ErrorHandlerImpl() {
-        chat = new BufferedChatNotifier(Minecraft.getInstance());
+        chat = new BufferedChatNotifier();
+    }
+
+    public void init(Minecraft game) {
+        chat.init(game);
     }
 
     @Override

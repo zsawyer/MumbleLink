@@ -30,6 +30,8 @@ import zsawyer.mods.mumblelink.mumble.MumbleInitializer;
 import zsawyer.mods.mumblelink.mumble.UpdateData;
 import zsawyer.mumble.jna.LinkAPILibrary;
 
+import java.util.function.Consumer;
+
 /**
  * <p>
  * mod to link with mumble for positional audio
@@ -41,13 +43,15 @@ import zsawyer.mumble.jna.LinkAPILibrary;
  * </p>
  * @author zsawyer, 2013-04-09
  */
-public class MumbleLinkBase {
+public class MumbleLinkBase implements Consumer<Minecraft> {
+    protected static Minecraft game;
 
-    protected MumbleInitializer mumbleInititer;
-    protected Thread mumbleInititerThread;
+    protected MumbleInitializer mumbleInitializer;
+    protected Thread mumbleInitializerThread;
     protected UpdateData mumbleData;
     protected LinkAPILibrary library;
     protected ErrorHandlerImpl errorHandler;
+
 
     public MumbleLinkBase() {
         super();
@@ -69,23 +73,37 @@ public class MumbleLinkBase {
 
         mumbleData = new UpdateData(library, errorHandler);
 
-        mumbleInititer = new MumbleInitializer(library, errorHandler);
-        mumbleInititerThread = new Thread(mumbleInititer);
+        mumbleInitializer = new MumbleInitializer(library, errorHandler, this);
+        mumbleInitializerThread = new Thread(mumbleInitializer);
     }
 
-    public void tryUpdateMumble(Minecraft game) {
-        if (mumbleInititer.isMumbleInitialized()) {
+    public void tryUpdateMumble() {
+        if (null != game && mumbleInitializer.isMumbleInitialized()) {
             if (game.player != null && game.world != null) {
                 mumbleData.set(game);
                 mumbleData.send();
             }
         } else {
             try {
-                mumbleInititerThread.start();
+                mumbleInitializerThread.start();
             } catch (IllegalThreadStateException ex) {
                 // thread was already started so we do nothing
             }
         }
     }
 
+    public static Minecraft getGame() {
+        return MumbleLinkBase.game;
+    }
+
+    /**
+     * Performs this operation on the given argument.
+     *
+     * @param minecraft the input argument
+     */
+    @Override
+    public void accept(Minecraft minecraft) {
+        game = minecraft;
+        ErrorHandlerImpl.getInstance().init(game);
+    }
 }

@@ -21,7 +21,6 @@
  */
 package zsawyer.mods.mumblelink;
 
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -37,7 +36,7 @@ public class UpdateTicker implements Activateable {
     @SubscribeEvent
     public void tickEnd(TickEvent.ClientTickEvent event) {
         if (enabled) {
-            MumbleLinkImpl.instance.tryUpdateMumble(Minecraft.getInstance());
+            MumbleLinkImpl.instance.tryUpdateMumble();
         }
     }
 

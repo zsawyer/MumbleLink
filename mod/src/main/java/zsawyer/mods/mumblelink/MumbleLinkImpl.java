@@ -41,7 +41,7 @@ import zsawyer.mods.mumblelink.mumble.ExtendedUpdateData;
 /**
  * mod to link with mumble for positional audio
  * <p>
- * this is a forge based implementation (Forge 1.13+)
+ * this is a forge based implementation (Forge 1.15+)
  *
  * @author zsawyer, 2013-04-09
  */
@@ -73,7 +73,7 @@ public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
         LOG.debug("setup started");
         preInit();
         if (enabled) {
-            load();
+            load(event);
             LOG.info("loaded and active");
         }
         LOG.trace("setup finished");
@@ -93,7 +93,7 @@ public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
         enabled = true;//Config.CONFIG.enabled.get();
     }
 
-    public void load() {
+    public void load(FMLClientSetupEvent event) {
         super.load();
         initComponents();
         activate();
