@@ -14,7 +14,7 @@ issueTrackerURL="http://sourceforge.net/projects/modmumblelink//issues" #optiona
 # The modid of the mod
 modId="mumblelink" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="${file.jarVersion}" #mandatory
+version="${modversion}" #mandatory
  # A display name for the mod
 displayName="MumbleLink for Forge" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
@@ -124,7 +124,7 @@ Uses JNA (https://github.com/twall/jna).
 [[dependencies.mumblelink]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.2]"
+    versionRange="[mcversion]"
     ordering="NONE"
     side="CLIENT"
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
@@ -143,12 +143,12 @@ Uses JNA (https://github.com/twall/jna).
 [[dependencies.extendedpasupport]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.2]"
+    versionRange="[${mcversion}]"
     ordering="NONE"
     side="CLIENT"
 [[dependencies.extendedpasupport]]
     modId="mumblelink"
     mandatory=true
-    versionRange="[4.3,)"
+    versionRange="[${modversion},)"
     ordering="NONE"
     side="CLIENT"

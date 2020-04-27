@@ -82,6 +82,16 @@ jar {
     }
 }
 
+processResources {
+    filesMatching(['**/mods.toml', '**/README.txt']) {
+        expand 'version': version,
+                'modversion': modversion,
+                'mcversion': mcversion,
+                'forgeversion': forgeversion,
+                'date': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+    }
+}
+
 def reobfFile = file("$buildDir/reobfJar/output.jar")
 def reobfArtifact = artifacts.add('default', reobfFile) {
     type 'jar'
