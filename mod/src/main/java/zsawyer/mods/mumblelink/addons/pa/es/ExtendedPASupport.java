@@ -27,6 +27,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -35,7 +36,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.FMLNetworkConstants;
 import net.minecraftforge.forgespi.language.IModInfo;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zsawyer.mods.mumblelink.api.Activateable;
@@ -82,6 +86,7 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
 
     public ExtendedPASupport() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(EventPriority.LOWEST, this::setup);
+        this.preInit();
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -89,7 +94,6 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
     public void setup(InterModEnqueueEvent event) {
         LOG.debug("setup started");
         try {
-            preInit();
             if (enabled) {
                 load();
                 LOG.info("loaded and active");
@@ -103,6 +107,9 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
     }
 
     public void preInit() {
+        ModLoadingContext context = ModLoadingContext.get();
+        context.registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(
+            () -> FMLNetworkConstants.IGNORESERVERONLY, (serverVer, isDedicated) -> true));
         IModInfo modInfo = ModLoadingContext.get().getActiveContainer().getModInfo();
         name = modInfo.getDisplayName();
         version = modInfo.getVersion().getQualifier();
