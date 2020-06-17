@@ -26,12 +26,16 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.network.FMLNetworkConstants;
 import net.minecraftforge.forgespi.language.IModInfo;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zsawyer.mods.mumblelink.api.MumbleLink;
@@ -58,6 +62,7 @@ public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
 
     public MumbleLinkImpl() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        this.preInit();
         instance = this;
     }
 
@@ -71,7 +76,6 @@ public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
     @SubscribeEvent(priority = EventPriority.NORMAL)
     public void setup(FMLClientSetupEvent event) {
         LOG.debug("setup started");
-        preInit();
         if (enabled) {
             load(event);
             LOG.info("loaded and active");
@@ -80,7 +84,10 @@ public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
     }
 
     public void preInit() {
-        IModInfo modInfo = ModLoadingContext.get().getActiveContainer().getModInfo();
+        ModLoadingContext context = ModLoadingContext.get();
+        context.registerExtensionPoint(ExtensionPoint.DISPLAYTEST, () -> Pair.of(
+            () -> FMLNetworkConstants.IGNORESERVERONLY, (serverVer, isDedicated) -> true));
+        IModInfo modInfo = context.getActiveContainer().getModInfo();
         name = modInfo.getDisplayName();
         version = modInfo.getVersion().getQualifier();
         loadConfig();
