@@ -6,9 +6,11 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[25,)" #mandatory (24 is current forge version)
+loaderVersion="[35,)" #mandatory (24 is current forge version)
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="http://sourceforge.net/projects/modmumblelink//issues" #optional
+# License, mandatory since 1.16, set to GNU GPL v3 as in LICENSE.txt located in resource folder
+license="GNU GPL v3"
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #  mandatory - mumblelink
 # The modid of the mod
