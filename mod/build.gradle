@@ -19,7 +19,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
 
-ext.modversion = "4.4.1"
+ext.modversion = "4.5.0"
 ext.mcversion = "1.15.2"
 ext.forgeversion = "31.1.0"
 

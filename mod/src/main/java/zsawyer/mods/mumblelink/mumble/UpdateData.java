@@ -54,6 +54,13 @@ public class UpdateData {
     NativeUpdateErrorHandler errorHandler;
     private int uiTick = 0;
 
+    private int dimensionYOffset = 0;
+    private int dimensionOffsetUpdateCounter = 0;
+
+    // First prime number higher than (2^16 + 512) / 13
+    final int DIMENSION_OFFSET_SEED = 5081;
+    final int DIMENSION_OFFSET_UPDATE_RATE = 101;
+
     public UpdateData(LinkAPILibrary mumbleLink,
                       NativeUpdateErrorHandler errorHandler) {
         this.mumbleLink = mumbleLink;
@@ -177,6 +184,8 @@ public class UpdateData {
                     Float.parseFloat(Double.toString(topDirection.y
                             * fCameraTopY))};
 
+            handleDimensionYOffset(game);
+
             // Identifier which uniquely identifies a certain player in a
             // context (e.g. the ingame Name).
             identity = generateIdentity(game,
@@ -232,5 +241,85 @@ public class UpdateData {
                 .sin((-game.player.rotationPitch + 90) * 0.017453292F);
 
         return new Vec3d((double) (f2 * f3), (double) f4, (double) (f1 * f3));
+    }
+
+    private void handleDimensionYOffset(Minecraft game) {
+        // Don't recalculate this every time, optimally this only needs to be done when a server/world is joined or when
+        // the player enters a different dimension.
+        if (dimensionOffsetUpdateCounter <= 0) {
+            // Todo: Call this as well or only on dimension change
+            calculateDimensionYOffset(game);
+            dimensionOffsetUpdateCounter = DIMENSION_OFFSET_UPDATE_RATE;
+        }
+
+        dimensionOffsetUpdateCounter--;
+
+        if (dimensionYOffset != 0) {
+            // Offset the Y-coordinate based on the dimension
+            fAvatarPosition[2] += dimensionYOffset;
+            fCameraPosition[2] += dimensionYOffset;
+        }
+    }
+
+    private void calculateDimensionYOffset(Minecraft game) {
+        /*
+         * Since the Link API coordinates are stored in floats, and those only have 23 bits of precision, at coordinates
+         * around 2^16 meters, the positional audio precision is already reduced to centimeters and becomes increasingly
+         * after that. At 2^23 a float can not contain more precise location data than meters. This is why a maximum
+         * y-offset around 2^16 (65536) was chosen.
+         * Now there is no way to fit a 256 y-range for each possible dimension id in the range of -65536 to 65536, so
+         * instead the three vanilla dimensions, Nether, Overworld and End get their own reserved "Mumble-space" of 256
+         * meters high and the rest of the dimensions are distributed over the space in between with the realistic chance
+         * of overlapping positional audio spaces, but it is what it is...
+         *
+         * The distribution is as follows:
+         *
+         *    |---------------|----------------------|------------|----------------------|----------|
+         * -(2^16)       -(2^16)+256                 0           256                    2^16     2^16+256
+         *          Nether      Negative ID Mod dims    Overworld   Positive ID Mod dims     End
+         */
+
+        // Coordinates are stored in a float array, which starts to lose precision in the magnitude of meters at 2^23.
+        // To be useful for positional audio use 2^16 (65536) as a maximum offset to only lose precision in the magnitude of centimeters.
+        int maxYOffset = 65536;
+
+        if (game.world == null) {
+            // If we don't know what to do, just use the maximum non-vanilla dimension offset so the "Mumble space"
+            // won't overlap with the Overworld or End.
+            dimensionYOffset = maxYOffset - 256;
+            return;
+        }
+
+        int dimID = game.world.dimension.getType().getId();
+
+        switch (dimID) {
+            case 0:
+                // Overworld
+                dimensionYOffset = 0;
+                return;
+            case -1:
+                // Nether
+                dimensionYOffset = -1 * maxYOffset;
+                return;
+            case 1:
+                // End
+                dimensionYOffset = maxYOffset;
+                return;
+            default:
+                // In all other cases, use the distribution function.
+                break;
+        }
+
+        // Min_INT * Min_ INT < Max_LONG
+        // -(2^31) * -(2^31) = 2^62 < 2^63-1
+        long rawYOffset = Math.abs((long) DIMENSION_OFFSET_SEED * (long) dimID);
+
+        // Transform the offset to be distributed between 256 and 2^16 - 256
+        dimensionYOffset = (int) (rawYOffset % (maxYOffset - 512) + 256);
+
+        // Transform the offset to be distributed between -(2^16) + 256 and -256
+        if (dimID < 0) {
+            dimensionYOffset *= -1;
+        }
     }
 }
