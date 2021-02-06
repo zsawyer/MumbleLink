@@ -202,6 +202,13 @@ In Mumble advanced settings, within "Audio Output" untick both:
 	and "while you talk"
 
 
+#### No Linking when using Flatpack on Unix
+Minecraft Flatpack needs additional permissions: 
+1. on the command prompt run `flatpak override --user --device=shm com.mojang.Minecraft` 
+2. restart the Minecraft Flatpak if it was already running 
+
+Reason: The Mumble Link works via SHM and `/dev/shm` is by default sandboxed by Flatpak.
+
 
 # Known Issues:
 
