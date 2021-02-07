@@ -18,3 +18,4 @@ build
 /mod/classes
 /mod/run
 /mod/.nb-gradle/
+/mod/logs

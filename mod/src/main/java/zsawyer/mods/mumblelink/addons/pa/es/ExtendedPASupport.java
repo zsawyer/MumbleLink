@@ -182,7 +182,9 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
         identity.put(IdentityKey.WORLD_SPAWN, spawnCoordinates);
 
         // append the dimension
-        identity.put(IdentityKey.DIMENSION, game.player.dimension);
+        // TODO: re-add dimension to identity again; this requires some better understanding 
+        //   of the dimensions and what would be useful here
+        //identity.put(IdentityKey.DIMENSION, game.player.dimension);
     }
 
     /**

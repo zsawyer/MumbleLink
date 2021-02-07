@@ -23,7 +23,7 @@ package zsawyer.mods.mumblelink.mumble;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import zsawyer.mods.mumblelink.MumbleLinkConstants;
 import zsawyer.mods.mumblelink.MumbleLinkImpl;
 import zsawyer.mods.mumblelink.api.ContextManipulator;
@@ -119,63 +119,50 @@ public class UpdateData {
             float fCameraTopY = 1; // Y points up
             float fCameraTopZ = 1;
 
-            Vec3d lookDirection = game.player.getLookVec();
-            Vec3d topDirection = getTopVec(game);
-
-			/*
-             * TODO: calculate real camera vector from pitch and yaw // camera
-			 * pitch in degrees (e.g. 0.0f to 360.0f) Float cameraPitch =
-			 * game.player.cameraPitch; // camera yaw in degrees (e.g. 0.0f
-			 * to 360.0f) Float cameraYaw = game.player.cameraYaw;
-			 */
+            Vector3d lookDirection = game.player.getLookVec();
+            Vector3d topDirection = getTopVec(game);
 
             // Position of the avatar
             fAvatarPosition = new float[]{
-                    Float.parseFloat(Double.toString(game.player.getPosition().getX())),
-                    Float.parseFloat(Double.toString(game.player.getPosition().getZ())),
-                    Float.parseFloat(Double.toString(game.player.getPosition().getY()))};
+                    (float) game.player.getPositionVec().getX(),
+                    (float) game.player.getPositionVec().getZ(),
+                    (float) game.player.getPositionVec().getY()
+            };
 
             // Unit vector pointing out of the avatar's eyes (here Front looks
             // into scene).
             fAvatarFront = new float[]{
-                    Float.parseFloat(Double.toString(lookDirection.x
-                            * fAvatarFrontX)),
-                    Float.parseFloat(Double.toString(lookDirection.z
-                            * fAvatarFrontZ)),
-                    Float.parseFloat(Double.toString(lookDirection.y
-                            * fAvatarFrontY))};
+                    (float) lookDirection.x * fAvatarFrontX,
+                    (float) lookDirection.z * fAvatarFrontZ,
+                    (float) lookDirection.y * fAvatarFrontY
+            };
 
             // Unit vector pointing out of the top of the avatar's head (here
             // Top looks straight up).
             fAvatarTop = new float[]{
-                    Float.parseFloat(Double.toString(topDirection.x
-                            * fAvatarTopX)),
-                    Float.parseFloat(Double.toString(topDirection.z
-                            * fAvatarTopZ)),
-                    Float.parseFloat(Double.toString(topDirection.y
-                            * fAvatarTopY))};
+                    (float) topDirection.x * fAvatarTopX,
+                    (float) topDirection.z * fAvatarTopZ,
+                    (float) topDirection.y * fAvatarTopY
+            };
 
             // TODO: use real camera position, s.a.
             fCameraPosition = new float[]{
-                    Float.parseFloat(Double.toString(game.player.getPosition().getX())),
-                    Float.parseFloat(Double.toString(game.player.getPosition().getZ())),
-                    Float.parseFloat(Double.toString(game.player.getPosition().getY()))};
+                    (float) game.player.getPositionVec().getX(),
+                    (float) game.player.getPositionVec().getZ(),
+                    (float) game.player.getPositionVec().getY()
+            };
 
             fCameraFront = new float[]{
-                    Float.parseFloat(Double.toString(lookDirection.x
-                            * fCameraFrontX)),
-                    Float.parseFloat(Double.toString(lookDirection.z
-                            * fCameraFrontZ)),
-                    Float.parseFloat(Double.toString(lookDirection.y
-                            * fCameraFrontY))};
+                    (float) lookDirection.x * fCameraFrontX,
+                    (float) lookDirection.z * fCameraFrontZ,
+                    (float) lookDirection.y * fCameraFrontY
+            };
 
             fCameraTop = new float[]{
-                    Float.parseFloat(Double.toString(topDirection.x
-                            * fCameraTopX)),
-                    Float.parseFloat(Double.toString(topDirection.z
-                            * fCameraTopZ)),
-                    Float.parseFloat(Double.toString(topDirection.y
-                            * fCameraTopY))};
+                    (float) topDirection.x * fCameraTopX,
+                    (float) topDirection.z * fCameraTopZ,
+                    (float) topDirection.y * fCameraTopY
+            };
 
             // Identifier which uniquely identifies a certain player in a
             // context (e.g. the ingame Name).
@@ -221,7 +208,7 @@ public class UpdateData {
         return MumbleLinkConstants.MUMBLE_CONTEXT_DOMAIN_ALL_TALK;
     }
 
-    private Vec3d getTopVec(Minecraft game) {
+    private Vector3d getTopVec(Minecraft game) {
         float f1 = MathHelper.cos(-game.player.rotationYaw * 0.017453292F
                 - (float) Math.PI);
         float f2 = MathHelper.sin(-game.player.rotationYaw * 0.017453292F
@@ -231,6 +218,10 @@ public class UpdateData {
         float f4 = MathHelper
                 .sin((-game.player.rotationPitch + 90) * 0.017453292F);
 
-        return new Vec3d((double) (f2 * f3), (double) f4, (double) (f1 * f3));
+        return new Vector3d(
+                f2 * f3,
+                f4,
+                f1 * f3
+        );
     }
 }
