@@ -27,18 +27,13 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ExtensionPoint;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.ModLoadingException;
+import net.minecraftforge.fml.*;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.FMLNetworkConstants;
 import net.minecraftforge.forgespi.language.IModInfo;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -182,9 +177,7 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
         identity.put(IdentityKey.WORLD_SPAWN, spawnCoordinates);
 
         // append the dimension
-        // TODO: re-add dimension to identity again; this requires some better understanding 
-        //   of the dimensions and what would be useful here
-        //identity.put(IdentityKey.DIMENSION, game.player.dimension);
+        identity.put(IdentityKey.DIMENSION, game.player.getEntityWorld().getDimensionKey());
     }
 
     /**
