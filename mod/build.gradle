@@ -19,9 +19,9 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
 
-ext.modversion = "4.6.0"
-ext.mcversion = "1.16.2"
-ext.forgeversion = "33.0.61"
+ext.modversion = "4.6.1"
+ext.mcversion = "1.16.3"
+ext.forgeversion = "34.1.0"
 
 version = mcversion + "-" + modversion
 group = "zsawyer.mods.mumblelink.MumbleLink"
@@ -31,7 +31,7 @@ ext.vendorName = "zsawyer." + archivesBaseName
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
-    mappings channel: 'snapshot', version: '20200916-1.16.2'
+    mappings channel: 'snapshot', version: '20201028-1.16.3'
 
     runs {
         client {
