@@ -6,7 +6,7 @@
 
 ***Minecraft + Mumble + MumbleLink = You hear where voices come from and how far away they are!***
 
-This is a **Minecraft mod based on "Minecraft Forge"**. It's purpose is to be able to use Minecraft in conjunction **with [Mumble](http://mumble.sourceforge.net/)**'s positional audio feature.
+This is a **Minecraft mod based on "Minecraft Forge"**. It's purpose is to be able to use Minecraft in conjunction **with [Mumble](https://mumble.info)**'s positional audio feature.
 
 This means: Directional and positionally attenuated VOIP in relation to the game world.
 
@@ -17,7 +17,7 @@ There is also a corresponding [Minecraft Forum thread](http://www.minecraftforum
 
 * [Minecraft Java Edition](https://www.minecraft.net)
 * [Minecraft Forge](http://www.minecraftforge.net/wiki/)
-* [Mumble](http://mumble.sourceforge.net/)
+* [Mumble](https://mumble.info)
   * advanced option "Link to Game and Transmit Position" activated  
      (Configure -> Settings -> Tick "Advanced" -> "Plugins"
         -> Tick "Link to Game and Transmit Position")
