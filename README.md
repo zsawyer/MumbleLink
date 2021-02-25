@@ -6,7 +6,7 @@
 
 ***Minecraft + Mumble + MumbleLink = You hear where voices come from and how far away they are!***
 
-This is a **Minecraft mod based on "Minecraft Forge"**. It's purpose is to be able to use Minecraft in conjunction **with [Mumble](https://mumble.info)**'s positional audio feature.
+This is a **client-side Minecraft mod based on "Minecraft Forge"**. It's purpose is to be able to use Minecraft in conjunction **with [Mumble](https://mumble.info)**'s positional audio feature.
 
 This means: Directional and positionally attenuated VOIP in relation to the game world.
 
@@ -102,16 +102,16 @@ Feel free to drop a note [on the forum](http://www.minecraftforum.net/topic/2175
 # Developing Addons for this Mod:
 
 * Please also refer to changelog of v4.0.2 and the source code comments.
-* The interface `MumbleLinkAPI` allows your addon to inject their custom Mumble
+* The interface [`MumbleLinkAPI`](https://github.com/zsawyer/MumbleLink/blob/QnD-MC_JNA/mod/src/main/java/zsawyer/mods/mumblelink/api/MumbleLinkAPI.java) allows your addon to inject their custom Mumble
     context and/or identity. Use this interface to register your callback
     function handlers. You will have to implement the callback interfaces. It is
     suggested that your addon implements the "Activatable" interface to allow
     other (child) addons to disable your handlers and thus overriding/replacing
     them. This is neccessary since the context and identity fields have a very
     limited length.  
-* The `ExtendedPASupport` mod should serve as a sample implementation.  
+* The [`ExtendedPASupport`](https://github.com/zsawyer/MumbleLink/blob/QnD-MC_JNA/mod/src/main/java/zsawyer/mods/mumblelink/addons/pa/es/ExtendedPASupport.java) mod should serve as a sample implementation.  
 * Please note the javadoc of these files.  
-* For more information about context and identity consult [mumble's doc](http://mumble.sourceforge.net/Link#Context). 
+* For more information about context and identity consult [mumble's doc](https://wiki.mumble.info/wiki/Link#Context). 
         
 
 
