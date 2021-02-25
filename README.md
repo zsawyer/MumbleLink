@@ -1,3 +1,7 @@
+[![](http://cf.way2muchnoise.eu/short_mumblelink_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/mumblelink/files)
+[![](http://cf.way2muchnoise.eu/versions/mumblelink_all.svg)](https://www.curseforge.com/minecraft/mc-mods/mumblelink/files)
+[![](http://cf.way2muchnoise.eu/packs/short_mumblelink.svg)](https://www.curseforge.com/minecraft/mc-mods/mumblelink/files)
+
 <p align="center">
   <img alt="MumbleLink Logo" src="doc/images/2011-03-23_07.19.05.png" width="80%">
 </p>
