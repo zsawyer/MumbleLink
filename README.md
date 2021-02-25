@@ -16,7 +16,7 @@ There is also a corresponding [Minecraft Forum thread](http://www.minecraftforum
 # Prerequisites:
 
 * [Minecraft Java Edition](https://www.minecraft.net)
-* [Minecraft Forge](http://www.minecraftforge.net/wiki/)
+* [Minecraft Forge](https://files.minecraftforge.net/)
 * [Mumble](https://mumble.info)
   * advanced option "Link to Game and Transmit Position" activated  
      (Configure -> Settings -> Tick "Advanced" -> "Plugins"
