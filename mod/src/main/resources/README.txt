@@ -220,7 +220,7 @@ Mod-Packs:
 
 Tested Platforms:
 
-- Windows 7 Home Premium 64-bit with Forge
+- Windows 10 Home 64-bit with Forge
     - Forge ${forgeversion} (MC ${mcversion})
 
 
@@ -236,6 +236,8 @@ Known Issues:
 
 
 Change Log:
+
+see https://github.com/zsawyer/MumbleLink/releases 
 
 v4.1.2
 - updated for Minecraft 1.8 (Forge 11.14.0.1268)

@@ -11,7 +11,7 @@ loaderVersion="[36,)" #mandatory
 # Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
 license="GNU LGPL v3.0"
 # A URL to refer people to when problems occur with this mod
-issueTrackerURL="http://sourceforge.net/projects/modmumblelink//issues" #optional
+issueTrackerURL="https://github.com/zsawyer/MumbleLink/issues" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #  mandatory - mumblelink
 # The modid of the mod
@@ -23,7 +23,7 @@ displayName="MumbleLink for Forge" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 #updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="http://www.minecraftforum.net/topic/217587" #optional
+displayURL="https://github.com/zsawyer/MumbleLink" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="logo.png" #optional
 # A text field displayed in the mod UI
@@ -72,7 +72,7 @@ displayName="ExtendedPASupport for MumbleLink" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 #updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="http://www.minecraftforum.net/topic/217587" #optional
+displayURL="https://github.com/zsawyer/MumbleLink" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
 logoFile="logo.png" #optional
 # A text field displayed in the mod UI
@@ -104,12 +104,7 @@ magneticflux    : Thanks for keeping this mod alive while I was away.
 authors="zsawyer, Robijnvogel, magneticflux-" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-A client-side Mod so that Minecraft now natively supports Mumble's positional audio feature.
-
-This means: Directional and positionally attenuated VOIP in relation to the game world.
-
-This is the forge based version.
-Uses JNA (https://github.com/twall/jna).
+An addon to the MumbleLink mod (forge version) which injects extended positional audio support (i.e. identity) based on vanilla Minecraft.
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.mumblelink]] #optional

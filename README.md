@@ -262,4 +262,5 @@ theskorm        | Thanks for helping with compiling libraries for linux 64 bit a
 davr            | Thanks for jumping in and helping with recompiling/reobfuscating  
 twall           | Thanks for JNA!  
 iSuchtel        | Thanks for helping with compiling the universal dylib for OSX  
-
+Robijnvogel     | Thanks for keeping this mod alive while I was away.
+magneticflux-   | Thanks for keeping this mod alive while I was away.
