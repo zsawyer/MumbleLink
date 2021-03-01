@@ -41,7 +41,7 @@ public class MumbleInitializer implements Runnable {
     private NativeInitError initilizationReturnCode = NativeInitError.NOT_YET_INITIALIZED;
 
     public static final String PLUGIN_NAME = "Minecraft";
-    public static final String PLUGIN_DESCRIPTION = "Link plugin for Minecraft with ModLoader";
+    public static final String PLUGIN_DESCRIPTION = "Minecraft (1.16.5)";
     public static final int PLUGIN_UI_VERSION = 2;
 
     public MumbleInitializer(LinkAPILibrary link, NativeInitErrorHandler errorHandler, Consumer<Minecraft> gameSetter) {

@@ -196,16 +196,8 @@ public class UpdateData {
     }
 
     protected String generateContext(Minecraft game, int maxLength) {
-        try {
-            JSONObject newContext = new JSONObject();
-            newContext.put(ContextManipulator.ContextKey.DOMAIN,
-                    MumbleLinkConstants.MUMBLE_CONTEXT_DOMAIN_ALL_TALK);
-            return newContext.toString();
-        } catch (JSONException e) {
-            MumbleLinkImpl.LOG.fatal("could not generate context", e);
-        }
-
-        return MumbleLinkConstants.MUMBLE_CONTEXT_DOMAIN_ALL_TALK;
+        // empty context because the plugin name is already always prepended anyways
+        return "";
     }
 
     private Vector3d getTopVec(Minecraft game) {
