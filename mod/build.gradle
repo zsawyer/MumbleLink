@@ -19,9 +19,10 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
 
-ext.modversion = "4.6.3"
-ext.mcversion = "1.16.5"
-ext.forgeversion = "36.0.15"
+ext.modversion              = "4.6.3"
+ext.mcversion               = "1.16.5"
+ext.forgeversion_dependency = "36"
+ext.forgeversion            = "36.0.15"
 
 version = mcversion + "-" + modversion
 group = "zsawyer.mods.mumblelink.MumbleLink"
@@ -88,6 +89,7 @@ processResources {
                 'modversion': modversion,
                 'mcversion': mcversion,
                 'forgeversion': forgeversion,
+                'forgeversion_dependency': forgeversion_dependency,
                 'date': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
     }
 }
