@@ -49,12 +49,11 @@ public class ChatNotifier implements UserNotifier {
     }
 
     protected boolean canSendMessage() {
-        return game != null && game.ingameGUI != null && game.isGameFocused()
-                && game.ingameGUI.getChatGUI() != null;
+        return game != null && game.gui != null && game.gui.getChat() != null;
     }
 
     protected void send(String message) {
-        ITextComponent messageObject = TextComponentUtils.toTextComponent(() -> message);
-        game.ingameGUI.getChatGUI().printChatMessage(messageObject);
+        ITextComponent messageObject = TextComponentUtils.fromMessage(() -> message);
+        game.gui.getChat().addMessage(messageObject);
     }
 }

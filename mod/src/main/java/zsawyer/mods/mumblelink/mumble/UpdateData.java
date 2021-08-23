@@ -119,14 +119,14 @@ public class UpdateData {
             float fCameraTopY = 1; // Y points up
             float fCameraTopZ = 1;
 
-            Vector3d lookDirection = game.player.getLookVec();
+            Vector3d lookDirection = game.player.getLookAngle();
             Vector3d topDirection = getTopVec(game);
 
             // Position of the avatar
             fAvatarPosition = new float[]{
-                    (float) game.player.getPositionVec().getX(),
-                    (float) game.player.getPositionVec().getZ(),
-                    (float) game.player.getPositionVec().getY()
+                    (float) game.player.getPosition(1f).x(),
+                    (float) game.player.getPosition(1f).z(),
+                    (float) game.player.getPosition(1f).y()
             };
 
             // Unit vector pointing out of the avatar's eyes (here Front looks
@@ -147,9 +147,9 @@ public class UpdateData {
 
             // TODO: use real camera position, s.a.
             fCameraPosition = new float[]{
-                    (float) game.player.getPositionVec().getX(),
-                    (float) game.player.getPositionVec().getZ(),
-                    (float) game.player.getPositionVec().getY()
+                    (float) game.player.getPosition(1f).x(),
+                    (float) game.player.getPosition(1f).z(),
+                    (float) game.player.getPosition(1f).y()
             };
 
             fCameraFront = new float[]{
@@ -201,19 +201,6 @@ public class UpdateData {
     }
 
     private Vector3d getTopVec(Minecraft game) {
-        float f1 = MathHelper.cos(-game.player.rotationYaw * 0.017453292F
-                - (float) Math.PI);
-        float f2 = MathHelper.sin(-game.player.rotationYaw * 0.017453292F
-                - (float) Math.PI);
-        float f3 = -MathHelper
-                .cos((-game.player.rotationPitch + 90) * 0.017453292F);
-        float f4 = MathHelper
-                .sin((-game.player.rotationPitch + 90) * 0.017453292F);
-
-        return new Vector3d(
-                f2 * f3,
-                f4,
-                f1 * f3
-        );
+        return game.player.getUpVector(1f);
     }
 }

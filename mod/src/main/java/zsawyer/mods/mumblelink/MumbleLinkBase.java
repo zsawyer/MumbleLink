@@ -79,7 +79,7 @@ public class MumbleLinkBase implements Consumer<Minecraft> {
 
     public void tryUpdateMumble() {
         if (null != game && mumbleInitializer.isMumbleInitialized()) {
-            if (game.player != null && game.world != null) {
+            if (game.player != null && game.level != null) {
                 mumbleData.set(game);
                 mumbleData.send();
             }

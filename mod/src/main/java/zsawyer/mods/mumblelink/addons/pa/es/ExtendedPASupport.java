@@ -23,6 +23,10 @@
 package zsawyer.mods.mumblelink.addons.pa.es;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Pose;
+import net.minecraft.world.Dimension;
+import net.minecraft.world.DimensionType;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -170,14 +174,14 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
         // it connects to.
         // TODO: test if we can use game.world.getSeed()
         JSONArray spawnCoordinates = new JSONArray();
-        spawnCoordinates.put(game.world.getWorldInfo().getSpawnX());
-        spawnCoordinates.put(game.world.getWorldInfo().getSpawnY());
-        spawnCoordinates.put(game.world.getWorldInfo().getSpawnZ());
+        spawnCoordinates.put(game.level.getSharedSpawnPos().getX());
+        spawnCoordinates.put(game.level.getSharedSpawnPos().getX());
+        spawnCoordinates.put(game.level.getSharedSpawnPos().getX());
         // append coordinates
         identity.put(IdentityKey.WORLD_SPAWN, spawnCoordinates);
 
         // append the dimension
-        identity.put(IdentityKey.DIMENSION, game.player.getEntityWorld().getDimensionKey());
+        identity.put(IdentityKey.DIMENSION, game.player.level.dimension());
     }
 
     /**
