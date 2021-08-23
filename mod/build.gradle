@@ -1,7 +1,6 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
+        maven { url = 'https://maven.minecraftforge.net' }
         mavenCentral()
     }
     dependencies {
@@ -10,7 +9,7 @@ buildscript {
 }
 
 repositories {
-    maven { url = 'https://files.minecraftforge.net/maven' }
+    maven { url = 'https://maven.minecraftforge.net' }
     jcenter()
     mavenCentral()
 }
@@ -19,18 +18,19 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
 
-ext.modversion              = "5.0.0"
-ext.mcversion               = "1.16.5"
-ext.forgeversion_dependency = "36"
-ext.forgeversion            = "36.2.2"
+ext.modversion              = "5.1.0"
+ext.mcversion               = "1.17.1"
+ext.forgeversion_dependency = "37"
+ext.forgeversion            = "37.0.43"
 
 version = mcversion + "-" + modversion
 group = "zsawyer.mods.mumblelink.MumbleLink"
 archivesBaseName = "mumblelink"
 ext.vendorName = "zsawyer." + archivesBaseName
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
     mappings channel: 'official', version: mcversion
 
@@ -62,9 +62,24 @@ minecraft {
                 }
             }
         }
+
+        data {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                archivesBaseName {
+                    source sourceSets.main
+                }
+            }
+        }
     }
 }
 
+sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     minecraft 'net.minecraftforge:forge:' + mcversion + '-' + forgeversion
 }
@@ -72,12 +87,12 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": project.name,
-            "Specification-Vendor": "${vendorName}",
-            "Specification-Version": "${version}",
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
-            "Implementation-Vendor" : "${vendorName}",
+            "Specification-Title"     : project.name,
+            "Specification-Vendor"    : "${vendorName}",
+            "Specification-Version"   : "${version}",
+            "Implementation-Title"    : project.name,
+            "Implementation-Version"  : "${version}",
+            "Implementation-Vendor"   : "${vendorName}",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
@@ -94,20 +109,17 @@ processResources {
     }
 }
 
-def reobfFile = file("$buildDir/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-    type 'jar'
-    builtBy 'reobfJar'
-}
+jar.finalizedBy('reobfJar')
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact reobfArtifact
+            artifact jar
         }
     }
     repositories {
         maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
+            url "file://${project.projectDir}/mcmodsrepo"
         }
     }
 }

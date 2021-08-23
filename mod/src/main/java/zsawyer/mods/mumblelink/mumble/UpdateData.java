@@ -22,11 +22,8 @@
 package zsawyer.mods.mumblelink.mumble;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import zsawyer.mods.mumblelink.MumbleLinkConstants;
+import net.minecraft.world.phys.Vec3;
 import zsawyer.mods.mumblelink.MumbleLinkImpl;
-import zsawyer.mods.mumblelink.api.ContextManipulator;
 import zsawyer.mods.mumblelink.api.IdentityManipulator;
 import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler;
 import zsawyer.mods.mumblelink.error.NativeUpdateErrorHandler.NativeUpdateError;
@@ -119,8 +116,8 @@ public class UpdateData {
             float fCameraTopY = 1; // Y points up
             float fCameraTopZ = 1;
 
-            Vector3d lookDirection = game.player.getLookAngle();
-            Vector3d topDirection = getTopVec(game);
+            Vec3 lookDirection = game.player.getLookAngle();
+            Vec3 topDirection = getTopVec(game);
 
             // Position of the avatar
             fAvatarPosition = new float[]{
@@ -200,7 +197,7 @@ public class UpdateData {
         return "";
     }
 
-    private Vector3d getTopVec(Minecraft game) {
+    private Vec3 getTopVec(Minecraft game) {
         return game.player.getUpVector(1f);
     }
 }
