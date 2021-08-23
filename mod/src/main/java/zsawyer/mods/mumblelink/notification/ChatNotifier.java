@@ -49,7 +49,7 @@ public class ChatNotifier implements UserNotifier {
     }
 
     protected boolean canSendMessage() {
-        return game != null && game.gui != null && game.gui.getChat() != null;
+        return game != null && game.gui != null && game.gui.getChat() != null && game.screen == null;
     }
 
     protected void send(String message) {
