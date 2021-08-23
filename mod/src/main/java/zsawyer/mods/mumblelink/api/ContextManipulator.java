@@ -28,7 +28,25 @@ import net.minecraft.client.Minecraft;
  * A class implementing this interface can register at the {@link MumbleLinkAPI} to be
  * consulted when generating the context to send to Mumble. There is no
  * exclusive privilege, expect other manipulators to run after and before your
- * implementation. Use JSON formatting for compatibility.
+ * implementation.
+ *
+ * CAUTION:
+ * Multiple mods using this is a major compatibility hazard!
+ * There is no neat solution as of now.
+ * If a context does not match exactly with that of the other user the positional audio
+ * data will be stripped.
+ *
+ * Since there is no guarantee that the manipulators on one client are called in the
+ * exact same order as on the other clients this can cause context mismatch.
+ *
+ * You probably might want to look into using an {@link IdentityManipulator} instead.
+ *
+ * If you are using or attempting to use this interface please contact us.
+ * We need feedback on what this could be used for to come up with a proper
+ * solution to the addon compatibility problem.
+ *
+ * If you are ever experiencing compatibility issues with other addons we expect
+ * you to get in touch with the other addon's team (and us) and work it out together.
  *
  * @author zsawyer
  */
@@ -44,8 +62,6 @@ public interface ContextManipulator {
      * to be respected by each implementation. Respecting herein means that the
      * previous context should be - if possible - appended to, or at least be
      * reparsed (e.g. if length is likely to be over stepped).
-     * </p><p>
-     * For compatibility with other addons the suggested format is JSON.
      * </p><br>
      * <p>
      * Excerpt from Mumble Wiki (http://mumble.sourceforge.net/Link 2013-07-08):
@@ -67,20 +83,11 @@ public interface ContextManipulator {
      * @param game      the Minecraft instance for convenience
      * @param maxLength the maximum number of characters the returned string may have,
      *                  else it will not fit into the Link-Plugin's data structure
-     * @return (preferably) a string representation of a JSON-Object (keep in
-     * mind that not using JSON will probably make your addon
-     * incompatible with other manipulator instances)
+     * @return a string representation of the new context to submit to the remaining
+     *                  manipulators (keep in mind that there is no real orchestration
+     *                  of addons and this is basically last one wins - which it will
+     *                  be is unpredictable in this implementation)
      */
     public String manipulateContext(String context, Minecraft game,
                                     int maxLength);
-
-    /**
-     * class holding a set of common keys to expect to be present within the context
-     */
-    public static class ContextKey {
-        public static final String DOMAIN = "domain";
-
-        private ContextKey() {
-        }
-    }
 }

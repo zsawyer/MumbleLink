@@ -31,7 +31,6 @@ public class MumbleLinkConstants {
     //
 
     public static final String LIBRARY_NAME = "LinkAPI";
-    public static final String MUMBLE_CONTEXT_DOMAIN_ALL_TALK = "AllTalk";
 
     private MumbleLinkConstants() {
     }
