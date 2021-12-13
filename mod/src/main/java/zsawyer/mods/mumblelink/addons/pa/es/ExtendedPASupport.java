@@ -102,11 +102,10 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
 
     public void preInit() {
         ModLoadingContext context = ModLoadingContext.get();
-        //TODO: Find replacement for FMLNetworkConstants
-        //context.registerExtensionPoint(IExtensionPoint.DisplayTest.class
-        //        , () -> new IExtensionPoint.DisplayTest(
-        //                () -> FMLNetworkConstants.IGNORESERVERONLY,
-        //                (serverVer, isDedicated) -> true));
+        context.registerExtensionPoint(IExtensionPoint.DisplayTest.class
+                , () -> new IExtensionPoint.DisplayTest(
+                        () -> "ANY",
+                        (serverVer, isDedicated) -> true));
         IModInfo modInfo = ModLoadingContext.get().getActiveContainer().getModInfo();
         name = modInfo.getDisplayName();
         version = modInfo.getVersion().getQualifier();
