@@ -32,7 +32,7 @@ import net.minecraftforge.fml.*;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fmllegacy.network.FMLNetworkConstants;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -79,7 +79,7 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
     private MumbleLink mumbleLinkInstance;
 
     public ExtendedPASupport() {
-        MinecraftForge.EVENT_BUS.register(this);
+        FMLJavaModLoadingContext.get().getModEventBus().register(this);
         this.preInit();
     }
 
@@ -102,10 +102,11 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
 
     public void preInit() {
         ModLoadingContext context = ModLoadingContext.get();
-        context.registerExtensionPoint(IExtensionPoint.DisplayTest.class
-                , () -> new IExtensionPoint.DisplayTest(
-                        () -> FMLNetworkConstants.IGNORESERVERONLY,
-                        (serverVer, isDedicated) -> true));
+        //TODO: Find replacement for FMLNetworkConstants
+        //context.registerExtensionPoint(IExtensionPoint.DisplayTest.class
+        //        , () -> new IExtensionPoint.DisplayTest(
+        //                () -> FMLNetworkConstants.IGNORESERVERONLY,
+        //                (serverVer, isDedicated) -> true));
         IModInfo modInfo = ModLoadingContext.get().getActiveContainer().getModInfo();
         name = modInfo.getDisplayName();
         version = modInfo.getVersion().getQualifier();
