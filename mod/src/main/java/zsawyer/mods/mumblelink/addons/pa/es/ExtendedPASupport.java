@@ -32,7 +32,7 @@ import net.minecraftforge.fml.*;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
-import net.minecraftforge.fmllegacy.network.FMLNetworkConstants;
+import net.minecraftforge.network.NetworkConstants;
 import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -104,7 +104,7 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
         ModLoadingContext context = ModLoadingContext.get();
         context.registerExtensionPoint(IExtensionPoint.DisplayTest.class
                 , () -> new IExtensionPoint.DisplayTest(
-                        () -> FMLNetworkConstants.IGNORESERVERONLY,
+                        () -> NetworkConstants.IGNORESERVERONLY,
                         (serverVer, isDedicated) -> true));
         IModInfo modInfo = ModLoadingContext.get().getActiveContainer().getModInfo();
         name = modInfo.getDisplayName();
