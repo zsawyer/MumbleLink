@@ -18,10 +18,10 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
 
-ext.modversion              = "5.2.0"
-ext.mcversion               = "1.18.2"
-ext.forgeversion_dependency = "40"
-ext.forgeversion            = "40.2.0"
+ext.modversion              = "5.3.0"
+ext.mcversion               = "1.19.3"
+ext.forgeversion_dependency = "44"
+ext.forgeversion            = "44.1.0"
 
 version = mcversion + "-" + modversion
 group = "zsawyer.mods.mumblelink.MumbleLink"
