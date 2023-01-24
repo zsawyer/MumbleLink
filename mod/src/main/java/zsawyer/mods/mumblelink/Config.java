@@ -47,8 +47,15 @@ public class Config {
     public static final String ENABLED_PATH = "enabled";
     public static final boolean ENABLED_DEFAULT_VALUE = true;
 
+    public static final String DIMENSIONAL_HEIGHT_COMMENT = "set the maximum expected height of dimensions";
+    public static final String DIMENSIONAL_HEIGHT_TRANSLATION = MumbleLink.MOD_ID + ".configgui.dimensionalHeight";
+    public static final String DIMENSIONAL_HEIGHT_PATH = "dimensionalHeight";
+    public static final int DIMENSIONAL_HEIGHT_DEFAULT_VALUE = 512;
+
+
     public final ForgeConfigSpec.BooleanValue debug;
     public final ForgeConfigSpec.BooleanValue enabled;
+    public final ForgeConfigSpec.IntValue dimensionalHeight;
 
     static {
         final Pair<Config, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Config::new);
@@ -63,6 +70,7 @@ public class Config {
 
         debug = ConfigHelper.buildBoolean(builder, DEBUG_PATH, DEBUG_COMMENT, DEBUG_TRANSLATION, DEBUG_DEFAULT_VALUE);
         enabled = ConfigHelper.buildBoolean(builder, ENABLED_PATH, ENABLED_COMMENT, ENABLED_TRANSLATION, ENABLED_DEFAULT_VALUE);
+        dimensionalHeight = ConfigHelper.buildInt(builder, DIMENSIONAL_HEIGHT_PATH, DIMENSIONAL_HEIGHT_COMMENT, DIMENSIONAL_HEIGHT_TRANSLATION, DIMENSIONAL_HEIGHT_DEFAULT_VALUE);
 
         builder.pop();
     }
@@ -73,6 +81,6 @@ public class Config {
      * @author zsawyer
      */
     public enum Path {
-        enabled, debug;
+        enabled, debug, dimensionalHeight;
     }
 }
