@@ -27,6 +27,7 @@ import zsawyer.mumble.jna.LinkAPILibrary;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.util.PrimitiveIterator;
 
 /**
  * @author zsawyer
@@ -52,6 +53,28 @@ public final class LinkAPIHelper {
         buffer.put(value.getBytes());
         buffer.rewind();
         return buffer;
+    }
+
+    /**
+     * A stable hash function designed for world IDs.
+     * Different clients should be able to run this on the same world ID and get the same result.
+     * <p>
+     * Based on the `djb2` hash function: [Hash Functions](http://www.cse.yorku.ca/~oz/hash.html)
+     * <p>
+     * reimplementation of https://github.com/magneticflux-/fabric-mumblelink-mod/blob/3866317c64f9b7f5b9b4f17e88cd51c0a717b993/src/main/kotlin/com/skaggsm/mumblelinkmod/client/Utils.kt#L21
+     *
+     * @param hashingTarget the strings whose character sequence should be hashed
+     * @return the stable hash built for the given input
+     */
+    public static int stableHash(String hashingTarget) {
+        int hash = 5381;
+        PrimitiveIterator.OfInt characterIterator = hashingTarget.chars().iterator();
+
+        while (characterIterator.hasNext()) {
+            hash += (hash << 5) + characterIterator.nextInt();
+        }
+
+        return hash;
     }
 
     public synchronized LinkAPILibrary getLibraryInstance() {

@@ -24,7 +24,6 @@ package zsawyer.mods.mumblelink;
 
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.IExtensionPoint;
@@ -66,6 +65,7 @@ public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
 
     private boolean enabled = true;
     private boolean debug = false;
+    private int dimensionalHeight = 512;
 
     private String name = "MumbleLink";
     private String version = "unknown";
@@ -97,6 +97,7 @@ public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.SPEC);
         // TODO: make this actually read from config
         debug = false;//Config.CONFIG.debug.get();
+        dimensionalHeight = 512;//Config.CONFIG.enabled.get();
         enabled = true;//Config.CONFIG.enabled.get();
     }
 
@@ -146,5 +147,9 @@ public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
     @Override
     public String getVersion() {
         return version;
+    }
+
+    public static int dimensionalHeight() {
+        return instance.dimensionalHeight;
     }
 }

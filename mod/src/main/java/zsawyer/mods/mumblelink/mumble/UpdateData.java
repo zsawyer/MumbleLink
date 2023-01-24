@@ -22,6 +22,8 @@
 package zsawyer.mods.mumblelink.mumble;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import zsawyer.mods.mumblelink.MumbleLinkImpl;
 import zsawyer.mods.mumblelink.api.IdentityManipulator;
@@ -36,6 +38,8 @@ import zsawyer.mumble.jna.LinkAPILibrary;
  * @author zsawyer
  */
 public class UpdateData {
+    private static final int HEIGHT_INDEX = 1;
+
 
     float[] fAvatarPosition = {0, 0, 0}; // [3]
     float[] fAvatarFront = {0, 0, 0}; // [3]
@@ -100,65 +104,78 @@ public class UpdateData {
             // 1 unit = 1 meter
 
             // initialize multipliers
+            // converted to left-handed coordinate system
+            //   (Mumble uses a left-handed, Minecraft uses a right-handed)
+            float fAvatarPositionX = 1;
+            float fAvatarPositionY = 1;
+            float fAvatarPositionZ = -1; // switch to left-handedness
+
+            float fCameraPositionX = 1;
+            float fCameraPositionY = 1;
+            float fCameraPositionZ = -1; // switch to left-handedness
+
             float fAvatarFrontX = 1;
             float fAvatarFrontY = 1;
-            float fAvatarFrontZ = 1;
+            float fAvatarFrontZ = -1; // switch to left-handedness
 
             float fCameraFrontX = 1;
             float fCameraFrontY = 1;
-            float fCameraFrontZ = 1;
+            float fCameraFrontZ = -1; // switch to left-handedness
 
             float fAvatarTopX = 1;
-            float fAvatarTopY = 1; // Y points up
-            float fAvatarTopZ = 1;
+            float fAvatarTopY = 1;
+            float fAvatarTopZ = -1; // switch to left-handedness
 
             float fCameraTopX = 1;
-            float fCameraTopY = 1; // Y points up
-            float fCameraTopZ = 1;
+            float fCameraTopY = 1;
+            float fCameraTopZ = -1; // switch to left-handedness
 
             Vec3 lookDirection = game.player.getLookAngle();
             Vec3 topDirection = getTopVec(game);
 
             // Position of the avatar
             fAvatarPosition = new float[]{
-                    (float) game.player.getPosition(1f).x(),
-                    (float) game.player.getPosition(1f).z(),
-                    (float) game.player.getPosition(1f).y()
+                    (float) game.player.getPosition(1f).x() * fAvatarPositionX,
+                    (float) game.player.getPosition(1f).y() * fAvatarPositionY,
+                    (float) game.player.getPosition(1f).z() * fAvatarPositionZ
             };
+            applyDimensionalOffset(game, fAvatarPosition);
 
             // Unit vector pointing out of the avatar's eyes (here Front looks
             // into scene).
             fAvatarFront = new float[]{
                     (float) lookDirection.x * fAvatarFrontX,
-                    (float) lookDirection.z * fAvatarFrontZ,
-                    (float) lookDirection.y * fAvatarFrontY
+                    (float) lookDirection.y * fAvatarFrontY,
+                    (float) lookDirection.z * fAvatarFrontZ
             };
 
             // Unit vector pointing out of the top of the avatar's head (here
             // Top looks straight up).
             fAvatarTop = new float[]{
                     (float) topDirection.x * fAvatarTopX,
-                    (float) topDirection.z * fAvatarTopZ,
-                    (float) topDirection.y * fAvatarTopY
+                    (float) topDirection.y * fAvatarTopY,
+                    (float) topDirection.z * fAvatarTopZ
             };
 
             // TODO: use real camera position, s.a.
+            // Position of the camera
             fCameraPosition = new float[]{
-                    (float) game.player.getPosition(1f).x(),
-                    (float) game.player.getPosition(1f).z(),
-                    (float) game.player.getPosition(1f).y()
+                    (float) game.player.getPosition(1f).x() * fCameraPositionX,
+                    (float) game.player.getPosition(1f).y() * fCameraPositionY,
+                    (float) game.player.getPosition(1f).z() * fCameraPositionZ
             };
+            applyDimensionalOffset(game, fCameraPosition);
 
             fCameraFront = new float[]{
                     (float) lookDirection.x * fCameraFrontX,
-                    (float) lookDirection.z * fCameraFrontZ,
-                    (float) lookDirection.y * fCameraFrontY
+                    (float) lookDirection.y * fCameraFrontY,
+                    (float) lookDirection.z * fCameraFrontZ
             };
 
             fCameraTop = new float[]{
                     (float) topDirection.x * fCameraTopX,
-                    (float) topDirection.z * fCameraTopZ,
-                    (float) topDirection.y * fCameraTopY
+                    (float) topDirection.y * fCameraTopY,
+                    (float) topDirection.z * fCameraTopZ
             };
 
             // Identifier which uniquely identifies a certain player in a
@@ -199,5 +216,28 @@ public class UpdateData {
 
     private Vec3 getTopVec(Minecraft game) {
         return game.player.getUpVector(1f);
+    }
+
+
+    /**
+     * Make people in other dimensions far away so that they're muted.
+     * <p>
+     * reimplementation of https://github.com/magneticflux-/fabric-mumblelink-mod/blob/12727324ae9ecfc9c6b0ab5b604e824d43cfffa1/src/main/kotlin/com/skaggsm/mumblelinkmod/client/ClientMumbleLinkMod.kt#L136
+     *
+     * @param game             the source to get live data from
+     * @param originalPosition the original position to be offset
+     */
+    public static void applyDimensionalOffset(Minecraft game, float[] originalPosition) {
+        ResourceKey<Level> dimension = game.player.level.dimension();
+        if (dimension == null) {
+            // silently ignoring because it would become too spammy
+            return;
+        }
+
+        int configuredOffset = MumbleLinkImpl.dimensionalHeight();
+        int hash = LinkAPIHelper.stableHash(dimension.toString());
+        float heightOffset = (hash % 2048) * configuredOffset;
+
+        originalPosition[HEIGHT_INDEX] += heightOffset;
     }
 }
