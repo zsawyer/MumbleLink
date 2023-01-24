@@ -19,16 +19,16 @@ apply plugin: 'idea'
 apply plugin: 'maven-publish'
 
 ext.modversion              = "5.1.0"
-ext.mcversion               = "1.17.1"
-ext.forgeversion_dependency = "37"
-ext.forgeversion            = "37.0.43"
+ext.mcversion               = "1.18.1"
+ext.forgeversion_dependency = "39"
+ext.forgeversion            = "39.0.0"
 
 version = mcversion + "-" + modversion
 group = "zsawyer.mods.mumblelink.MumbleLink"
 archivesBaseName = "mumblelink"
 ext.vendorName = "zsawyer." + archivesBaseName
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
 minecraft {
