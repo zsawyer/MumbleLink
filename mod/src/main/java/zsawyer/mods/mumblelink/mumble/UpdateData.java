@@ -22,6 +22,8 @@
 package zsawyer.mods.mumblelink.mumble;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import zsawyer.mods.mumblelink.MumbleLinkImpl;
 import zsawyer.mods.mumblelink.api.IdentityManipulator;
@@ -36,6 +38,8 @@ import zsawyer.mumble.jna.LinkAPILibrary;
  * @author zsawyer
  */
 public class UpdateData {
+    private static final int HEIGHT_INDEX = 1;
+
 
     float[] fAvatarPosition = {0, 0, 0}; // [3]
     float[] fAvatarFront = {0, 0, 0}; // [3]
@@ -135,6 +139,7 @@ public class UpdateData {
                     (float) game.player.getPosition(1f).y() * fAvatarPositionY,
                     (float) game.player.getPosition(1f).z() * fAvatarPositionZ
             };
+            applyDimensionalOffset(game, fAvatarPosition);
 
             // Unit vector pointing out of the avatar's eyes (here Front looks
             // into scene).
@@ -159,6 +164,7 @@ public class UpdateData {
                     (float) game.player.getPosition(1f).y() * fCameraPositionY,
                     (float) game.player.getPosition(1f).z() * fCameraPositionZ
             };
+            applyDimensionalOffset(game, fCameraPosition);
 
             fCameraFront = new float[]{
                     (float) lookDirection.x * fCameraFrontX,
@@ -210,5 +216,28 @@ public class UpdateData {
 
     private Vec3 getTopVec(Minecraft game) {
         return game.player.getUpVector(1f);
+    }
+
+
+    /**
+     * Make people in other dimensions far away so that they're muted.
+     * <p>
+     * reimplementation of https://github.com/magneticflux-/fabric-mumblelink-mod/blob/12727324ae9ecfc9c6b0ab5b604e824d43cfffa1/src/main/kotlin/com/skaggsm/mumblelinkmod/client/ClientMumbleLinkMod.kt#L136
+     *
+     * @param game             the source to get live data from
+     * @param originalPosition the original position to be offset
+     */
+    public static void applyDimensionalOffset(Minecraft game, float[] originalPosition) {
+        ResourceKey<Level> dimension = game.player.level.dimension();
+        if (dimension == null) {
+            // silently ignoring because it would become too spammy
+            return;
+        }
+
+        int configuredOffset = MumbleLinkImpl.dimensionalHeight();
+        int hash = LinkAPIHelper.stableHash(dimension.toString());
+        float heightOffset = (hash % 2048) * configuredOffset;
+
+        originalPosition[HEIGHT_INDEX] += heightOffset;
     }
 }
