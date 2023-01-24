@@ -32,7 +32,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fmllegacy.network.FMLNetworkConstants;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.forgespi.language.IModInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,7 +59,7 @@ public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
     private MumbleLinkAPIImpl api;
 
     public MumbleLinkImpl() {
-        MinecraftForge.EVENT_BUS.register(this);
+        FMLJavaModLoadingContext.get().getModEventBus().register(this);
         this.preInit();
         instance = this;
     }
@@ -85,7 +85,7 @@ public class MumbleLinkImpl extends MumbleLinkBase implements MumbleLink {
         ModLoadingContext context = ModLoadingContext.get();
         context.registerExtensionPoint(IExtensionPoint.DisplayTest.class
                 , () -> new IExtensionPoint.DisplayTest(
-                        () -> FMLNetworkConstants.IGNORESERVERONLY,
+                        () -> "ANY",
                         (serverVer, isDedicated) -> true));
         IModInfo modInfo = context.getActiveContainer().getModInfo();
         name = modInfo.getDisplayName();
