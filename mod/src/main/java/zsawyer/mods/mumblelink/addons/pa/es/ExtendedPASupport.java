@@ -25,7 +25,6 @@ package zsawyer.mods.mumblelink.addons.pa.es;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.*;
@@ -62,12 +61,6 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
 
     public static final @Nonnull
     String MOD_ID = "extendedpasupport";
-    public final static @Nonnull
-    String MOD_NAME = "ExtendedPASupport for MumbleLink";
-    public final static @Nonnull
-    String VERSION = "1.1.0";
-    public final static @Nonnull
-    String MOD_DEPENDENCIES = "required-after:" + MumbleLink.MOD_ID;
 
     // whether this mod is active
     private boolean enabled = true;
@@ -178,7 +171,7 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
         identity.put(IdentityKey.WORLD_SPAWN, spawnCoordinates);
 
         // append the dimension
-        identity.put(IdentityKey.DIMENSION, game.player.level.dimension());
+        identity.put(IdentityKey.DIMENSION, game.player.level.dimension().location().toString());
     }
 
     /**
