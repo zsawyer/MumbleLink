@@ -235,7 +235,7 @@ public class UpdateData {
         }
 
         int configuredOffset = MumbleLinkImpl.dimensionalHeight();
-        int hash = LinkAPIHelper.stableHash(dimension.toString());
+        int hash = LinkAPIHelper.stableHash(dimension.location().toString());
         float heightOffset = (hash % 2048) * configuredOffset;
 
         originalPosition[HEIGHT_INDEX] += heightOffset;
