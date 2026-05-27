@@ -23,6 +23,7 @@
 package zsawyer.mods.mumblelink.addons.pa.es;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -51,7 +52,7 @@ import javax.management.InstanceNotFoundException;
  * positional audio support (i.e. identity) based on vanilla Minecraft.
  *
  * @author zsawyer, 2013-07-05
- * @version 1.0.1
+ * @version 1.2.0
  */
 @Mod(ExtendedPASupport.MOD_ID)
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -163,15 +164,22 @@ public class ExtendedPASupport implements Activateable, IdentityManipulator {
         // identifiable information the client has about the world (and server)
         // it connects to.
         // TODO: test if we can use game.world.getSeed()
-        JSONArray spawnCoordinates = new JSONArray();
-        spawnCoordinates.put(game.level.getSharedSpawnPos().getX());
-        spawnCoordinates.put(game.level.getSharedSpawnPos().getX());
-        spawnCoordinates.put(game.level.getSharedSpawnPos().getX());
-        // append coordinates
-        identity.put(IdentityKey.WORLD_SPAWN, spawnCoordinates);
+        if (game.level != null) {
+            BlockPos sharedSpawnPos = game.level.getSharedSpawnPos();
+
+            JSONArray spawnCoordinates = new JSONArray();
+            spawnCoordinates.put(sharedSpawnPos.getX());
+            spawnCoordinates.put(sharedSpawnPos.getY());
+            spawnCoordinates.put(sharedSpawnPos.getZ());
+
+            // append coordinates
+            identity.put(IdentityKey.WORLD_SPAWN, spawnCoordinates);
+        }
 
         // append the dimension
-        identity.put(IdentityKey.DIMENSION, game.player.level.dimension().location().toString());
+        if (game.player != null) {
+            identity.put(IdentityKey.DIMENSION, game.player.level.dimension().location().toString());
+        }
     }
 
     /**
