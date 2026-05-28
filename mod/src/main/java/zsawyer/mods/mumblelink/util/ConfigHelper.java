@@ -65,4 +65,22 @@ public class ConfigHelper {
                 .translation(translation)
                 .define(path, defaultValue);
     }
+
+    /**
+     * Short-hand function to get a {@link net.minecraftforge.common.ForgeConfigSpec.IntValue}, providing a comment, translation and
+     * default value. The comment will be supplemented with the range (1 to {@link Integer#MAX_VALUE})
+     *
+     * @param builder      a builder instance to work with
+     * @param path         an identifier for this key-value pair
+     * @param comment      a hint which will be written into the config file
+     * @param translation  the key for the translation string
+     * @param defaultValue a default value to use if it wasn't set yet
+     * @return the value read from config
+     */
+    public static ForgeConfigSpec.IntValue buildInt(ForgeConfigSpec.Builder builder, String path, String comment, String translation, int defaultValue) {
+        return builder
+                .comment(comment + System.getProperty("line.separator") + 1 + "-" + Integer.MAX_VALUE)
+                .translation(translation)
+                .defineInRange(path, defaultValue, 1, Integer.MAX_VALUE);
+    }
 }
