@@ -240,6 +240,7 @@ There are multiple Forks.
 
 Also similar projects which deserve an honorable mention: 
 - https://github.com/magneticflux-/fabric-mumblelink-mod does the same as this project but has a different implementation
+- https://github.com/GeheimagentNr1/MumbleIntegration does similar things like this project but has a different implementation and also allows to connect with mumble servers directly, it is currently more frequently updated, too
 
 
 # Acknowledgements:
