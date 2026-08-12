@@ -21,7 +21,7 @@ context and/or identity.
 
 Prerequisites:
 
-- Minecraft ${mcversion}+
+- Minecraft ${minecraft_version}+
 - Minecraft Forge installed (http://www.minecraftforge.net/wiki/)
 - Mumble + advanced option "Link to Game and Transmit Position" activated
      (Configure -> Settings -> Tick "Advanced" -> "Plugins"
@@ -221,7 +221,7 @@ Mod-Packs:
 Tested Platforms:
 
 - Windows 10 Home 64-bit with Forge
-    - Forge ${forgeversion} (MC ${mcversion})
+    - Forge ${forge_version} (MC ${minecraft_version})
 
 
 

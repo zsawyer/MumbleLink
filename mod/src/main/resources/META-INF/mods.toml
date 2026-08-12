@@ -6,7 +6,7 @@
 # The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[${forgeversion_dependency},)" #mandatory
+loaderVersion="${loader_version_range}" #mandatory
 # The license for you mod. This is mandatory metadata and allows for easier comprehension of your redistributive properties.
 # Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
 license="GNU LGPL v3.0"
@@ -17,9 +17,9 @@ issueTrackerURL="https://github.com/zsawyer/MumbleLink/issues" #optional
 # The modid of the mod
 modId="mumblelink" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="${modversion}" #mandatory
+version="${mod_version}" #mandatory
  # A display name for the mod
-displayName="MumbleLink for Forge" #mandatory
+displayName="${mod_name}" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 #updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
@@ -113,7 +113,7 @@ An addon to the MumbleLink mod (forge version) which injects extended positional
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[${forgeversion_dependency},)" #mandatory
+    versionRange="${forge_version_range}" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -122,7 +122,7 @@ An addon to the MumbleLink mod (forge version) which injects extended positional
 [[dependencies.mumblelink]]
     modId="minecraft"
     mandatory=true
-    versionRange="[${mcversion}]"
+    versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="CLIENT"
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
@@ -132,7 +132,7 @@ An addon to the MumbleLink mod (forge version) which injects extended positional
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[${forgeversion_dependency},)" #mandatory
+    versionRange="${forge_version_range}" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -141,12 +141,12 @@ An addon to the MumbleLink mod (forge version) which injects extended positional
 [[dependencies.extendedpasupport]]
     modId="minecraft"
     mandatory=true
-    versionRange="[${mcversion}]"
+    versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="CLIENT"
 [[dependencies.extendedpasupport]]
     modId="mumblelink"
     mandatory=true
-    versionRange="[${modversion},)"
+    versionRange="[${mod_version},)"
     ordering="NONE"
     side="CLIENT"
